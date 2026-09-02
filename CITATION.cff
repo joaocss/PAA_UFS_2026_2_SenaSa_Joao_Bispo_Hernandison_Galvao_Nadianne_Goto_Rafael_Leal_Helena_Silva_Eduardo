@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+title: Recuperação de contexto para IA generativa em materiais educacionais abertos
+message: Protótipo desenvolvido para a Atividade 1 (AV1) de Projeto e Análise de Algoritmos, PROCC/UFS, 2026.2
+type: software
+authors:
+  - family-names: Sena Sá
+    given-names: João Cosme
+  - family-names: Bispo
+    given-names: Hernandison da Silva
+  - family-names: Galvão
+    given-names: Nadianne Maria dos Santos
+  - family-names: Goto
+    given-names: Rafael Takeguma
+  - family-names: Leal
+    given-names: Helena Carvalho
+  - family-names: Silva
+    given-names: Eduardo Henrique do Lago
+license: MIT
+version: 0.1.0
+date-released: "2026-09-03"

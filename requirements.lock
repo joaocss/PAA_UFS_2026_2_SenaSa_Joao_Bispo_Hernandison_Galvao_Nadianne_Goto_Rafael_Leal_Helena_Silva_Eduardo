@@ -1,0 +1,7 @@
+# Ambiente travado. Regerar com: pip freeze > requirements.lock
+# C1, C2 e C3 nao usam biblioteca externa; as dependencias abaixo servem
+# ao baseline de referencia, as figuras e a suite de testes.
+pytest==8.3.4
+scikit-learn==1.6.1
+matplotlib==3.10.0
+numpy==2.2.2

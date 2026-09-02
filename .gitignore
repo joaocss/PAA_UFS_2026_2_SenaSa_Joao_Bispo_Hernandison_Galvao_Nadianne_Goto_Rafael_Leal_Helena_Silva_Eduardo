@@ -1,0 +1,30 @@
+# Ambiente
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Corpus baixado: o script de aquisicao reproduz, o manifesto confere
+data/raw/
+data/processed/
+
+# Os dados brutos dos experimentos, tabelas e figuras SAO versionados.
+# Sao entregavel exigido pelo enunciado, nao adicione experimentos/ aqui.
+
+# Sistema e editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Segredos, nunca versionar
+.env
+*.key
+*.pem
+credenciais*
