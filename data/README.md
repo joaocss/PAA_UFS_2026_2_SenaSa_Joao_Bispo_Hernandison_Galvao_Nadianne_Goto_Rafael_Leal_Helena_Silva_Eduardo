@@ -12,14 +12,18 @@
 | Data de acesso | 01/09/2026, a reconfirmar no dia da aquisição |
 | Formato | 21 notebooks Jupyter: prefácio, introdução e capítulos 1 a 19 |
 | Tamanho auditado | 817.578 bytes, 2.789 células, 73.867 palavras de texto e código na extração canônica |
-| SHA-256 do recorte bruto | 86e71e127f4e0e557333bcd1d469162c2ad9b613c0708830ba570ff57cf8b34c |
-| SHA-256 da extração | b0354898a9e6c58231c4f11014521c6c888afcf433a9495253011d6c9b8513fa |
+| SHA-256 do recorte bruto | 20106262588b9041517ab675fccee3034d879f08b381b584cdd99f40a5768dc5 |
+| SHA-256 da extração | pendente, será gravado por `preparar_corpus.py` |
 | Idioma | Português brasileiro |
 | Licença do texto | CC BY-NC-SA 4.0 |
 | Licença dos códigos | MIT |
 | Dados sensíveis | Nenhum. Conteúdo didático público |
 
-Os hashes acima vieram da auditoria de planejamento. O script de aquisição recalcula e grava os valores efetivos em `corpus_manifest.csv`; divergência entre os dois é sinal de que o material mudou na origem e precisa ser investigada antes de qualquer execução.
+O recorte são os 21 notebooks de `capitulos/*.ipynb`, no commit acima. As pastas `brancos` e `solucoes` do repositório de origem ficam de fora: uma repete o texto sem as respostas, a outra traz gabaritos. A subpasta `capitulos/teste` também não entra.
+
+O hash do recorte é calculado assim: para cada arquivo, concatena-se o caminho relativo e o SHA-256 do conteúdo; a lista é ordenada alfabeticamente, unida por quebras de linha, e o SHA-256 dessa string é o valor registrado. A ordem de leitura não influencia o resultado, e qualquer arquivo que entre, saia ou mude altera o hash.
+
+O valor acima foi produzido por `scripts/baixar_corpus.py` em 02/09/2026. O total de 817.578 bytes confere com o levantamento de planejamento, o que confirma que o recorte é o mesmo. Divergência em execuções futuras significa que o material mudou na origem e precisa ser investigada antes de qualquer experimento.
 
 ## Por que o texto não está versionado aqui
 
