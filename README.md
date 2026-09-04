@@ -8,12 +8,12 @@ Tema 8: materiais educacionais abertos.
 
 | Integrante | Frente principal |
 | --- | --- |
-| João Cosme Sena Sá | a definir |
-| Eduardo Henrique do Lago Silva | a definir |
-| Helena Carvalho Leal | a definir |
-| Hernandison da Silva Bispo | a definir |
-| Nadianne Maria dos Santos Galvão | a definir |
-| Rafael Takeguma Goto | a definir |
+| João Cosme Sena Sá | Dados de teste, pacote e testes, protocolo experimental, índice invertido e busca binária (C2), entrega |
+| Eduardo Henrique do Lago Silva | Experimentos, tabelas, gráfico e baseline de referência (C4) |
+| Helena Carvalho Leal | Consultas, julgamentos de relevância, métricas, relação com IA generativa e limitações |
+| Hernandison da Silva Bispo | Ingestão, normalização e fragmentação; manutenção do relatório |
+| Nadianne Maria dos Santos Galvão | Corretude, modelo RAM, complexidade e recorrências |
+| Rafael Takeguma Goto | Busca linear, Insertion Sort, Merge Sort, pontuação e consulta (C1 e C3) |
 
 A tabela de contribuições com evidências está em `docs/CONTRIBUICOES.md`.
 
@@ -39,9 +39,11 @@ O pipeline vai da ingestão até a lista ordenada de trechos: baixa o corpus no 
 
 Três configurações são comparadas sobre os mesmos dados e a mesma função de pontuação:
 
-- C1: varredura linear com Insertion Sort implementado pela equipe.
-- C2: mesma varredura linear com Merge Sort implementado pela equipe.
-- C3: índice invertido com busca binária no vocabulário, seguido de Merge Sort dos candidatos.
+- C1: varredura linear com Insertion Sort implementado pela equipe (baseline).
+- C2: índice invertido com busca binária no vocabulário, seguido de Merge Sort dos candidatos (busca indexada).
+- C3: mesma varredura linear de C1 com Merge Sort implementado pela equipe (divisão e conquista).
+
+A numeração segue a seção 7.1 do enunciado. As regras que todo o código segue estão em `docs/CONTRATOS.md`; a divisão de trabalho e as datas em `docs/PLANEJAMENTO.md`.
 
 Uma quarta configuração usa o TF-IDF do scikit-learn apenas como referência externa. Ela não substitui nenhuma implementação exigida e é analisada em separado.
 
