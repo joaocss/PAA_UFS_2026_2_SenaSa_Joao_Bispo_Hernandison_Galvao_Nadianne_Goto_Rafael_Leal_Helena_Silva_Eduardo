@@ -1,5 +1,7 @@
+from paa_context.contador import Contador
 from paa_context.insertion_sort import insertion_sort, linear_search_sorted
 from paa_context.linear_search import CHUNKS_PYTHON, linear_search
+from paa_context.merge_sort import merge_sort
 
 
 def test_lista_vazia():
@@ -26,6 +28,12 @@ def test_ordem_inversa():
 
 def test_empate_preserva_ordem():
     items = [("tupla", 0.5), ("funcoes", 0.5)]
+
+    assert insertion_sort(items) == items
+
+
+def test_empate_tres_elementos():
+    items = [("a", 0.5), ("b", 0.5), ("c", 0.5)]
 
     assert insertion_sort(items) == items
 
@@ -59,3 +67,22 @@ def test_consulta_lista_python():
     assert chunks[0] == CHUNKS_PYTHON[0]
     assert chunks[1] == CHUNKS_PYTHON[1]
     assert chunks[2] == CHUNKS_PYTHON[3]
+
+
+def test_contador_ordem_inversa():
+    items = [("c", 0.0), ("b", 0.5), ("a", 1.0)]
+    contador = Contador()
+
+    insertion_sort(items, contador=contador)
+
+    assert contador.comparacoes == 3
+    assert contador.trocas == 3
+
+
+def test_contador_lista_vazia():
+    contador = Contador()
+
+    insertion_sort([], contador=contador)
+
+    assert contador.comparacoes == 0
+    assert contador.trocas == 0

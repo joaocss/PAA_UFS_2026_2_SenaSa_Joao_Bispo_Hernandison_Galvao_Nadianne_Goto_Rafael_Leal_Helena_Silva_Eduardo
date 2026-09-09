@@ -1,6 +1,16 @@
+from paa_context.contador import Contador
 from paa_context.insertion_sort import insertion_sort
 from paa_context.linear_search import CHUNKS_PYTHON, linear_search
 from paa_context.merge_sort import linear_search_merge_sorted, merge_sort
+
+
+CONSULTAS_EQUIVALENCIA = [
+    "lista python",
+    "lista dicionario",
+    "python",
+    "recursao grafo",
+    "",
+]
 
 
 def test_lista_vazia():
@@ -27,6 +37,12 @@ def test_ordem_inversa():
 
 def test_empate_preserva_ordem():
     items = [("tupla", 0.5), ("funcoes", 0.5)]
+
+    assert merge_sort(items) == items
+
+
+def test_empate_tres_elementos():
+    items = [("a", 0.5), ("b", 0.5), ("c", 0.5)]
 
     assert merge_sort(items) == items
 
@@ -66,3 +82,34 @@ def test_equivalente_ao_insertion_sort():
     pontuados = linear_search("lista python", CHUNKS_PYTHON)
 
     assert merge_sort(pontuados) == insertion_sort(pontuados)
+
+
+def test_equivalencia_varias_consultas():
+    for query in CONSULTAS_EQUIVALENCIA:
+        pontuados = linear_search(query, CHUNKS_PYTHON)
+        assert merge_sort(pontuados) == insertion_sort(pontuados)
+
+
+def test_equivalencia_empate_tres():
+    items = [("x", 1.0), ("a", 0.5), ("b", 0.5), ("c", 0.5), ("z", 0.0)]
+
+    assert merge_sort(items) == insertion_sort(items)
+
+
+def test_contador_incrementa():
+    items = [("c", 0.0), ("b", 0.5), ("a", 1.0)]
+    contador = Contador()
+
+    merge_sort(items, contador=contador)
+
+    assert contador.comparacoes > 0
+    assert contador.trocas > 0
+
+
+def test_contador_lista_vazia():
+    contador = Contador()
+
+    merge_sort([], contador=contador)
+
+    assert contador.comparacoes == 0
+    assert contador.trocas == 0
