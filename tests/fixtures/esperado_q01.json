@@ -1,0 +1,27 @@
+{
+  "query_id": "q01",
+  "consulta": "o que é recursão",
+  "k": 5,
+  "resultados": [
+    {
+      "chunk_id": "recursao-c0007",
+      "escore": 11.19419
+    },
+    {
+      "chunk_id": "recursao-c0008",
+      "escore": 11.19419
+    },
+    {
+      "chunk_id": "recursao-c0012",
+      "escore": 10.006297
+    },
+    {
+      "chunk_id": "listas-c0018",
+      "escore": 10.006297
+    },
+    {
+      "chunk_id": "recursao-c0011",
+      "escore": 6.453038
+    }
+  ]
+}

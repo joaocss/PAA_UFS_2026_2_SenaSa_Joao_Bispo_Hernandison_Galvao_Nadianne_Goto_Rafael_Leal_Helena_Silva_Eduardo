@@ -1,0 +1,4 @@
+query_id,texto,categoria,capitulo_esperado,autor
+q01,o que é recursão,conceito,Recursão,fixture
+q02,exemplo de função que devolve valor,exemplo,Funções,fixture
+q03,diferença entre lista e tupla,relacao,Listas,fixture

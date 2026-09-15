@@ -1,0 +1,27 @@
+{
+  "query_id": "q03",
+  "consulta": "diferença entre lista e tupla",
+  "k": 5,
+  "resultados": [
+    {
+      "chunk_id": "listas-c0015",
+      "escore": 20.471953
+    },
+    {
+      "chunk_id": "listas-c0014",
+      "escore": 5.198673
+    },
+    {
+      "chunk_id": "listas-c0016",
+      "escore": 4.217844
+    },
+    {
+      "chunk_id": "listas-c0018",
+      "escore": 3.814259
+    },
+    {
+      "chunk_id": "listas-c0017",
+      "escore": 2.252763
+    }
+  ]
+}

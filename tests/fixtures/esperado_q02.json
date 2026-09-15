@@ -1,0 +1,27 @@
+{
+  "query_id": "q02",
+  "consulta": "exemplo de função que devolve valor",
+  "k": 5,
+  "resultados": [
+    {
+      "chunk_id": "funcoes-c0003",
+      "escore": 17.582785
+    },
+    {
+      "chunk_id": "funcoes-c0001",
+      "escore": 16.073953
+    },
+    {
+      "chunk_id": "funcoes-c0005",
+      "escore": 6.115153
+    },
+    {
+      "chunk_id": "funcoes-c0000",
+      "escore": 5.77057
+    },
+    {
+      "chunk_id": "recursao-c0012",
+      "escore": 5.199887
+    }
+  ]
+}
