@@ -15,6 +15,7 @@ import csv
 import json
 import math
 import re
+import unicodedata
 from collections import Counter
 from pathlib import Path
 
@@ -23,8 +24,14 @@ PASTA = Path(__file__).parent
 
 
 def tokenizar(texto: str) -> list[str]:
-    """Token = palavra: letras, digitos e sublinhado, em minusculas, acentos mantidos."""
-    return re.findall(r"\w+", texto.lower())
+    """Token = sequencia de letras e digitos, em minusculas e sem acentos.
+
+    Mesmo criterio do normalize de src/paa_context/preprocessing.py, escrito de
+    outro jeito (regex em vez de isalnum) para nao copiar o codigo testado.
+    """
+    decomposto = unicodedata.normalize("NFD", texto.lower())
+    sem_acentos = "".join(c for c in decomposto if unicodedata.category(c) != "Mn")
+    return re.findall(r"[^\W_]+", sem_acentos)
 
 
 def main() -> None:

@@ -5,23 +5,23 @@
   "resultados": [
     {
       "chunk_id": "listas-c0015",
-      "escore": 20.471953
+      "escore": 20.17999
     },
     {
       "chunk_id": "listas-c0014",
-      "escore": 5.198673
-    },
-    {
-      "chunk_id": "listas-c0016",
-      "escore": 4.217844
+      "escore": 6.470607
     },
     {
       "chunk_id": "listas-c0018",
-      "escore": 3.814259
+      "escore": 5.96783
     },
     {
-      "chunk_id": "listas-c0017",
-      "escore": 2.252763
+      "chunk_id": "listas-c0016",
+      "escore": 3.524697
+    },
+    {
+      "chunk_id": "recursao-c0013",
+      "escore": 3.035208
     }
   ]
 }

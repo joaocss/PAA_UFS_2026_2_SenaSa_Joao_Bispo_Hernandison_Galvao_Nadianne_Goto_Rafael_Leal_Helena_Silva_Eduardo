@@ -22,25 +22,25 @@ Dados inventados para desenvolver e testar antes de o corpus real estar fragment
 
 Fórmula do contrato 02, com N = 20 chunks:
 
-- token: `re.findall(r"\w+", texto.lower())`
+- token: sequência de letras e dígitos, em minúsculas e sem acentos (o mesmo critério do `normalize` de `src/paa_context/preprocessing.py`)
 - `tf(t, c) = 1 + ln f(t, c)` se o termo ocorre no chunk, senão 0
 - `idf(t) = ln((N + 1) / (df(t) + 1)) + 1`
 - `escore(c, q) = Σ qtf(t, q) · tf(t, c) · idf(t)` sobre os termos distintos de q
 - ordem: maior escore, depois menor `source_order`; escore zero fica fora; k = 5
 
-Conferência à mão de um caso, `q01` e o chunk `recursao-c0007`: os termos da consulta são `o`, `que`, `é`, `recursão`. No chunk, `o` ocorre 2 vezes, `que` 1, `é` 2, `recursão` 2. As frequências de documento nos 20 chunks são `o` 11, `que` 6, `é` 11, `recursão` 5. Então:
+Conferência à mão de um caso, `q01` e o chunk `recursao-c0007`: sem acentos, os termos da consulta são `o`, `que`, `e`, `recursao`. No chunk, `o` ocorre 2 vezes, `que` 1, `e` 2 (as duas vezes em que aparece "é"), `recursao` 2. As frequências de documento nos 20 chunks são `o` 11, `que` 6, `e` 15, `recursao` 5. Então:
 
 ```
 o:        (1 + ln 2) · (ln(21/12) + 1) = 1,6931 · 1,5596 = 2,6407
 que:      (1 + ln 1) · (ln(21/7)  + 1) = 1,0000 · 2,0986 = 2,0986
-é:        (1 + ln 2) · (ln(21/12) + 1) = 1,6931 · 1,5596 = 2,6407
-recursão: (1 + ln 2) · (ln(21/6)  + 1) = 1,6931 · 2,2528 = 3,8143
-soma                                                     = 11,1942
+e:        (1 + ln 2) · (ln(21/16) + 1) = 1,6931 · 1,2719 = 2,1536
+recursao: (1 + ln 2) · (ln(21/6)  + 1) = 1,6931 · 2,2528 = 3,8143
+soma                                                     = 10,7071
 ```
 
-Bate com o `esperado_q01.json`: a conta foi refeita em 14/09/2026 e confere. Antes de os testes de `pontuacao.py` e de equivalência passarem a depender deste gabarito, alguém da equipe que não o gerou refaz a conta de pelo menos um chunk.
+Bate com o `esperado_q01.json`, regerado em 16/09/2026 sem acentos. Antes de os testes de `pontuacao.py` e de equivalência passarem a depender deste gabarito, alguém da equipe que não o gerou refaz a conta de pelo menos um chunk.
 
-Os acentos são mantidos, então "é" e "e" são termos diferentes. Se a pontuação da equipe remover acentos, as notas mudam (sem acento, o df de "e" passa a 15 e `recursao-c0007` cai de 11,1942 para 10,7071) e este gabarito precisa ser regerado com o mesmo critério.
+Os acentos são removidos, então "é" e "e" viram o mesmo termo. Até 15/09 o gabarito mantinha os acentos e `recursao-c0007` valia 11,1942; a troca acompanhou o `normalize` da equipe. Se a regra de tokens mudar outra vez, este gabarito precisa ser regerado com o mesmo critério.
 
 ## Regerar
 
