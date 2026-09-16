@@ -12,7 +12,7 @@ license = {text = "MIT"}
 dependencies = []
 
 [project.optional-dependencies]
-# C1, C2 e C3 E tudo local. e alimentam o C4, tanto na figuras e aos testes.
+# C1, C2 e C3 nao usam biblioteca externa. Estas servem ao C4 (referencia), as figuras e aos testes.
 dev = [
     "pytest==8.3.4",
     "scikit-learn==1.6.1",

@@ -54,12 +54,14 @@ Python 3.11 ou superior. As dependências estão travadas em `requirements.lock`
 ```
 python -m venv .venv
 source .venv/bin/activate     # no Windows: .venv\Scripts\activate
-pip install -r requirements.lock
+pip install -e ".[dev]"
 ```
+
+Os testes rodam com `pytest` e usam só os dados sintéticos de `tests/fixtures/`, então não dependem do corpus baixado.
 
 ## Reprodução
 
-O comando abaixo executa tudo, do download aos gráficos:
+O comando abaixo vai executar tudo, do download aos gráficos (ainda a fazer):
 
 ```
 python scripts/reproduzir_tudo.py
@@ -69,10 +71,18 @@ Os estágios também rodam isolados, na ordem:
 
 ```
 python scripts/baixar_corpus.py        # baixa e registra hashes em data/corpus_manifest.csv
-python scripts/preparar_corpus.py      # normaliza e gera os chunks
-python scripts/rodar_experimentos.py   # 45 execuções, grava em experimentos/brutos
-python scripts/gerar_figuras.py        # tabelas e gráficos em experimentos/figuras
+python scripts/preparar_corpus.py      # normaliza e gera data/processed/chunks.jsonl
+python scripts/rodar_experimentos.py   # a fazer: 45 execuções, grava em experimentos/brutos
+python scripts/gerar_figuras.py        # a fazer: tabelas e gráficos em experimentos/figuras
 ```
+
+Para uma consulta avulsa, depois de preparar o corpus (por enquanto só C1 e C3; a C2 ainda não está integrada):
+
+```
+python scripts/consultar.py --consulta "o que é recursão" --k 5 --config C1
+```
+
+`preparar_corpus.py --notebooks 8` limita o corte aos oito primeiros notebooks, como no checkpoint de 10/09. O protocolo de medição está em `docs/PROTOCOLO_EXPERIMENTAL.md`.
 
 Todos os scripts são idempotentes: rodar duas vezes produz o mesmo resultado e não duplica arquivos.
 
@@ -81,7 +91,7 @@ Cada execução registra hostname, processador, memória, sistema operacional, v
 ## Estrutura
 
 ```
-src/paa_contexto/    aquisicao, normalizacao, fragmentacao, pontuacao, ordenacao, busca, indice, metricas
+src/paa_context/     fragmentacao, pontuacao, ordenacao, busca linear, busca binaria, indice, metricas
 scripts/             comandos de ponta a ponta
 tests/               unitários, integração e fixtures versionadas
 data/                manifesto do corpus, consultas e julgamentos de relevância
