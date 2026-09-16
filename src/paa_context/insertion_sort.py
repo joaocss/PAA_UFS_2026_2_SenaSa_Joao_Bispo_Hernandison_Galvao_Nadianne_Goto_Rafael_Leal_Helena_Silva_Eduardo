@@ -1,25 +1,25 @@
 from .linear_search import linear_search
+from .sort_key import sort_key
 
-# Desempate (prototipo):
-# Enquanto nao houver source_order na estrutura oficial de Chunk,
-# empates de score preservam a ordem do corpus (ordem de entrada apos
-# a busca linear). Quando Chunk existir, a chave passa a ser
-# (-escore, source_order), conforme docs/CONTRATOS.md.
+# Desempate:
+# Chave (-escore, source_order), conforme docs/CONTRATOS.md. Em empate de
+# score vence o menor source_order, qualquer que seja a ordem de entrada.
+# Assim o resultado nao muda quando os candidatos chegam fora da ordem do
+# corpus, como na C2.
 
 
 def insertion_sort(items, contador=None):
     """Ordena pares (chunk, score) por score decrescente.
 
-    Insertion Sort estavel: empates preservam a ordem de entrada
-    (ordem do corpus apos a busca linear). Esse criterio sera
-    substituido por source_order quando a estrutura Chunk existir.
+    Empates de score saem em ordem crescente de source_order
+    (ver sort_key).
 
     Devolve lista nova e nao altera a original.
     `contador` e opcional: se fornecido, incrementa comparacoes e trocas
     (deslocamentos).
 
-    Tempo: melhor Theta(C); medio e pior Theta(C^2).
-    Espaco extra: O(C), pela copia da entrada.
+    Tempo: melhor Theta(P); medio e pior Theta(P^2), com P = len(items).
+    Espaco extra: O(P), pela copia da entrada.
     """
     result = list(items)
 
@@ -29,7 +29,7 @@ def insertion_sort(items, contador=None):
         while j >= 0:
             if contador is not None:
                 contador.comparacoes += 1
-            if not result[j][1] < current[1]:
+            if not sort_key(current) < sort_key(result[j]):
                 break
             result[j + 1] = result[j]
             if contador is not None:
@@ -40,9 +40,9 @@ def insertion_sort(items, contador=None):
     return result
 
 
-def linear_search_sorted(query, chunks, contador=None):
+def linear_search_sorted(query, chunks, estatisticas, contador=None):
     """Busca linear seguida de Insertion Sort.
 
-    Tempo: Theta(C(m + n) + C^2) no pior e no caso medio.
+    Tempo: Theta(C(m + n) + P^2) no pior e no caso medio.
     """
-    return insertion_sort(linear_search(query, chunks), contador=contador)
+    return insertion_sort(linear_search(query, chunks, estatisticas), contador=contador)

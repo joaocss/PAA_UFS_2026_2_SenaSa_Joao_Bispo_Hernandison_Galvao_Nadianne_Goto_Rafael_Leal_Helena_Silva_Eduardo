@@ -25,26 +25,24 @@ from paa_context.insertion_sort import insertion_sort  # noqa: E402
 from paa_context.linear_search import linear_search  # noqa: E402
 from paa_context.merge_sort import merge_sort  # noqa: E402
 from paa_context.pipeline import top_k  # noqa: E402
+from paa_context.relevance import build_statistics  # noqa: E402
 
 CHUNKS_PADRAO = RAIZ / "data" / "processed" / "chunks.jsonl"
 
 ORDENADORES = {"C1": insertion_sort, "C3": merge_sort}
 
 
-def consultar(chunks, consulta: str, k: int, config: str):
+def consultar(chunks, estatisticas, consulta: str, k: int, config: str):
     """Devolve (resultados, contador, candidatos) para a configuracao pedida."""
     if config not in ORDENADORES:
         raise ValueError(f"configuracao {config} indisponivel; use C1 ou C3")
 
-    # A busca linear do Rafael trabalha sobre strings e devolve na ordem do
-    # corpus, entao basta casar cada par com o chunk de mesma posicao.
-    pontuados = linear_search(consulta, [c.texto for c in chunks])
-    pares = [(chunk, escore) for chunk, (_, escore) in zip(chunks, pontuados)]
-    candidatos = sum(1 for _, escore in pares if escore > 0)
+    # A busca linear ja devolve so os candidatos (escore > 0), na ordem do livro.
+    pontuados = linear_search(consulta, chunks, estatisticas)
 
     contador = Contador()
-    ordenados = ORDENADORES[config](pares, contador=contador)
-    return top_k(ordenados, k), contador, candidatos
+    ordenados = ORDENADORES[config](pontuados, contador=contador)
+    return top_k(ordenados, k), contador, len(pontuados)
 
 
 def principal() -> int:
@@ -64,9 +62,10 @@ def principal() -> int:
         return 1
 
     chunks = carregar_chunks(args.chunks)
+    estatisticas = build_statistics(chunks)
 
     inicio = time.perf_counter_ns()
-    resultados, contador, candidatos = consultar(chunks, args.consulta, args.k, args.config)
+    resultados, contador, candidatos = consultar(chunks, estatisticas, args.consulta, args.k, args.config)
     duracao_ms = (time.perf_counter_ns() - inicio) / 1e6
 
     print(f'consulta: "{args.consulta}"  config: {args.config}  k: {args.k}')

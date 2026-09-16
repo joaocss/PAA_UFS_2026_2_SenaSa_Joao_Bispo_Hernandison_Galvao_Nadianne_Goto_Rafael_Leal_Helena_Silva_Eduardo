@@ -1,13 +1,22 @@
+import random
+
 from paa_context.contador import Contador
 from paa_context.insertion_sort import insertion_sort
 from paa_context.linear_search import CHUNKS_PYTHON, linear_search
 from paa_context.merge_sort import linear_search_merge_sorted, merge_sort
+from paa_context.relevance import build_statistics
+
+ESTATISTICAS = build_statistics(CHUNKS_PYTHON)
+
+# source_order: a = 0, b = 1, c = 2, d = 3, e = 4
+a, b, c, d, e = CHUNKS_PYTHON
 
 
 CONSULTAS_EQUIVALENCIA = [
     "lista python",
     "lista dicionario",
     "python",
+    "uma sequencia",
     "recursao grafo",
     "",
 ]
@@ -18,37 +27,49 @@ def test_lista_vazia():
 
 
 def test_um_elemento():
-    items = [("unico", 0.5)]
+    items = [(a, 0.5)]
 
     assert merge_sort(items) == items
 
 
 def test_ja_ordenada():
-    items = [("a", 1.0), ("b", 0.5), ("c", 0.0)]
+    items = [(a, 1.0), (b, 0.5), (c, 0.0)]
 
     assert merge_sort(items) == items
 
 
 def test_ordem_inversa():
-    items = [("c", 0.0), ("b", 0.5), ("a", 1.0)]
+    items = [(c, 0.0), (b, 0.5), (a, 1.0)]
 
-    assert merge_sort(items) == [("a", 1.0), ("b", 0.5), ("c", 0.0)]
+    assert merge_sort(items) == [(a, 1.0), (b, 0.5), (c, 0.0)]
 
 
-def test_empate_preserva_ordem():
-    items = [("tupla", 0.5), ("funcoes", 0.5)]
+def test_empate_na_ordem_do_corpus():
+    items = [(b, 0.5), (d, 0.5)]
 
     assert merge_sort(items) == items
+
+
+def test_empate_fora_da_ordem_do_corpus():
+    items = [(d, 0.5), (b, 0.5)]
+
+    assert merge_sort(items) == [(b, 0.5), (d, 0.5)]
 
 
 def test_empate_tres_elementos():
-    items = [("a", 0.5), ("b", 0.5), ("c", 0.5)]
+    items = [(a, 0.5), (b, 0.5), (c, 0.5)]
 
     assert merge_sort(items) == items
 
 
+def test_empate_tres_elementos_embaralhados():
+    items = [(c, 0.5), (a, 0.5), (b, 0.5)]
+
+    assert merge_sort(items) == [(a, 0.5), (b, 0.5), (c, 0.5)]
+
+
 def test_nao_altera_entrada():
-    items = [("c", 0.0), ("a", 1.0)]
+    items = [(c, 0.0), (a, 1.0)]
     original = list(items)
 
     merge_sort(items)
@@ -58,46 +79,53 @@ def test_nao_altera_entrada():
 
 def test_reutiliza_busca_linear():
     query = "lista python"
-    pontuados = linear_search(query, CHUNKS_PYTHON)
+    pontuados = linear_search(query, CHUNKS_PYTHON, ESTATISTICAS)
     ordenados = merge_sort(pontuados)
 
     assert sorted(score for _, score in ordenados) == sorted(
         score for _, score in pontuados
     )
-    assert {chunk for chunk, _ in ordenados} == set(CHUNKS_PYTHON)
+    assert {chunk for chunk, _ in ordenados} == {chunk for chunk, _ in pontuados}
 
 
 def test_consulta_lista_python():
-    resultados = linear_search_merge_sorted("lista python", CHUNKS_PYTHON)
+    resultados = linear_search_merge_sorted("lista python", CHUNKS_PYTHON, ESTATISTICAS)
     chunks = [chunk for chunk, _ in resultados]
     scores = [score for _, score in resultados]
 
-    assert scores == [1.0, 0.5, 0.5, 0.0, 0.0]
-    assert chunks[0] == CHUNKS_PYTHON[0]
-    assert chunks[1] == CHUNKS_PYTHON[1]
-    assert chunks[2] == CHUNKS_PYTHON[3]
+    assert chunks == [a, b, d]
+    assert scores[0] > scores[1]
+    assert scores[1] == scores[2]
 
 
 def test_equivalente_ao_insertion_sort():
-    pontuados = linear_search("lista python", CHUNKS_PYTHON)
+    pontuados = linear_search("lista python", CHUNKS_PYTHON, ESTATISTICAS)
 
     assert merge_sort(pontuados) == insertion_sort(pontuados)
 
 
 def test_equivalencia_varias_consultas():
     for query in CONSULTAS_EQUIVALENCIA:
-        pontuados = linear_search(query, CHUNKS_PYTHON)
+        pontuados = linear_search(query, CHUNKS_PYTHON, ESTATISTICAS)
         assert merge_sort(pontuados) == insertion_sort(pontuados)
 
 
 def test_equivalencia_empate_tres():
-    items = [("x", 1.0), ("a", 0.5), ("b", 0.5), ("c", 0.5), ("z", 0.0)]
+    items = [(a, 1.0), (b, 0.5), (c, 0.5), (d, 0.5), (e, 0.0)]
 
     assert merge_sort(items) == insertion_sort(items)
 
 
+def test_equivalencia_entrada_embaralhada():
+    gerador = random.Random(2026)
+    for _ in range(50):
+        items = [(chunk, gerador.choice([0.5, 1.0, 2.0])) for chunk in CHUNKS_PYTHON]
+        gerador.shuffle(items)
+        assert merge_sort(items) == insertion_sort(items)
+
+
 def test_contador_incrementa():
-    items = [("c", 0.0), ("b", 0.5), ("a", 1.0)]
+    items = [(c, 0.0), (b, 0.5), (a, 1.0)]
     contador = Contador()
 
     merge_sort(items, contador=contador)
