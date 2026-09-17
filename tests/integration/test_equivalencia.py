@@ -4,6 +4,7 @@ import random
 from pathlib import Path
 
 from paa_context.contador import Contador
+from paa_context.indice import buscar_indexado, construir_indice, recuperar_indexado
 from paa_context.insertion_sort import insertion_sort
 from paa_context.linear_search import linear_search
 from paa_context.merge_sort import merge_sort
@@ -15,6 +16,7 @@ FIXTURES = Path(__file__).resolve().parents[1] / "fixtures"
 
 CHUNKS = carregar_chunks(FIXTURES / "chunks_sinteticos.jsonl")
 ESTATISTICAS = build_statistics(CHUNKS)
+INDICE = construir_indice(CHUNKS)
 
 with (FIXTURES / "consultas_sinteticas.csv").open(encoding="utf-8") as arquivo:
     CONSULTAS = list(csv.DictReader(arquivo))
@@ -30,20 +32,30 @@ def test_bate_com_gabarito():
         esperado = carregar_esperado(consulta["query_id"])
         ids_esperados = [linha["chunk_id"] for linha in esperado["resultados"]]
 
-        for algoritmo in ("insertion", "merge"):
-            resultado = retrieve(consulta["texto"], CHUNKS, ESTATISTICAS, k=esperado["k"], algoritmo=algoritmo)
+        resultados = [
+            retrieve(consulta["texto"], CHUNKS, ESTATISTICAS, k=esperado["k"], algoritmo="insertion"),
+            recuperar_indexado(consulta["texto"], INDICE, ESTATISTICAS, k=esperado["k"]),
+            retrieve(consulta["texto"], CHUNKS, ESTATISTICAS, k=esperado["k"], algoritmo="merge"),
+        ]
 
+        for resultado in resultados:
             assert [chunk.chunk_id for chunk, _ in resultado] == ids_esperados
             for (_, score), linha in zip(resultado, esperado["resultados"]):
                 assert abs(score - linha["escore"]) < 1e-6
 
 
-def test_insertion_igual_merge():
+def test_c1_c2_c3_iguais():
     for consulta in CONSULTAS:
         for k in (0, 1, 5, 100):
-            a = retrieve(consulta["texto"], CHUNKS, ESTATISTICAS, k=k, algoritmo="insertion")
-            b = retrieve(consulta["texto"], CHUNKS, ESTATISTICAS, k=k, algoritmo="merge")
-            assert a == b
+            c1 = retrieve(consulta["texto"], CHUNKS, ESTATISTICAS, k=k, algoritmo="insertion")
+            c2 = recuperar_indexado(consulta["texto"], INDICE, ESTATISTICAS, k=k)
+            c3 = retrieve(consulta["texto"], CHUNKS, ESTATISTICAS, k=k, algoritmo="merge")
+            assert c1 == c2 == c3
+
+
+def test_indice_devolve_os_mesmos_candidatos_da_busca_linear():
+    for consulta in CONSULTAS:
+        assert buscar_indexado(consulta["texto"], INDICE, ESTATISTICAS) == linear_search(consulta["texto"], CHUNKS, ESTATISTICAS)
 
 
 def test_ordem_de_entrada_nao_muda_resultado():
