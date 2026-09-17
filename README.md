@@ -76,7 +76,7 @@ python scripts/rodar_experimentos.py   # a fazer: 45 execuções, grava em exper
 python scripts/gerar_figuras.py        # a fazer: tabelas e gráficos em experimentos/figuras
 ```
 
-Para uma consulta avulsa, depois de preparar o corpus (por enquanto só C1 e C3; a C2 ainda não está integrada):
+Para uma consulta avulsa, depois de preparar o corpus (`--config` aceita C1, C2 ou C3):
 
 ```
 python scripts/consultar.py --consulta "o que é recursão" --k 5 --config C1
