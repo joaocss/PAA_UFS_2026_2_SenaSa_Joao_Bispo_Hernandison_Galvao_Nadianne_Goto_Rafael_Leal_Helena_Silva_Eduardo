@@ -1,0 +1,12 @@
+| secao | vezes_no_top10 | % |
+| --- | --- | --- |
+| Glossário | 110 | 36.7 |
+| Pergunte a um assistente virtual | 33 | 11.0 |
+| Exercício | 21 | 7.0 |
+| Depuração | 17 | 5.7 |
+| (sem seção) | 14 | 4.7 |
+| Navegando pelo livro | 9 | 3.0 |
+| Salto de fé | 7 | 2.3 |
+| Mães e filhas | 6 | 2.0 |
+| Repetição | 6 | 2.0 |
+| Representando cartas | 5 | 1.7 |

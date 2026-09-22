@@ -1,0 +1,24 @@
+{
+  "inicio": "2026-09-22T23:28:33+00:00",
+  "fim": "2026-09-22T23:36:47+00:00",
+  "commit": "081c407",
+  "comando": "python scripts/rodar_experimentos.py",
+  "argumentos": {
+    "rapido": false
+  },
+  "host": "MacBook-Pro-de-Joao.local",
+  "sistema": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "processador": "Apple M5",
+  "nucleos": 10,
+  "memoria_bytes": 25769803776,
+  "python": "3.14.7",
+  "bibliotecas": {
+    "scikit-learn": "1.6.1",
+    "numpy": "2.2.2",
+    "scipy": "1.18.1",
+    "matplotlib": "3.11.2"
+  },
+  "semente": 2026,
+  "n_execucoes": 3600,
+  "divergencias_c1_c2_c3": []
+}
