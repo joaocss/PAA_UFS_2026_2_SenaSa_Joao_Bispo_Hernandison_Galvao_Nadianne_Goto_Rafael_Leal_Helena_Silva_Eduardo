@@ -8,7 +8,7 @@ O enunciado pede contribuição com evidência, não cargo. Cada linha aponta co
 | Eduardo Henrique do Lago Silva | Experimentos, tabelas, gráfico e baseline de referência (C4) | a preencher | a preencher |
 | Helena Carvalho Leal | Consultas, julgamentos de relevância, métricas, relação com IA generativa e limitações | a preencher | a preencher |
 | Hernandison da Silva Bispo | Ingestão, normalização e fragmentação; manutenção do relatório | a preencher | a preencher |
-| Nadianne Maria dos Santos Galvão | Corretude, modelo RAM, complexidade e recorrências | a preencher | a preencher |
+| Nadianne Maria dos Santos Galvão | Corretude, modelo RAM, complexidade e recorrências | `docs/CORRETUDE.md`; análise RAM/complexidade/recorrências em `docs/`; criação de `tests/unit/test_sort_key.py` com testes de prioridade por `score`, desempate por `source_order` e transitividade; suíte completa com 118 testes aprovados; commit `6a5923c` e PR da branch `Nadianne_01` | Apresentação de RAM e complexidade, recorrências/C1-C2-C3 e corretude formal do Merge Sort; gravação individual da participação no https://drive.google.com/file/d/1WWhyEl1k9qLuE8Sod03WE9qJ3bNDWx3Y/view?usp=drive_link |
 | Rafael Takeguma Goto | Busca linear, Insertion Sort, Merge Sort, pontuação e consulta (C1 e C3) | a preencher | a preencher |
 
 A revisão de código, da prova e dos resultados é responsabilidade coletiva, independentemente da frente de cada um.
