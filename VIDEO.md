@@ -16,7 +16,7 @@ Plataforma: a definir, com reprodução liberada por link, sem solicitação de 
 | Eduardo Henrique do Lago Silva | a definir |
 | Helena Carvalho Leal | a definir |
 | Hernandison da Silva Bispo | a definir |
-| Nadianne Maria dos Santos Galvão | a definir |
+| Nadianne Maria dos Santos Galvão | RAM e complexidade, recorrências de C1, C2 e C3 e corretude formal do Merge Sort. Gravação individual: https://drive.google.com/file/d/1WWhyEl1k9qLuE8Sod03WE9qJ3bNDWx3Y/view?usp=drive_link |
 | Rafael Takeguma Goto | a definir |
 
 Todos os integrantes participam do vídeo, com identificação clara da própria contribuição.
