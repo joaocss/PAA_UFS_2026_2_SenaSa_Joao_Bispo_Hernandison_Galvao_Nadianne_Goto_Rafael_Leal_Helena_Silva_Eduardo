@@ -25,13 +25,13 @@ Seja `P(n)` a seguinte proposição:
 
 > Para toda lista válida de tamanho `n`, o algoritmo `merge_sort` termina e retorna uma permutação da entrada ordenada segundo a regra definida por `sort_key`.
 
-A função `sort_key` utiliza como critério `(-score, source_order)`, isto é, maior `score` primeiro e, em caso de empate, menor `source_order`. :contentReference[oaicite:0]{index=0}
+A função `sort_key` utiliza como critério `(-score, source_order)`, isto é, maior `score` primeiro e, em caso de empate, menor `source_order`.
 
 ### Caso base
 
 Para listas de tamanho `n <= 1`, não é necessário realizar nenhuma divisão adicional. Uma lista vazia ou contendo apenas um elemento já está ordenada por definição.
 
-Na implementação da equipe, quando o tamanho da entrada é menor ou igual a um, a função retorna diretamente uma cópia da própria lista. :contentReference[oaicite:1]{index=1}
+Na implementação da equipe, quando o tamanho da entrada é menor ou igual a um, a função retorna diretamente uma cópia da própria lista.
 
 Portanto, para `n = 0` e `n = 1`, o algoritmo:
 
@@ -59,11 +59,11 @@ Considere agora uma lista válida de tamanho `n > 1`.
 
 O algoritmo divide essa lista em duas partes menores, `left` e `right`. Como ambas possuem tamanho inferior a `n`, aplica-se a hipótese de indução: as chamadas recursivas `merge_sort(left)` e `merge_sort(right)` terminam e produzem duas listas corretamente ordenadas.
 
-Na implementação da equipe, essas duas chamadas recursivas são executadas antes da etapa de combinação. :contentReference[oaicite:2]{index=2}
+Na implementação da equipe, essas duas chamadas recursivas são executadas antes da etapa de combinação.
 
-Em seguida, o procedimento `_merge` combina as duas listas já ordenadas. A cada comparação, é selecionado o elemento que deve aparecer primeiro segundo `sort_key`, mantendo a ordem definida pelo projeto. :contentReference[oaicite:3]{index=3}
+Em seguida, o procedimento `_merge` combina as duas listas já ordenadas. A cada comparação, é selecionado o elemento que deve aparecer primeiro segundo `sort_key`, mantendo a ordem definida pelo projeto.
 
-Como todos os elementos das duas metades são copiados para a lista resultante, sem alteração do conjunto de elementos da entrada, o resultado final é uma permutação da lista original. Os elementos restantes de uma das metades, após o término do laço principal, também são adicionados ao resultado. :contentReference[oaicite:4]{index=4}
+Como todos os elementos das duas metades são copiados para a lista resultante, sem alteração do conjunto de elementos da entrada, o resultado final é uma permutação da lista original. Os elementos restantes de uma das metades, após o término do laço principal, também são adicionados ao resultado.
 
 Portanto, se o algoritmo funciona corretamente para os dois subproblemas menores, então também funciona corretamente para a lista de tamanho `n`.
 
@@ -79,7 +79,7 @@ Para demonstrar que o procedimento `_merge` mantém a ordenação correta durant
 
 Além disso, todos os elementos já inseridos em `merged` aparecem antes dos elementos ainda não consumidos, de acordo com a mesma relação de ordenação.
 
-Na implementação da equipe, `_merge` compara os elementos atuais das duas listas e acrescenta ao resultado aquele que deve aparecer primeiro segundo `sort_key`. :contentReference[oaicite:0]{index=0}
+Na implementação da equipe, `_merge` compara os elementos atuais das duas listas e acrescenta ao resultado aquele que deve aparecer primeiro segundo `sort_key`.
 
 ### Inicialização
 
@@ -99,7 +99,7 @@ Suponha que o invariante seja verdadeiro no início de uma determinada iteraçã
 
 Como `left` e `right` já estão ordenadas, seus primeiros elementos ainda não consumidos são os próximos candidatos possíveis segundo a relação de ordenação utilizada no projeto.
 
-O algoritmo compara esses dois elementos por meio de `sort_key` e acrescenta a `merged` aquele que deve aparecer primeiro. Em seguida, o índice correspondente é incrementado. :contentReference[oaicite:1]{index=1}
+O algoritmo compara esses dois elementos por meio de `sort_key` e acrescenta a `merged` aquele que deve aparecer primeiro. Em seguida, o índice correspondente é incrementado.
 
 Dessa forma:
 
@@ -113,7 +113,7 @@ Portanto, o invariante é preservado após cada iteração.
 
 O laço principal termina quando todos os elementos de uma das duas listas foram consumidos.
 
-Nesse momento, os elementos restantes pertencem apenas à outra lista. Como essa lista já está ordenada, seus elementos podem ser acrescentados ao final de `merged` sem violar a ordem estabelecida. A implementação realiza essa etapa por meio dos laços que copiam os elementos restantes de `left` ou `right`. :contentReference[oaicite:2]{index=2}
+Nesse momento, os elementos restantes pertencem apenas à outra lista. Como essa lista já está ordenada, seus elementos podem ser acrescentados ao final de `merged` sem violar a ordem estabelecida. A implementação realiza essa etapa por meio dos laços que copiam os elementos restantes de `left` ou `right`.
 
 Ao término do procedimento:
 
@@ -132,7 +132,7 @@ A prova de término considera separadamente a recursão do `merge_sort` e os la�
 
 Para uma lista com mais de um elemento, o `merge_sort` divide a entrada em duas partes menores.
 
-Essas partes possuem tamanho estritamente menor que o tamanho da lista original. O processo de divisão continua até que sejam alcançadas listas de tamanho zero ou um, que correspondem ao caso base do algoritmo. Na implementação da equipe, quando `len(items) <= 1`, a função retorna diretamente uma cópia da lista. :contentReference[oaicite:0]{index=0}
+Essas partes possuem tamanho estritamente menor que o tamanho da lista original. O processo de divisão continua até que sejam alcançadas listas de tamanho zero ou um, que correspondem ao caso base do algoritmo. Na implementação da equipe, quando `len(items) <= 1`, a função retorna diretamente uma cópia da lista.
 
 Como o tamanho do problema diminui a cada chamada recursiva, não é possível ocorrer uma sequência infinita de divisões. Assim, as chamadas recursivas terminam.
 
@@ -142,11 +142,11 @@ Esse comportamento é compatível com a estratégia de divisão e conquista desc
 
 No procedimento `_merge`, dois índices são utilizados para percorrer as listas `left` e `right`.
 
-A cada iteração do laço principal, pelo menos um desses índices é incrementado, indicando que um elemento foi consumido de uma das listas. :contentReference[oaicite:1]{index=1}
+A cada iteração do laço principal, pelo menos um desses índices é incrementado, indicando que um elemento foi consumido de uma das listas.
 
 Como `left` e `right` são listas finitas, os índices não podem ser incrementados indefinidamente. O laço principal termina quando uma das listas é completamente consumida.
 
-Em seguida, os elementos restantes da outra lista são copiados para o resultado por meio de laços que também avançam seus respectivos índices a cada iteração. :contentReference[oaicite:2]{index=2}
+Em seguida, os elementos restantes da outra lista são copiados para o resultado por meio de laços que também avançam seus respectivos índices a cada iteração.
 
 Portanto, todos os laços executados por `_merge` também terminam.
 
@@ -164,7 +164,7 @@ Em particular, a prova garante que:
 - a saída é ordenada segundo a regra definida por `sort_key`;
 - o critério de desempate por `source_order` é respeitado.
 
-A regra usada pelo projeto prioriza maior `score` e, em caso de empate, menor `source_order`. Essa relação é implementada diretamente pela função `sort_key`. :contentReference[oaicite:0]{index=0}
+A regra usada pelo projeto prioriza maior `score` e, em caso de empate, menor `source_order`. Essa relação é implementada diretamente pela função `sort_key`.
 
 Entretanto, essa demonstração não garante que o valor de `score` represente perfeitamente a intenção do usuário. Um candidato pode estar corretamente ordenado segundo a função de relevância utilizada e, ainda assim, não ser o trecho semanticamente mais adequado para responder à consulta.
 
@@ -192,9 +192,9 @@ A prova não se aplica, por exemplo, nos seguintes casos:
 - quando a implementação utiliza um critério de comparação diferente daquele definido em `sort_key`;
 - quando a estrutura dos elementos de entrada não corresponde ao formato esperado pelo algoritmo.
 
-Na implementação atual, a ordenação depende da chave `(-score, source_order)`. Portanto, qualquer alteração nessa regra exige uma nova análise de corretude, pois a relação de ordem considerada na prova também mudaria. :contentReference[oaicite:0]{index=0}
+Na implementação atual, a ordenação depende da chave `(-score, source_order)`. Portanto, qualquer alteração nessa regra exige uma nova análise de corretude, pois a relação de ordem considerada na prova também mudaria.
 
-Da mesma forma, a prova do Merge Sort pressupõe que cada metade seja ordenada antes da chamada ao procedimento `_merge`. Essa condição é satisfeita pela implementação atual por meio das chamadas recursivas realizadas antes da combinação das duas partes. :contentReference[oaicite:1]{index=1}
+Da mesma forma, a prova do Merge Sort pressupõe que cada metade seja ordenada antes da chamada ao procedimento `_merge`. Essa condição é satisfeita pela implementação atual por meio das chamadas recursivas realizadas antes da combinação das duas partes.
 
 Assim, a demonstração é válida para a implementação e para as condições analisadas neste trabalho, não podendo ser generalizada automaticamente para versões modificadas do algoritmo.
 
@@ -232,3 +232,8 @@ Essa relação é a mesma utilizada ao longo da prova formal para definir quando
 
 Foram implementados três testes específicos:
 
+- `test_maior_score_vem_primeiro`: com escores 20,0 e 10,0, o item de escore 20,0 tem a chave menor e vem antes, mesmo tendo `source_order` maior.
+- `test_empate_usa_menor_source_order`: com escores iguais a 10,0, o item de `source_order` 1 vem antes do de `source_order` 2.
+- `test_ordem_transitiva`: com três itens de escores 30,0, 20,0 e 10,0, as três comparações entre pares são coerentes entre si.
+
+A estabilidade e o desempate dentro das ordenações são exercitados em `tests/unit/test_insertion_sort.py` e `tests/unit/test_merge_sort.py` (casos `test_empate_*`), e a equivalência entre as três configurações em `tests/integration/test_equivalencia.py`. O mapa completo está em `tests/README.md`.

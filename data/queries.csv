@@ -1,0 +1,31 @@
+query_id,texto,categoria,capitulo_esperado,autor,secao_esperada
+Q01,Qual é a diferença entre divisão convencional e divisão inteira em Python?,facil,chap01,Helena,Operadores aritméticos
+Q02,Como os parênteses alteram a ordem de operações em uma expressão?,facil,chap01,Helena,Expressões
+Q03,Como criar uma variável e atribuir um valor a ela em Python?,facil,chap02,Helena,Variáveis
+Q04,Quais nomes podem ou não ser usados como nomes de variáveis em Python?,facil,chap02,Helena,Nomes de variáveis
+Q05,Como definir uma nova função com def e depois chamá-la?,facil,chap03,Helena,Definindo novas funções
+Q06,Qual é a relação entre um argumento passado para uma função e seu parâmetro?,facil,chap03,Helena,Parâmetros
+Q07,O que significa encapsular um código em uma função e como um parâmetro pode generalizar essa função?,facil,chap04,Helena,Encapsulamento e generalização
+Q08,"Como usar if, elif e else para tratar diferentes condições em um programa?",facil,chap05,Helena,Instruções if|A cláusula `else`|Condicionais encadeadas
+Q09,O que é recursão e como uma função pode chamar a si mesma?,facil,chap05,Helena,Recursão
+Q10,Como uma função usa return para devolver um valor?,facil,chap06,Helena,Algumas funções devolvem valores
+Q11,Como usar um laço for para percorrer os caracteres de uma string?,media,chap07,Helena,Laços de repetição e *strings*
+Q12,Como ler um arquivo de palavras linha por linha e remover a quebra de linha de cada palavra?,media,chap07,Helena,Lendo a lista de palavras
+Q13,Como atualizar uma variável dentro de um laço para contar ocorrências?,media,chap07,Helena,Atualizando variáveis
+Q14,Como acessar o último caractere de uma string usando um índice negativo?,media,chap08,Helena,Uma *string* é uma sequência
+Q15,Por que não é possível alterar diretamente um caractere de uma string em Python?,media,chap08,Helena,*Strings* são imutáveis
+Q16,Como append e extend alteram uma lista de maneiras diferentes?,media,chap09,Helena,Métodos de listas
+Q17,Por que duas variáveis podem acabar se referindo ao mesmo objeto lista?,media,chap09,Helena,Objetos e valores|*Aliasing*
+Q18,Como um dicionário associa uma chave a um valor e como recuperar esse valor?,media,chap10,Helena,Um dicionário é um mapeamento
+Q19,Por que verificar a existência de uma chave em um dicionário pode ser muito mais rápido do que procurar um elemento em uma lista?,media,chap10,Helena,O operador `in`
+Q20,Como a atribuição de tupla permite trocar os valores de duas variáveis sem usar uma variável temporária?,media,chap11,Helena,Atribuição de tupla
+Q21,"Se eu fornecer apenas o nome memo.txt, como o Python decide em qual diretório procurar o arquivo e como obtenho seu caminho completo?",dificil,chap13,Helena,Nomes de arquivos e caminhos
+Q22,Por que modificar uma lista recuperada de uma prateleira não atualiza automaticamente o valor armazenado nela?,dificil,chap13,Helena,Armazenando estruturas de dados
+Q23,"Como criar um tipo próprio para representar uma hora do dia e armazenar hora, minuto e segundo dentro de cada objeto?",dificil,chap14,Helena,Tipos definidos pelo programador|Atributos
+Q24,"Quando uma função recebe um objeto Time e altera seus atributos, por que o objeto original também é modificado?",dificil,chap14,Helena,Objetos são mutáveis
+Q25,Por que start.print_time() consegue usar start dentro do método mesmo sem ele aparecer explicitamente entre os argumentos da chamada?,dificil,chap15,Helena,Definindo métodos
+Q26,O que precisa ser definido em Time para que dois objetos possam ser somados usando diretamente o operador +?,dificil,chap15,Helena,Sobrecarga de operador
+Q27,Por que copiar um Rectangle pode fazer o original e a cópia continuarem compartilhando o mesmo objeto Point?,dificil,chap16,Helena,Cópia profunda
+Q28,Como dois objetos diferentes podem representar o mesmo ponto sem serem o mesmo objeto na memória?,dificil,chap16,Helena,Equivalência e identidade
+Q29,"Como criar uma classe mais específica que reutiliza atributos e métodos de outra classe, mas acrescenta comportamento próprio?",dificil,chap17,Helena,Mães e filhas|Especialização
+Q30,Como eliminar valores repetidos de uma sequência sem percorrer manualmente todos os elementos para verificar duplicatas?,dificil,chap18,Helena,Conjuntos

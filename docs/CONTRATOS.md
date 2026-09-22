@@ -50,10 +50,10 @@ Fixture sintético em `tests/fixtures/chunks_sinteticos.jsonl`, com cerca de 20 
 `data/queries.csv`, cabeçalho:
 
 ```
-query_id,texto,categoria,capitulo_esperado,autor
+query_id,texto,categoria,capitulo_esperado,autor,secao_esperada
 ```
 
-`categoria` em `conceito`, `exemplo` ou `relacao`. As 30 consultas são escritas antes de qualquer resultado ser observado.
+`categoria` é o nível de dificuldade lexical: `facil`, `media` ou `dificil`, dez consultas em cada (substitui a divisão conceito/exemplo/relacao do planejamento inicial). `capitulo_esperado` é o notebook (`chap01` a `chap18`) e `secao_esperada` traz o nome exato da seção no corpus, com `|` separando quando há mais de uma. As duas colunas servem de ponto de partida para o julgamento de relevância, não o substituem. As 30 consultas são escritas antes de qualquer resultado ser observado.
 
 `data/qrels.csv`, cabeçalho:
 
