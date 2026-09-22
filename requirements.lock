@@ -3,5 +3,5 @@
 # ao baseline de referencia, as figuras e a suite de testes.
 pytest==8.3.4
 scikit-learn==1.6.1
-matplotlib==3.10.0
+matplotlib==3.11.2
 numpy==2.2.2

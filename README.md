@@ -61,7 +61,7 @@ Os testes rodam com `pytest` e usam só os dados sintéticos de `tests/fixtures/
 
 ## Reprodução
 
-O comando abaixo vai executar tudo, do download aos gráficos (ainda a fazer):
+O comando abaixo executa tudo, do download aos gráficos (cerca de 15 minutos; `--rapido` roda uma versão reduzida para conferir o fluxo):
 
 ```
 python scripts/reproduzir_tudo.py
@@ -72,8 +72,8 @@ Os estágios também rodam isolados, na ordem:
 ```
 python scripts/baixar_corpus.py        # baixa e registra hashes em data/corpus_manifest.csv
 python scripts/preparar_corpus.py      # normaliza e gera data/processed/chunks.jsonl
-python scripts/rodar_experimentos.py   # a fazer: 45 execuções, grava em experimentos/brutos
-python scripts/gerar_figuras.py        # a fazer: tabelas e gráficos em experimentos/figuras
+python scripts/rodar_experimentos.py   # C1 a C4 x 3 tamanhos x 30 consultas x k 5 e 10 x 5 repetições, grava em experimentos/brutos
+python scripts/gerar_figuras.py        # tabelas em experimentos/processados e gráficos em experimentos/figuras
 ```
 
 Para uma consulta avulsa, depois de preparar o corpus (`--config` aceita C1, C2 ou C3):
@@ -81,6 +81,8 @@ Para uma consulta avulsa, depois de preparar o corpus (`--config` aceita C1, C2 
 ```
 python scripts/consultar.py --consulta "o que é recursão" --k 5 --config C1
 ```
+
+O julgamento de relevância é humano: `python scripts/montar_qrels.py pool` gera a planilha de julgamento e `python scripts/montar_qrels.py consolidar` grava `data/qrels.csv` depois de preenchida.
 
 `preparar_corpus.py --notebooks 8` limita o corte aos oito primeiros notebooks, como no checkpoint de 10/09. O protocolo de medição está em `docs/PROTOCOLO_EXPERIMENTAL.md`.
 
