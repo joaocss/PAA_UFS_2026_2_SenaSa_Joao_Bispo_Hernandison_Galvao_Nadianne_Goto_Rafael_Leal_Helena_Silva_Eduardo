@@ -53,7 +53,7 @@ Registrar erros concretos de corretude, complexidade, casos de borda, estabilida
 
 | Erro | Como foi detectado | Correção aplicada |
 | --- | --- | --- |
-| Fórmula da C2 sem o termo Θ(P(m + n)) da pontuação dos candidatos, em análise redigida com apoio de IA | Medição em 19/09: a pontuação é 96% do tempo da consulta e a ordenação, 4% | Termo incluído na análise do relatório |
+| (João) Na revisão da análise de complexidade, a fórmula da C2 não trazia o termo Θ(P(m + n)) da pontuação dos candidatos | Medição do tempo por etapa em 19/09, feita com apoio de IA: a pontuação é 96% do tempo da consulta e a ordenação, 4% | Termo apontado para inclusão no relatório; os números estão em `docs/RESULTADOS.md` |
 | Plano de 01/09 com as configurações C2 e C3 trocadas | Conferência contra o PDF do enunciado em 04/09 | Numeração corrigida antes de qualquer código |
 | a preencher | a preencher | a preencher |
 
