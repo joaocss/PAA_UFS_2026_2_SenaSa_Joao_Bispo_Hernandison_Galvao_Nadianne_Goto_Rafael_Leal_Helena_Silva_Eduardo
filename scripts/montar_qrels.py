@@ -3,6 +3,7 @@
 Uso:
     python scripts/montar_qrels.py pool
     python scripts/montar_qrels.py consolidar
+    python scripts/montar_qrels.py importar [--gabarito CAMINHO]
 
 A etapa `pool` junta, para cada consulta de data/queries.csv, os chunks da
 secao esperada e os 10 primeiros da C3, e grava a planilha de julgamento em
@@ -14,6 +15,13 @@ partida para o avaliador.
 A etapa `consolidar` le a planilha preenchida (colunas `relevancia` e
 `avaliador`) e grava data/qrels.csv no formato do contrato 03. Linha sem
 julgamento e recusada, para que nenhuma sugestao entre como se fosse avaliacao.
+
+A etapa `importar` e o caminho alternativo: converte o gabarito montado a mao
+pela Helena (data/perguntas_30_com_chunks_justificativas.csv), que lista, para
+cada consulta, os chunks que a respondem, com justificativa, escolhidos antes
+de qualquer ranking ser observado. O gabarito e binario: cada chunk listado
+entra com relevancia 1, e os demais contam como 0 nas metricas. Confere que
+todo chunk_id existe no corpus e que a pergunta e a mesma de data/queries.csv.
 """
 
 from __future__ import annotations
@@ -36,6 +44,7 @@ CHUNKS = RAIZ / "data" / "processed" / "chunks.jsonl"
 CONSULTAS = RAIZ / "data" / "queries.csv"
 PLANILHA = RAIZ / "data" / "processed" / "qrels_para_julgar.csv"
 QRELS = RAIZ / "data" / "qrels.csv"
+GABARITO = RAIZ / "data" / "perguntas_30_com_chunks_justificativas.csv"
 PROFUNDIDADE = 10
 
 COLUNAS_PLANILHA = [
@@ -113,11 +122,49 @@ def consolidar() -> int:
     return 0
 
 
+def importar(gabarito: Path) -> int:
+    if not gabarito.exists():
+        print(f"nao encontrei {gabarito}", file=sys.stderr)
+        return 1
+    ids = {c.chunk_id for c in carregar_chunks(CHUNKS)}
+    perguntas = {q["query_id"]: q["texto"].strip() for q in csv.DictReader(CONSULTAS.open(encoding="utf-8"))}
+    linhas = list(csv.DictReader(gabarito.open(encoding="utf-8-sig")))
+
+    problemas = []
+    vistos = set()
+    for l in linhas:
+        chave = (l["question_id"], l["chunk_id"])
+        if l["chunk_id"] not in ids:
+            problemas.append(f"{chave}: chunk_id fora do corpus")
+        if perguntas.get(l["question_id"]) != l["question"].strip():
+            problemas.append(f"{chave}: pergunta diferente de data/queries.csv")
+        if chave in vistos:
+            problemas.append(f"{chave}: repetido")
+        vistos.add(chave)
+    if problemas:
+        print(f"{len(problemas)} problemas no gabarito, por exemplo: {'; '.join(problemas[:5])}", file=sys.stderr)
+        return 1
+
+    with QRELS.open("w", newline="", encoding="utf-8") as saida:
+        escritor = csv.writer(saida, lineterminator="\n")
+        escritor.writerow(["query_id", "chunk_id", "avaliador", "relevancia", "adjudicada"])
+        for l in sorted(linhas, key=lambda l: (l["question_id"], l["chunk_id"])):
+            escritor.writerow([l["question_id"], l["chunk_id"], "Helena", 1, 1])
+
+    print(f"{len(linhas)} julgamentos de {len({l['question_id'] for l in linhas})} consultas gravados em {QRELS.relative_to(RAIZ)}")
+    return 0
+
+
 def principal() -> int:
     opcoes = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    opcoes.add_argument("etapa", choices=["pool", "consolidar"])
+    opcoes.add_argument("etapa", choices=["pool", "consolidar", "importar"])
+    opcoes.add_argument("--gabarito", type=Path, default=GABARITO, help="CSV do gabarito (etapa importar)")
     args = opcoes.parse_args()
-    return montar_pool() if args.etapa == "pool" else consolidar()
+    if args.etapa == "pool":
+        return montar_pool()
+    if args.etapa == "consolidar":
+        return consolidar()
+    return importar(args.gabarito)
 
 
 if __name__ == "__main__":
