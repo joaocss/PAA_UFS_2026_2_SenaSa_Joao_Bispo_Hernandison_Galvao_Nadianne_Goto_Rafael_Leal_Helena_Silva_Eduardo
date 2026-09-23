@@ -1,0 +1,23 @@
+{
+  "inicio": "2026-09-23T10:54:41+00:00",
+  "fim": "2026-09-23T10:55:10+00:00",
+  "commit": "01ddd55",
+  "comando": "python scripts/medir_ingestao.py",
+  "argumentos": {
+    "rapido": false
+  },
+  "host": "vm",
+  "sistema": "Linux-6.18.44-fc-v37-x86_64-with-glibc2.39",
+  "processador": "x86_64",
+  "nucleos": 4,
+  "memoria_bytes": null,
+  "python": "3.11.15",
+  "bibliotecas": {
+    "scikit-learn": "1.6.1",
+    "numpy": "2.2.2",
+    "scipy": "1.17.1",
+    "matplotlib": "3.11.2"
+  },
+  "repeticoes": 5,
+  "aquecimentos": 2
+}

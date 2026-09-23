@@ -5,7 +5,8 @@ Uso:
     python scripts/reproduzir_tudo.py --rapido    # experimento reduzido, so para conferir o fluxo
 
 Etapas: baixar o corpus, preparar os chunks, rodar a suite de testes, rodar
-os experimentos e gerar tabelas e figuras. O julgamento de relevancia
+os experimentos, gerar tabelas e figuras e medir a ingestao com a
+sensibilidade ao tamanho do chunk. O julgamento de relevancia
 (data/qrels.csv) e humano e nao e refeito aqui; se o arquivo existir, as
 metricas de qualidade entram nas tabelas.
 """
@@ -32,6 +33,7 @@ def principal() -> int:
         [python, "-m", "pytest"],
         [python, "scripts/rodar_experimentos.py"] + (["--rapido"] if args.rapido else []),
         [python, "scripts/gerar_figuras.py"],
+        [python, "scripts/medir_ingestao.py"] + (["--rapido"] if args.rapido else []),
     ]
     for etapa in etapas:
         print(f"\n>>> {' '.join(etapa[1:])}", flush=True)
