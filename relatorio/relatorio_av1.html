@@ -1,0 +1,755 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Relatório Técnico — AV1 PAA 2026.2</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm 20mm 16mm; }
+
+  :root{
+    --azul:#1f4e79; --azul2:#2e5c8a; --laranja:#c55a11; --verde:#2e7d32;
+    --cinza:#444; --cinzaclaro:#777; --linha:#d0d7de; --fundo:#f6f8fa;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body{
+    font-family: "Georgia","Times New Roman",serif;
+    font-size: 10.6pt; line-height: 1.5; color:#1b1b1b; margin:0;
+    text-align: justify;
+  }
+  h1,h2,h3,h4 { font-family:"Segoe UI","Helvetica Neue",Arial,sans-serif; color:var(--azul); line-height:1.25; text-align:left; }
+  h2 { font-size:15pt; border-bottom:2px solid var(--azul); padding-bottom:4px; margin-top:26px; }
+  h3 { font-size:12.2pt; color:var(--azul2); margin-top:18px; }
+  h4 { font-size:10.8pt; color:var(--cinza); margin:12px 0 4px; }
+  p { margin:7px 0; }
+  a { color:var(--azul); text-decoration:none; }
+  code { font-family:"Consolas","Courier New",monospace; font-size:9.4pt; background:var(--fundo); padding:0 3px; border-radius:3px; }
+  sub,sup { font-size:75%; }
+
+  .quebra { page-break-before: always; }
+  .noquebra { page-break-inside: avoid; }
+
+  /* CAPA */
+  .capa{ height: 258mm; display:flex; flex-direction:column; justify-content:space-between; text-align:center; }
+  .capa .topo{ font-family:"Segoe UI",Arial,sans-serif; color:var(--cinza); font-size:11pt; letter-spacing:.5px; }
+  .capa .topo strong{ color:var(--azul); }
+  .capa .miolo h1{ font-size:25pt; color:var(--azul); margin:8px 0; text-align:center; }
+  .capa .miolo .sub{ font-size:13.5pt; color:var(--laranja); font-family:"Segoe UI",Arial,sans-serif; }
+  .capa .faixa{ height:4px; background:linear-gradient(90deg,var(--azul),var(--laranja)); margin:18px auto; width:70%; }
+  .capa table{ margin:0 auto; font-family:"Segoe UI",Arial,sans-serif; font-size:10.2pt; border:none; }
+  .capa table td{ border:none; padding:3px 10px; text-align:left; }
+  .capa .equipe{ font-family:"Segoe UI",Arial,sans-serif; font-size:11pt; line-height:1.9; }
+  .capa .rod{ font-family:"Segoe UI",Arial,sans-serif; font-size:9.5pt; color:var(--cinzaclaro); }
+
+  /* TABELAS */
+  table{ border-collapse:collapse; width:100%; margin:10px 0; font-size:9.6pt; font-family:"Segoe UI",Arial,sans-serif; }
+  th,td{ border:1px solid var(--linha); padding:5px 8px; text-align:left; vertical-align:top; }
+  th{ background:var(--azul); color:#fff; font-weight:600; }
+  tr:nth-child(even) td{ background:var(--fundo); }
+  caption{ caption-side:bottom; font-size:8.8pt; color:var(--cinzaclaro); padding-top:5px; font-style:italic; text-align:left; }
+
+  /* BLOCOS */
+  .pseudo{ font-family:"Consolas","Courier New",monospace; font-size:9pt; background:#0f2a43; color:#eaf2fb;
+           padding:12px 14px; border-radius:6px; line-height:1.45; white-space:pre; overflow-x:auto; margin:10px 0; }
+  .pseudo .kw{ color:#7fc4ff; font-weight:bold; } .pseudo .cm{ color:#8aa0b4; font-style:italic; }
+  .nota{ border-left:4px solid var(--laranja); background:#fff6ef; padding:9px 13px; margin:12px 0; font-size:9.8pt; }
+  .teo{ border-left:4px solid var(--verde); background:#f0f7f0; padding:9px 13px; margin:12px 0; }
+  .teo .rot{ font-family:"Segoe UI",Arial,sans-serif; font-weight:700; color:var(--verde); }
+  .inv{ border:1px dashed var(--azul); background:#f3f7fc; padding:9px 13px; margin:12px 0; }
+  .status{ border:1px solid var(--laranja); background:#fff9f3; border-radius:6px; padding:11px 15px; margin:14px 0; font-family:"Segoe UI",Arial,sans-serif; font-size:9.7pt; }
+  .status b{ color:var(--laranja); }
+  .fig{ text-align:center; margin:14px 0; page-break-inside:avoid; }
+  .fig img{ max-width:100%; border:1px solid var(--linha); border-radius:4px; }
+  .fig .cap{ font-size:8.8pt; color:var(--cinzaclaro); font-style:italic; margin-top:5px; font-family:"Segoe UI",Arial,sans-serif; }
+  .eq{ text-align:center; font-family:"Cambria Math","Georgia",serif; font-size:11pt; margin:8px 0; }
+  ul,ol{ margin:6px 0 6px 4px; padding-left:20px; } li{ margin:3px 0; }
+
+  /* SUMÁRIO */
+  .toc{ font-family:"Segoe UI",Arial,sans-serif; font-size:10pt; }
+  .toc li{ margin:2px 0; } .toc .n{ color:var(--laranja); font-weight:600; }
+
+
+</style>
+</head>
+<body>
+
+<!-- ============================ CAPA ============================ -->
+<section class="capa">
+  <div class="topo">
+    Universidade Federal de Sergipe — <strong>PROCC</strong><br>
+    Projeto e Análise de Algoritmos · Período 2026.2<br>
+    Módulo I — Fundamentos e Eficiência na Era dos Dados
+  </div>
+
+  <div class="miolo">
+    <div class="faixa"></div>
+    <div class="sub">Atividade 1 (AV1) — Relatório Técnico</div>
+    <h1>Recuperação de contexto para IA generativa em materiais educacionais abertos</h1>
+    <p style="font-family:'Segoe UI',Arial,sans-serif; color:var(--cinza); font-size:11pt;">
+      Corretude, eficiência e recuperação de contexto:<br>
+      um estudo comparativo de estratégias de ordenação e busca sobre um livro-texto aberto
+    </p>
+    <div class="faixa"></div>
+
+    <p class="equipe">
+      João Cosme Sena Sá &nbsp;·&nbsp; Eduardo Henrique do Lago Silva &nbsp;·&nbsp; Helena Carvalho Leal<br>
+      Hernandison da Silva Bispo &nbsp;·&nbsp; Nadianne Maria dos Santos Galvão &nbsp;·&nbsp; Rafael Takeguma Goto
+    </p>
+
+    <table>
+      <tr><td><b>Tema</b></td><td>8 — Materiais educacionais abertos</td></tr>
+      <tr><td><b>Corpus</b></td><td><i>Pense Python</i> (tradução livre da 3ª ed. de <i>Think Python</i>)</td></tr>
+      <tr><td><b>Repositório</b></td><td>github.com/joaocss/PAA_UFS_2026_2_SenaSa_Joao_Bispo_Hernandison_Galvao_Nadianne_Goto_Rafael_Leal_Helena_Silva_Eduardo</td></tr>
+      <tr><td><b>Licença do código</b></td><td>MIT · Versão/tag: v0.1.0</td></tr>
+      <tr><td><b>Vídeo da atividade</b></td><td><i>URL a preencher até 22/09/2026</i> (também em README, VIDEO.md e Google Classroom)</td></tr>
+    </table>
+  </div>
+
+  <div class="rod">
+    Documento gerado em 04/09/2026 · São Cristóvão, SE<br>
+    Entrega dos artefatos até 23/09/2026 · Apresentação em 24/09/2026
+  </div>
+</section>
+
+<!-- ============================ STATUS ============================ -->
+<div class="quebra"></div>
+<div class="status">
+  <b>Estado desta versão do relatório (checkpoint de 04/09/2026).</b>
+  Este documento consolida a <b>especificação formal</b>, os <b>algoritmos e pseudocódigos</b>, a <b>prova de corretude</b>,
+  a <b>análise no modelo RAM</b>, as <b>recorrências</b>, a <b>metodologia experimental</b> e a <b>relação com RAG</b> — partes
+  que não dependem da execução do pipeline. As figuras 1 e 2 são <b>curvas e diagramas teóricos</b>, derivados das funções de
+  complexidade, e não medições. As tabelas da Seção&nbsp;12 (resultados empíricos) trazem a estrutura definitiva de colunas e
+  estão marcadas <i>“a preencher após a execução”</i>; os números serão inseridos após rodar
+  <code>scripts/reproduzir_tudo.py</code>, conforme o cronograma da disciplina (demonstração inicial no checkpoint de
+  10/09/2026 e resultados completos até 23/09/2026). Nenhum dado experimental foi estimado ou inventado.
+</div>
+
+<!-- ============================ SUMÁRIO ============================ -->
+<h2>Sumário</h2>
+<div class="toc">
+<ol>
+  <li><span class="n">1.</span> Identificação da equipe</li>
+  <li><span class="n">2.</span> Tema, corpus e fonte</li>
+  <li><span class="n">3.</span> Repositório, licença, versão e data de acesso</li>
+  <li><span class="n">4.</span> Definição formal do problema</li>
+  <li><span class="n">5.</span> Representação dos dados e estratégia de chunking</li>
+  <li><span class="n">6.</span> Algoritmos e pseudocódigo</li>
+  <li><span class="n">7.</span> Justificativa de corretude</li>
+  <li><span class="n">8.</span> Análise no modelo RAM</li>
+  <li><span class="n">9.</span> Melhor, pior e caso médio</li>
+  <li><span class="n">10.</span> Recorrências</li>
+  <li><span class="n">11.</span> Metodologia experimental</li>
+  <li><span class="n">12.</span> Resultados e gráficos</li>
+  <li><span class="n">13.</span> Discussão de escalabilidade</li>
+  <li><span class="n">14.</span> Relação com IA generativa e RAG</li>
+  <li><span class="n">15.</span> Limitações e ameaças à validade</li>
+  <li><span class="n">16.</span> Declaração de uso de IA generativa</li>
+  <li><span class="n">17.</span> Contribuição individual</li>
+  <li><span class="n">18.</span> Vídeo da atividade</li>
+  <li><span class="n">19.</span> Referências</li>
+</ol>
+</div>
+
+<!-- ============================ 1 ============================ -->
+<div class="quebra"></div>
+<h2>1. Identificação da equipe</h2>
+<p>Equipe de seis discentes do curso de Ciência da Computação (PROCC/UFS), matriculados na disciplina
+Projeto e Análise de Algoritmos no período 2026.2. A modalidade da atividade é trabalho em equipe (5 a 7 integrantes).</p>
+
+<table>
+  <tr><th style="width:38%">Integrante</th><th>Frente principal</th></tr>
+  <tr><td>João Cosme Sena Sá</td><td>Coordenação e entrega; dados de teste e pacote; índice invertido e busca binária no vocabulário (Config. 2)</td></tr>
+  <tr><td>Eduardo Henrique do Lago Silva</td><td>Experimentos, tabelas, gráficos e baseline de referência scikit-learn (Config. 4)</td></tr>
+  <tr><td>Helena Carvalho Leal</td><td>Consultas, julgamentos de relevância (qrels), métricas (Precision@k), relação com IA e limitações</td></tr>
+  <tr><td>Hernandison da Silva Bispo</td><td>Ingestão, normalização, fragmentação e manutenção do relatório</td></tr>
+  <tr><td>Nadianne Maria dos Santos Galvão</td><td>Corretude, modelo RAM, complexidade e recorrências</td></tr>
+  <tr><td>Rafael Takeguma Goto</td><td>Busca linear, Insertion Sort, Merge Sort, pontuação e consulta (Config. 1 e 3)</td></tr>
+</table>
+<p class="nota" style="border-color:var(--azul);background:#f3f7fc">A divisão acima é uma <b>proposta de frentes</b> para organizar o trabalho; a
+revisão de código, da prova e dos resultados é responsabilidade coletiva. A tabela de contribuição individual
+<b>com evidências</b> (commits, arquivos, execuções) é mantida em <code>docs/CONTRIBUICOES.md</code> e resumida na Seção&nbsp;17.</p>
+
+<!-- ============================ 2 ============================ -->
+<h2>2. Tema, corpus e fonte</h2>
+<p>O tema escolhido é o de número 8 do enunciado, <b>materiais educacionais abertos</b>. O corpus é o livro
+<i>Pense Python</i>, tradução livre da 3ª edição de <i>Think Python</i>, de Allen B. Downey, traduzida por
+Rodrigo Castelan Carlson. O material reúne conteúdo didático público de introdução à programação em Python,
+sem qualquer dado sensível, pessoal ou sigiloso.</p>
+
+<table>
+  <tr><th style="width:32%">Campo</th><th>Registro</th></tr>
+  <tr><td>Nome</td><td><i>Pense Python</i> — tradução livre da 3ª edição de <i>Think Python</i></td></tr>
+  <tr><td>Autor / Tradução</td><td>Allen B. Downey / Rodrigo Castelan Carlson</td></tr>
+  <tr><td>Fonte</td><td>rodrigocarlson.github.io/PensePython3ed &nbsp;·&nbsp; github.com/rodrigocarlson/PensePython3ed</td></tr>
+  <tr><td>Commit de referência</td><td><code>cfde2c450bf4f2ea65326da88e9968f400597e92</code> (branch <code>main</code>)</td></tr>
+  <tr><td>Recorte</td><td>21 notebooks Jupyter: prefácio, introdução e capítulos 1 a 19 (<code>capitulos/*.ipynb</code>)</td></tr>
+  <tr><td>Tamanho auditado</td><td>817.578 bytes · 2.789 células · ~73.867 palavras (texto e código)</td></tr>
+  <tr><td>SHA-256 do recorte</td><td><code>2010626258…5768dc5</code> (agregado; ver <code>data/corpus_manifest.csv</code>)</td></tr>
+  <tr><td>Idioma</td><td>Português brasileiro (com estrangeirismos técnicos do Python/Jupyter)</td></tr>
+  <tr><td>Licença do texto / do código</td><td>CC BY-NC-SA 4.0 / MIT</td></tr>
+  <tr><td>Data de acesso</td><td>02/09/2026 (aquisição registrada); planejamento em 01/09/2026</td></tr>
+  <tr><td>Dados sensíveis</td><td>Nenhum — conteúdo didático público</td></tr>
+</table>
+
+<div class="nota">
+  <b>Corpus não versionado, mas reprodutível.</b> Como a licença do texto é não comercial e com compartilhamento
+  pelas mesmas condições (CC BY-NC-SA), o texto não é redistribuído no repositório da equipe (cujo código é MIT).
+  Em vez disso, o script <code>scripts/baixar_corpus.py</code> baixa o material no commit fixado e o arquivo
+  <code>data/corpus_manifest.csv</code> guarda o SHA-256 de cada notebook e um <b>hash agregado do recorte</b>, permitindo
+  conferir que qualquer download reproduz exatamente o mesmo conjunto auditado. Trechos citados no relatório preservam
+  atribuição ao autor e ao tradutor.
+</div>
+
+<p><b>Pergunta(s) de recuperação.</b> As consultas seguem o formato “tira-dúvidas” de um estudante sobre o livro, por exemplo:
+<i>“como funciona um laço for em Python?”</i>, <i>“o que é uma função recursiva?”</i>, <i>“como tratar exceções com try e except?”</i>.
+O conjunto completo de 30 consultas está em <code>data/queries.csv</code>, redigido <b>antes</b> de qualquer resultado ser observado.</p>
+
+<!-- ============================ 3 ============================ -->
+<h2>3. Repositório, licença, versão e data de acesso</h2>
+<table>
+  <tr><th style="width:32%">Item</th><th>Registro</th></tr>
+  <tr><td>URL do repositório</td><td>https://github.com/joaocss/PAA_UFS_2026_2_SenaSa_Joao_Bispo_Hernandison_Galvao_Nadianne_Goto_Rafael_Leal_Helena_Silva_Eduardo</td></tr>
+  <tr><td>Licença do código</td><td>MIT (arquivo <code>LICENSE</code>)</td></tr>
+  <tr><td>Versão / tag</td><td>v0.1.0 (<code>CITATION.cff</code>, <code>date-released: 2026-09-03</code>)</td></tr>
+  <tr><td>Commit/tag/release do relatório</td><td><i>a fixar na entrega final (tag da release de 23/09/2026)</i></td></tr>
+  <tr><td>Data de acesso ao corpus</td><td>02/09/2026 (a reconfirmar no dia da aquisição)</td></tr>
+  <tr><td>Ambiente travado</td><td><code>requirements.lock</code>: pytest 8.3.4, scikit-learn 1.6.1, matplotlib 3.10.0, numpy 2.2.2</td></tr>
+</table>
+<p>O repositório não contém chaves, senhas, tokens, dados pessoais ou artefatos sem licença compatível. Arquivos grandes
+(o corpus baixado e dados intermediários) são controlados por <code>.gitignore</code>; as instruções de obtenção e reprodução
+estão no <code>README.md</code>.</p>
+
+<!-- ============================ 4 ============================ -->
+<div class="quebra"></div>
+<h2>4. Definição formal do problema</h2>
+<p>O protótipo é um <b>recuperador de contexto</b>: dada uma consulta, devolve os trechos mais relevantes do corpus,
+ordenados por relevância. Não é um chatbot; o interesse está nas operações algorítmicas anteriores à geração de texto.</p>
+
+<h3>4.1 Entradas e saída</h3>
+<ul>
+  <li><b>Corpus</b> <i>C</i> = ⟨c<sub>1</sub>, …, c<sub>N</sub>⟩: sequência de <i>N</i> chunks. Cada chunk c<sub>i</sub> tem
+      um <code>chunk_id</code> textual único, um <code>source_order</code> id<sub>i</sub> inteiro único em 0..N-1 (usado no desempate),
+      o texto normalizado e origem<sub>i</sub> = (notebook, seção, offset).</li>
+  <li><b>Consulta</b> <i>q</i>: cadeia de caracteres em português; após normalização vira um multiconjunto de <i>m</i> termos.</li>
+  <li><b>k</b> ∈ ℕ: número máximo de trechos a devolver.</li>
+  <li><b>Saída</b> <i>R</i>: sequência de até <i>k</i> chunks de <i>C</i>, sem repetição, ordenada de forma não crescente
+      pela função de relevância.</li>
+</ul>
+
+<h3>4.2 Função de relevância</h3>
+<p>A pontuação é <b>TF-IDF</b> lexical, definida pela equipe e usada de forma idêntica nas três configurações obrigatórias:</p>
+<div class="eq">tf(t, c) = 1 + ln f<sub>t,c</sub> &nbsp;(se f<sub>t,c</sub> &gt; 0; senão 0) &nbsp;&nbsp;·&nbsp;&nbsp;
+idf(t) = ln ( (N+1) / (df(t)+1) ) + 1</div>
+<div class="eq"><b>score(q, c) = Σ<sub>t ∈ q</sub> tf(t, c) · idf(t)</b></div>
+<p>em que f<sub>t,c</sub> é a frequência do termo <i>t</i> no chunk <i>c</i>, e df(t) é o número de chunks que contêm <i>t</i>.
+Termos da consulta ausentes do vocabulário não contribuem (contribuição 0). As formas suavizadas (ln f no tf e
+ln((N+1)/(df+1))+1 no idf) são as mesmas do TF-IDF do scikit-learn, o que mantém limpa a comparação com a Config. 4 e
+evita zerar um termo presente em todos os chunks. A <b>ordem total</b> ≼ usada na ordenação é:</p>
+<div class="eq">c<sub>a</sub> ≼ c<sub>b</sub> &nbsp;⟺&nbsp; score(q, c<sub>a</sub>) &gt; score(q, c<sub>b</sub>) &nbsp;∨&nbsp;
+(score iguais ∧ id<sub>a</sub> &lt; id<sub>b</sub>)</div>
+<p>onde id denota o <code>source_order</code> do chunk. O desempate determinístico por <code>source_order</code> crescente
+garante que o resultado independe da ordem de entrada e da configuração usada.</p>
+
+<h3>4.3 Pré-condições, pós-condições e casos de borda</h3>
+<table>
+  <tr><th style="width:22%">Categoria</th><th>Especificação</th></tr>
+  <tr><td>Pré-condições</td><td><i>N</i> ≥ 0; <i>k</i> ≥ 0; todo score é um número real finito; os source_order são únicos; o comparador ≼ é uma ordem total sobre os chunks.</td></tr>
+  <tr><td>Pós-condições</td><td>Seja n' o número de chunks com score &gt; 0. Então |R| = min(k, n'); todo elemento de R pertence a C e é único; R está ordenado por ≼; e não existe chunk fora de R com relevância maior (por ≼) que qualquer elemento de R. Ou seja, R são exatamente os min(k, n') melhores.</td></tr>
+  <tr><td>Casos de borda</td><td>consulta vazia após normalização → R = ⟨⟩; k = 0 → R = ⟨⟩; k &gt; n' → devolve os n' com score &gt; 0; todos os scores 0 (nenhum termo casa) → R = ⟨⟩; empates massivos → resolvidos por source_order; termo fora do vocabulário → ignorado.</td></tr>
+  <tr><td>Hipótese sobre os dados</td><td>Para a vantagem do índice invertido (Config. 2) supõe-se <b>esparsidade</b>: os termos de consulta típicos ocorrem em poucos chunks (df ≪ N), de modo que o conjunto de candidatos é bem menor que N. A corretude não depende dessa hipótese; apenas a eficiência.</td></tr>
+</table>
+
+<!-- ============================ 5 ============================ -->
+<h2>5. Representação dos dados e estratégia de chunking</h2>
+<h3>5.1 Normalização</h3>
+<p>A normalização é deliberadamente simples, para poder ser auditada:</p>
+<ul>
+  <li><b>Células de texto (Markdown):</b> normalização Unicode NFKC, minúsculas, separação controlada da pontuação e
+      compactação de espaços; <b>acentos são preservados</b>.</li>
+  <li><b>Células de código:</b> a fonte é guardada intacta e ganha uma visão lexical à parte (tokens), sem alterar a indentação.</li>
+  <li><b>Stopwords não são removidas</b> na configuração principal: em português isso apagaria termos funcionais
+      (preposições, conjunções) que mudam o sentido de consultas como <i>“diferença entre while e for”</i>.</li>
+  <li>Saídas de execução das células são descartadas, para não introduzir texto derivado de execução.</li>
+</ul>
+
+<h3>5.2 Segmentação (chunking)</h3>
+<p>A segmentação respeita a hierarquia do livro — notebook, título e seção — e <b>nunca mistura</b> célula de texto com célula de
+código no mesmo chunk. A configuração principal usa <b>256 tokens</b> com <b>sobreposição de 32</b>, o que produz cerca de
+<b>330 chunks</b>. As configurações 128/16 e 512/64 entram apenas no experimento de sensibilidade ao tamanho do bloco.</p>
+
+<h3>5.3 Representações computacionais</h3>
+<ul>
+  <li><b>Saco de palavras / TF-IDF:</b> cada chunk é um vetor esparso de pesos TF-IDF sobre o vocabulário <i>V</i>.</li>
+  <li><b>Índice invertido (Config. 2):</b> um mapa termo → lista de <i>postings</i> (id do chunk, f<sub>t,c</sub>), com o
+      <b>vocabulário mantido em um vetor ordenado</b> para permitir <b>busca binária</b> por termo.</li>
+</ul>
+<div class="nota"><b>Riscos conhecidos do corpus.</b> A tradução ainda carrega termos em inglês do Python/Jupyter (ex.: <i>loop</i>,
+<i>string</i>), o que afeta consultas com e sem estrangeirismos; um único livro introdutório não representa todo o universo
+dos materiais educacionais abertos — os resultados valem como <b>estudo de caso</b>.</div>
+
+<!-- ============================ 6 ============================ -->
+<div class="quebra"></div>
+<h2>6. Algoritmos e pseudocódigo</h2>
+<p>Os algoritmos obrigatórios do enunciado (§5.2) são cobertos assim: <b>busca linear</b> na pontuação de todos os chunks;
+<b>ordenação</b> por Insertion Sort e Merge Sort implementados pela equipe; <b>busca binária</b> no vocabulário do índice
+invertido; <b>divisão e conquista</b> pelo próprio Merge Sort; e <b>comparação com biblioteca</b> pelo TF-IDF do scikit-learn,
+usado apenas como referência externa (Config. 4).</p>
+
+<h3>6.1 Busca linear com pontuação (comum a C1 e C3)</h3>
+<div class="pseudo"><span class="kw">função</span> PontuarLinear(q, C, idf):
+  candidatos ← lista vazia
+  <span class="kw">para</span> cada chunk c em C <span class="kw">faça</span>          <span class="cm"># N iterações</span>
+    s ← 0
+    <span class="kw">para</span> cada termo t em q <span class="kw">faça</span>         <span class="cm"># m iterações</span>
+      <span class="kw">se</span> t ∈ c.termos <span class="kw">então</span>            <span class="cm"># teste O(1) via hash</span>
+        s ← s + tf(t, c) · idf[t]
+    <span class="kw">se</span> s &gt; 0 <span class="kw">então</span> candidatos.anexar( (s, c.id, c) )
+  <span class="kw">retorne</span> candidatos</div>
+
+<h3>6.2 Insertion Sort — Config. 1</h3>
+<div class="pseudo"><span class="kw">função</span> InsertionSort(A, ≼):
+  <span class="kw">para</span> i ← 1 <span class="kw">até</span> |A|−1 <span class="kw">faça</span>
+    chave ← A[i];  j ← i − 1
+    <span class="kw">enquanto</span> j ≥ 0 <span class="kw">e</span> A[j] ≻ chave <span class="kw">faça</span>   <span class="cm"># desloca maiores</span>
+      A[j+1] ← A[j];  j ← j − 1
+    A[j+1] ← chave
+  <span class="kw">retorne</span> A</div>
+
+<h3>6.3 Merge Sort — Config. 3 e estratégia de divisão e conquista</h3>
+<div class="pseudo"><span class="kw">função</span> MergeSort(A, ≼):
+  <span class="kw">se</span> |A| ≤ 1 <span class="kw">então retorne</span> A          <span class="cm"># caso base</span>
+  meio ← ⌊|A| / 2⌋
+  E ← MergeSort(A[0 .. meio−1], ≼)          <span class="cm"># T(N/2)</span>
+  D ← MergeSort(A[meio .. |A|−1], ≼)        <span class="cm"># T(N/2)</span>
+  <span class="kw">retorne</span> Merge(E, D, ≼)                  <span class="cm"># Θ(N)</span>
+
+<span class="kw">função</span> Merge(E, D, ≼):
+  O ← lista vazia;  i ← 0;  j ← 0
+  <span class="kw">enquanto</span> i &lt; |E| <span class="kw">e</span> j &lt; |D| <span class="kw">faça</span>
+    <span class="kw">se</span> E[i] ≼ D[j] <span class="kw">então</span> O.anexar(E[i]); i ← i+1   <span class="cm"># ≼ estável: empate → E</span>
+    <span class="kw">senão</span>              O.anexar(D[j]); j ← j+1
+  O.anexar(restante de E a partir de i)
+  O.anexar(restante de D a partir de j)
+  <span class="kw">retorne</span> O</div>
+
+<h3>6.4 Índice invertido e busca binária — Config. 2</h3>
+<div class="pseudo"><span class="kw">função</span> BuscaBinaria(vocab, t):            <span class="cm"># vocab é vetor ORDENADO de termos</span>
+  lo ← 0;  hi ← |vocab| − 1
+  <span class="kw">enquanto</span> lo ≤ hi <span class="kw">faça</span>
+    mid ← ⌊(lo + hi) / 2⌋
+    <span class="kw">se</span> vocab[mid] = t <span class="kw">então retorne</span> mid
+    <span class="kw">senão se</span> vocab[mid] &lt; t <span class="kw">então</span> lo ← mid + 1
+    <span class="kw">senão</span> hi ← mid − 1
+  <span class="kw">retorne</span> NÃO_ENCONTRADO
+
+<span class="kw">função</span> ConsultarIndice(q, vocab, postings, idf):
+  acc ← mapa id → score (vazio)
+  <span class="kw">para</span> cada termo t em q <span class="kw">faça</span>          <span class="cm"># m termos</span>
+    p ← BuscaBinaria(vocab, t)               <span class="cm"># Θ(log V)</span>
+    <span class="kw">se</span> p ≠ NÃO_ENCONTRADO <span class="kw">então</span>
+      <span class="kw">para</span> cada (id, f) em postings[t] <span class="kw">faça</span>  <span class="cm"># só os candidatos!</span>
+        acc[id] ← acc[id] + (1 + ln f) · idf[t]
+  candidatos ← [ (s, id, chunk(id)) para (id, s) em acc ]
+  <span class="kw">retorne</span> MergeSort(candidatos, ≼)         <span class="cm"># ordena só os candidatos</span></div>
+
+<h3>6.5 Seleção dos k melhores (comum a todas)</h3>
+<div class="pseudo"><span class="kw">função</span> TopK(candidatos_ordenados, k):
+  <span class="kw">retorne</span> os primeiros min(k, |candidatos_ordenados|) elementos</div>
+<p>Como a lista já está totalmente ordenada por ≼, os primeiros min(k, n') elementos são, por definição, os k mais relevantes
+(corolário provado na Seção&nbsp;7).</p>
+
+<!-- ============================ 7 ============================ -->
+<div class="quebra"></div>
+<h2>7. Justificativa de corretude</h2>
+<p>Provamos a corretude do <b>Merge Sort</b> (Config. 3 e núcleo da Config. 2), por indução forte no tamanho da entrada,
+apoiada em um invariante de laço para o procedimento <code>Merge</code>. O texto completo está em
+<code>docs/CORRETUDE.md</code>.</p>
+
+<div class="teo">
+<span class="rot">Teorema.</span> Dada uma lista finita <i>A</i> de chunks com identificadores únicos e a ordem total ≼ (score decrescente;
+empate por id crescente), <code>MergeSort(A, ≼)</code> <b>termina</b> e devolve uma <b>permutação de A ordenada</b> por ≼.
+</div>
+
+<h4>Hipóteses</h4>
+<ul>
+  <li>A é finita; cada elemento tem score real finito e id único.</li>
+  <li>≼ é uma <b>ordem total</b>: reflexiva, antissimétrica (garantida pelo desempate por id único) e transitiva.</li>
+  <li>A comparação de dois elementos custa Θ(1).</li>
+</ul>
+
+<h4>Lema (corretude do <code>Merge</code>) — invariante de laço</h4>
+<div class="inv">
+<b>Invariante.</b> No início de cada iteração do laço <b>enquanto</b> de <code>Merge(E, D)</code>, com E e D já ordenados por ≼:
+(i) a saída <i>O</i> está ordenada por ≼; (ii) <i>O</i> contém exatamente os elementos já consumidos de E (índices &lt; i) e de
+D (índices &lt; j); e (iii) todo elemento de <i>O</i> é ≼ a qualquer elemento ainda não consumido de E ou D.
+</div>
+<ul>
+  <li><b>Inicialização.</b> Antes da primeira iteração, O = ⟨⟩ e i = j = 0. (i)–(iii) valem vacuamente.</li>
+  <li><b>Manutenção.</b> Suponha o invariante no início de uma iteração. O algoritmo escolhe o menor entre E[i] e D[j]
+      (empate resolvido a favor de E). Como E e D estão ordenados, o elemento escolhido <i>x</i> é ≼ a todos os demais não
+      consumidos de E e de D; logo pode ser anexado ao fim de O preservando a ordenação (i) e a propriedade (iii). O contador
+      correspondente avança, mantendo (ii). Portanto o invariante vale no início da próxima iteração.</li>
+  <li><b>Término.</b> Cada iteração consome exatamente um elemento, então o laço executa no máximo |E|+|D| vezes e termina
+      quando E ou D se esgota. Os elementos restantes da lista não esgotada já são, por (iii), ≼ a nada em O e estão em ordem;
+      anexá-los mantém O ordenado. Ao final, O contém todos os |E|+|D| elementos, ordenados — uma permutação ordenada de E∪D.</li>
+</ul>
+
+<h4>Indução no tamanho de <i>A</i></h4>
+<ul>
+  <li><b>Base (|A| ≤ 1).</b> A lista é devolvida como está: trivialmente ordenada e permutação de si mesma. Termina sem recursão.</li>
+  <li><b>Hipótese de indução.</b> <code>MergeSort</code> é correto para toda entrada de tamanho &lt; n.</li>
+  <li><b>Passo (|A| = n &gt; 1).</b> A é dividida em E (⌊n/2⌋) e D (n−⌊n/2⌋), ambas de tamanho &lt; n. Por hipótese de indução,
+      as chamadas recursivas devolvem permutações ordenadas de E e de D. Pelo Lema, <code>Merge(E, D)</code> devolve uma
+      permutação ordenada de E∪D. Como a concatenação de E e D é a própria A a menos de reordenação, o resultado é uma
+      permutação ordenada de A. ∎</li>
+</ul>
+
+<h4>Término da recursão</h4>
+<p>Os tamanhos das subchamadas decrescem estritamente (⌊n/2⌋ &lt; n e n−⌊n/2⌋ &lt; n para n &gt; 1) e sempre atingem o caso base;
+logo a recursão é finita.</p>
+
+<h4>Estabilidade e desempate</h4>
+<p>O <code>Merge</code> anexa de E em caso de empate, tornando a ordenação <b>estável</b>. Como os id são únicos e entram na
+própria relação ≼, não há empates verdadeiros entre chunks distintos: a saída é <b>determinística</b>, independentemente da
+ordem de entrada e da configuração (C1, C2 ou C3). Isso é verificado por testes que ordenam a mesma entrada embaralhada e
+comparam a saída.</p>
+
+<div class="teo">
+<span class="rot">Corolário (top-k).</span> Se <i>A</i> está ordenada por ≼, então seus primeiros min(k, |A|) elementos são exatamente os
+k maiores segundo ≼. Logo <code>TopK</code> aplicado à saída do <code>MergeSort</code> devolve os k chunks mais relevantes,
+cumprindo a pós-condição da Seção&nbsp;4.3.
+</div>
+
+<h4>Limites do argumento e casos em que não se aplica</h4>
+<ul>
+  <li>A prova garante <b>ordenação correta e término</b>, não que a função TF-IDF corresponda à intenção de quem consultou:
+      relevância lexical é um <i>proxy</i> imperfeito (ver Seções 14 e 15).</li>
+  <li>Se algum score for indefinido (NaN) ou o comparador não for transitivo, ≼ deixa de ser ordem total e o teorema não se aplica.</li>
+  <li>Se os id não forem únicos, o desempate falha e a saída pode deixar de ser determinística.</li>
+  <li>A prova não fala de precisão numérica de ponto flutuante; scores muito próximos podem, na prática, ser tratados como
+      empate e então decididos pelo source_order — comportamento coberto pelos testes de desempate.</li>
+</ul>
+
+<h4>Validação prática da ordenação</h4>
+<p>Como complemento à prova, a relação de ordem ≼ usada em todas as configurações é validada diretamente em
+<code>tests/unit/test_sort_key.py</code>, sobre a função <code>sort_key</code> de <code>src/paa_context/sort_key.py</code>, que
+estabelece maior <code>score</code> primeiro e, em empate, menor <code>source_order</code>. Três testes cobrem os pilares do argumento:</p>
+<ul>
+  <li><code>test_maior_score_vem_primeiro</code>: prioridade do maior <code>score</code>;</li>
+  <li><code>test_empate_usa_menor_source_order</code>: critério de desempate por <code>source_order</code>;</li>
+  <li><code>test_ordem_transitiva</code>: transitividade da relação (condição para ≼ ser ordem total).</li>
+</ul>
+<p>Os três passam isoladamente e a suíte completa do projeto é executada e aprovada (87 testes na versão de 23/09/2026 —
+atualizar o número na versão congelada). Esta análise de corretude, modelo RAM, complexidade e recorrências foi conduzida por
+Nadianne Galvão (<code>docs/CORRETUDE.md</code> e o documento de corretude/RAM/complexidade/recorrências).</p>
+
+<!-- ============================ 8 ============================ -->
+<div class="quebra"></div>
+<h2>8. Análise no modelo RAM</h2>
+<h3>8.1 Parâmetros</h3>
+<table>
+  <tr><th style="width:12%">Símbolo</th><th>Significado</th></tr>
+  <tr><td><i>N</i></td><td>número de chunks (~330 na configuração principal)</td></tr>
+  <tr><td><i>V</i></td><td>tamanho do vocabulário (termos distintos)</td></tr>
+  <tr><td><i>L</i></td><td>total de tokens do corpus</td></tr>
+  <tr><td><i>m</i></td><td>número de termos da consulta</td></tr>
+  <tr><td><i>k</i></td><td>número de resultados retornados</td></tr>
+  <tr><td><i>C<sub>q</sub></i></td><td>número de chunks candidatos (com score &gt; 0) para a consulta <i>q</i></td></tr>
+  <tr><td><i>P</i></td><td>tamanho total das listas de postings percorridas = Σ<sub>t∈q</sub> df(t)</td></tr>
+  <tr><td><i>r</i></td><td>número de repetições experimentais</td></tr>
+</table>
+
+<h3>8.2 Operações elementares e custo por algoritmo</h3>
+<p>Contam-se como operações elementares: comparação de chaves, acesso a vetor/lista, atribuição, incremento, chamada
+recursiva, consulta a tabela de dispersão e atualização de estrutura. Para dois algoritmos, o detalhamento:</p>
+
+<h4>Insertion Sort (sobre C<sub>q</sub> candidatos)</h4>
+<p>O laço externo executa C<sub>q</sub>−1 vezes; o laço interno desloca, no pior caso, todos os elementos já ordenados.
+O número de comparações é Σ<sub>i=1</sub><sup>C<sub>q</sub>−1</sup> i = C<sub>q</sub>(C<sub>q</sub>−1)/2 no pior caso, com igual
+ordem de grandeza de acessos e atribuições. Espaço auxiliar Θ(1) (ordena no lugar).</p>
+
+<h4>Merge Sort (sobre C<sub>q</sub> candidatos)</h4>
+<p>Cada nível da recursão percorre todos os elementos uma vez no <code>Merge</code> (Θ(C<sub>q</sub>) comparações e cópias por
+nível) e há ⌈log<sub>2</sub> C<sub>q</sub>⌉ níveis, dando Θ(C<sub>q</sub> log C<sub>q</sub>) comparações. O <code>Merge</code>
+usa listas auxiliares, logo o espaço é Θ(C<sub>q</sub>).</p>
+
+<h4>Custo do pipeline por configuração</h4>
+<table>
+  <tr><th>Etapa</th><th>C1 (linear + Insertion)</th><th>C2 (índice + binária + Merge)</th><th>C3 (linear + Merge)</th></tr>
+  <tr><td>Pontuação / seleção de candidatos</td><td>Θ(N·m)</td><td>Θ(m·log V + P)</td><td>Θ(N·m)</td></tr>
+  <tr><td>Ordenação dos candidatos</td><td>O(C<sub>q</sub><sup>2</sup>)</td><td>Θ(C<sub>q</sub> log C<sub>q</sub>)</td><td>Θ(C<sub>q</sub> log C<sub>q</sub>)</td></tr>
+  <tr><td>Seleção top-k</td><td>Θ(k)</td><td>Θ(k)</td><td>Θ(k)</td></tr>
+  <tr><td>Espaço adicional (consulta)</td><td>Θ(C<sub>q</sub>)</td><td>Θ(V + P<sub>total</sub>) do índice + Θ(C<sub>q</sub>)</td><td>Θ(C<sub>q</sub>)</td></tr>
+</table>
+<p class="nota"><b>Fatores fora do modelo RAM.</b> O modelo ignora hierarquia de cache, custo de E/S ao ler os notebooks, alocação de
+memória, comportamento do coletor de lixo do Python e a diferença entre código interpretado (C1–C3) e rotinas vetorizadas em
+C/NumPy (Config. 4 do scikit-learn). Por isso a Seção&nbsp;12 mede tempo de parede além de contar operações.</p>
+
+<!-- ============================ 9 ============================ -->
+<h2>9. Melhor, pior e caso médio</h2>
+<table>
+  <tr><th>Algoritmo</th><th>Melhor caso</th><th>Pior caso</th><th>Caso médio</th><th>Espaço</th></tr>
+  <tr><td>Busca/pontuação linear</td><td>Θ(N·m)</td><td>Θ(N·m)</td><td>Θ(N·m)</td><td>Θ(C<sub>q</sub>)</td></tr>
+  <tr><td>Insertion Sort</td><td>Θ(n) — já ordenado</td><td>Θ(n²) — invertido</td><td>Θ(n²)</td><td>Θ(1)</td></tr>
+  <tr><td>Merge Sort</td><td>Θ(n log n)</td><td>Θ(n log n)</td><td>Θ(n log n)</td><td>Θ(n)</td></tr>
+  <tr><td>Busca binária (por termo)</td><td>Θ(1)</td><td>Θ(log V)</td><td>Θ(log V)</td><td>Θ(1)</td></tr>
+  <tr><td>Consulta via índice (C2)</td><td>Θ(m log V + C<sub>q</sub> log C<sub>q</sub>)</td><td>Θ(m log V + N log N)</td><td>Θ(m log V + P + C<sub>q</sub> log C<sub>q</sub>)</td><td>Θ(V + P<sub>total</sub>)</td></tr>
+</table>
+<p>Onde <i>n</i> = C<sub>q</sub> é o número de candidatos a ordenar. Observações sobre os parâmetros relevantes:</p>
+<ul>
+  <li><b>Insertion Sort</b> só é competitivo quando C<sub>q</sub> é pequeno ou a lista já está quase ordenada; seu melhor caso
+      linear ocorre quando nenhum deslocamento é necessário.</li>
+  <li><b>Merge Sort</b> tem custo Θ(n log n) <b>garantido</b> nos três casos, independentemente da distribuição — o que o torna
+      a escolha segura para a comparação.</li>
+  <li><b>Consulta via índice (C2)</b> tem melhor caso quando os termos são <b>raros</b> (P e C<sub>q</sub> pequenos) e degenera
+      ao custo de C3 no pior caso, quando os termos são tão frequentes que C<sub>q</sub> ≈ N (por exemplo, uma stopword muito
+      comum). É por isso que a hipótese de esparsidade (Seção 4.3) é o que separa C2 de C3 na prática.</li>
+</ul>
+
+<!-- ============================ 10 ============================ -->
+<h2>10. Recorrências</h2>
+<h3>10.1 Merge Sort</h3>
+<div class="eq">T(N) = 2·T(N/2) + Θ(N),&nbsp;&nbsp; T(1) = Θ(1)</div>
+<p><b>Origem dos termos na implementação:</b> o fator <b>2</b> vem das duas chamadas recursivas (metades E e D); cada
+<b>T(N/2)</b> é o custo de ordenar uma metade; o termo <b>Θ(N)</b> é o custo do <code>Merge</code>, que percorre linearmente
+as duas metades uma única vez. Pela <b>árvore de recorrência</b> (Figura 2), cada um dos ⌈log<sub>2</sub> N⌉+1 níveis realiza
+trabalho total Θ(N), somando <b>Θ(N log N)</b>. O <b>Teorema Mestre</b> confirma: com a = 2, b = 2, tem-se
+N<sup>log<sub>b</sub>a</sup> = N<sup>1</sup>, e como f(N) = Θ(N) = Θ(N<sup>1</sup>), aplica-se o caso 2, dando
+T(N) = Θ(N log N).</p>
+
+<div class="fig">
+  <img src="figuras/arvore_recorrencia.png" alt="Árvore de recorrência do Merge Sort">
+  <div class="cap">Figura 2 — Árvore de recorrência de T(N) = 2·T(N/2) + Θ(N). O trabalho por nível é constante em Θ(N) e há
+  log₂N + 1 níveis, resultando em Θ(N log N). Diagrama teórico.</div>
+</div>
+
+<h3>10.2 Busca binária</h3>
+<div class="eq">T(V) = T(V/2) + Θ(1),&nbsp;&nbsp; T(1) = Θ(1)</div>
+<p><b>Origem dos termos:</b> há uma única chamada recursiva sobre metade do vocabulário (a outra metade é descartada a cada
+passo), e o termo <b>Θ(1)</b> corresponde ao cálculo do meio e à comparação com <code>vocab[mid]</code>. Pelo Teorema Mestre,
+a = 1, b = 2, N<sup>log<sub>b</sub>a</sup> = N<sup>0</sup> = 1 = f(N): caso 2 novamente, dando <b>T(V) = Θ(log V)</b>.</p>
+
+<!-- ============================ 11 ============================ -->
+<div class="quebra"></div>
+<h2>11. Metodologia experimental</h2>
+<h3>11.1 Configurações comparadas</h3>
+<table>
+  <tr><th style="width:14%">Config.</th><th>Descrição</th><th>Papel</th></tr>
+  <tr><td><b>C1</b> — baseline</td><td>Varredura linear + Insertion Sort (implementado pela equipe)</td><td>Baseline sem estrutura</td></tr>
+  <tr><td><b>C2</b> — indexada</td><td>Índice invertido + busca binária no vocabulário + Merge Sort dos candidatos</td><td>Busca indexada/otimizada</td></tr>
+  <tr><td><b>C3</b> — ordenada</td><td>Varredura linear + Merge Sort (implementado pela equipe)</td><td>Divisão e conquista na ordenação</td></tr>
+  <tr><td><b>C4</b> — referência</td><td>TF-IDF do scikit-learn (biblioteca)</td><td>Somente baseline externo; não substitui nenhuma exigência</td></tr>
+</table>
+<p>As três configurações obrigatórias usam <b>os mesmos dados e a mesma função de pontuação</b>; diferem apenas na estrutura de
+busca e na ordenação. Consequência importante para a validação: <b>C1, C2 e C3 devem produzir listas ranqueadas idênticas</b>
+(mesma ordem total ≼), diferindo apenas em custo — um teste de consistência forte. A Config. 4 pode divergir por usar
+normalização L2 e TF sublinear próprias, e por isso é analisada em separado.</p>
+
+<h3>11.2 Cargas, repetições e execuções</h3>
+<p>O plano cobre <b>3 configurações × 3 tamanhos de corpus × 5 repetições = 45 execuções mensuráveis</b> (bem acima do mínimo
+de 12 exigido, e com folga sobre as “pelo menos duas repetições por cenário”). Os três tamanhos são obtidos por
+<b>subamostragem determinística</b> (semente fixa) de aproximadamente 25%, 50% e 100% dos chunks; adicionalmente, o experimento
+de sensibilidade varia o chunking em 128/16, 256/32 e 512/64. Cada consulta é executada para <b>k = 5 e k = 10</b>. As duas
+primeiras execuções de cada cenário são descartadas como aquecimento e a mediana das repetições é reportada com a dispersão.</p>
+
+<h3>11.3 Métricas registradas</h3>
+<ul>
+  <li>Tempo de pré-processamento/ingestão; tempo de ordenação ou de construção do índice; tempo de consulta; tempo total.</li>
+  <li>Uso aproximado de memória (via <code>tracemalloc</code> e RSS do processo).</li>
+  <li><b>Número de comparações</b>, por contador instrumentado nos algoritmos de ordenação e busca.</li>
+  <li>Tamanho do corpus, número de chunks e k.</li>
+  <li><b>Precision@k</b> contra os julgamentos de relevância (<code>data/qrels.csv</code>), quando há referência.</li>
+  <li>Taxa de falhas, resultados vazios ou itens irrelevantes; custo e limitações de cada abordagem.</li>
+</ul>
+
+<h3>11.4 Reprodutibilidade</h3>
+<p>Todo o pipeline roda com <code>python scripts/reproduzir_tudo.py</code> (download → normalização → chunking →
+experimentos → figuras). Os scripts são <b>idempotentes</b>. Cada execução registra em <code>experimentos/logs</code>:
+hostname, processador, memória, sistema operacional, versão do Python, versões das bibliotecas, commit e a linha de comando
+completa — atendendo à exigência de registrar o ambiente. As consultas e os qrels foram fixados <b>antes</b> de observar
+qualquer resultado, para evitar viés de seleção.</p>
+
+<h3>11.5 Julgamentos de relevância</h3>
+<p>As 30 consultas de <code>data/queries.csv</code> recebem julgamentos em escala 0, 1 e 2 por <b>dois avaliadores
+independentes</b>, com a adjudicação dos desacordos registrada em <code>data/qrels.csv</code>. Isso dá a referência de
+relevância necessária para o Precision@k e permite reportar a concordância entre avaliadores.</p>
+
+<!-- ============================ 12 ============================ -->
+<div class="quebra"></div>
+<h2>12. Resultados e gráficos</h2>
+
+<div class="fig">
+  <img src="figuras/crescimento_teorico.png" alt="Curvas de crescimento teórico">
+  <div class="cap">Figura 1 — Crescimento teórico do número de operações elementares em função de N (escala logarítmica no eixo y).
+  A separação entre Θ(N²) (Insertion), Θ(N log N) (Merge) e Θ(log N) (busca binária) motiva as três configurações. Curvas
+  teóricas, não medições.</div>
+</div>
+
+<div class="status">
+  <b>Tabelas empíricas — a preencher após a execução.</b> A estrutura de colunas abaixo é a definitiva; os valores serão
+  inseridos a partir de <code>experimentos/processados</code> após rodar <code>scripts/rodar_experimentos.py</code>. A previsão
+  qualitativa (não medida) que os experimentos vão testar está indicada em itálico abaixo de cada tabela.
+</div>
+
+<h3>12.1 Tempo por etapa e configuração (mediana de r repetições)</h3>
+<table>
+  <tr><th>Config.</th><th>N (chunks)</th><th>Ingestão (ms)</th><th>Ordenação/índice (ms)</th><th>Consulta (ms)</th><th>Total (ms)</th><th>Comparações</th></tr>
+  <tr><td>C1</td><td>~330</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+  <tr><td>C2</td><td>~330</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+  <tr><td>C3</td><td>~330</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+  <tr><td>C4 (ref.)</td><td>~330</td><td>—</td><td>—</td><td>—</td><td>—</td><td>n/a</td></tr>
+  <caption>Tabela 1 — Tempos e contagem de comparações. Valores a preencher (mediana; reportar também dispersão).</caption>
+</table>
+<p style="font-style:italic;font-size:9.4pt;color:var(--cinza)">Previsão a testar: o tempo de ordenação de C1 cresce como
+C<sub>q</sub>², superando C2/C3 conforme o número de candidatos aumenta; a consulta de C2 é a menor por tocar apenas os
+candidatos; a contagem de comparações de C2 e C3 fica próxima de C<sub>q</sub>·log₂C<sub>q</sub>, e a de C1 próxima de
+C<sub>q</sub>²/2 no pior caso.</p>
+
+<h3>12.2 Qualidade da recuperação e memória</h3>
+<table>
+  <tr><th>Config.</th><th>Precision@5</th><th>Precision@10</th><th>Taxa de vazios</th><th>Memória pico (MB)</th></tr>
+  <tr><td>C1</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+  <tr><td>C2</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+  <tr><td>C3</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+  <tr><td>C4 (ref.)</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+  <caption>Tabela 2 — Qualidade e memória. Valores a preencher.</caption>
+</table>
+<p style="font-style:italic;font-size:9.4pt;color:var(--cinza)">Previsão a testar: C1, C2 e C3 têm <b>Precision@k idêntica</b>
+(mesma função de pontuação e mesma ordem total), confirmando que a diferença entre elas é de custo, não de qualidade; C2
+consome mais memória por manter o índice invertido; C4 pode divergir na Precision@k por usar normalização TF-IDF diferente.</p>
+
+<h3>12.3 Escalabilidade medida (a preencher)</h3>
+<table>
+  <tr><th>N (chunks)</th><th>C1 total (ms)</th><th>C2 total (ms)</th><th>C3 total (ms)</th></tr>
+  <tr><td>~82 (25%)</td><td>—</td><td>—</td><td>—</td></tr>
+  <tr><td>~165 (50%)</td><td>—</td><td>—</td><td>—</td></tr>
+  <tr><td>~330 (100%)</td><td>—</td><td>—</td><td>—</td></tr>
+  <caption>Tabela 3 — Tempo total por tamanho de corpus. O gráfico empírico correspondente será gerado por
+  <code>scripts/gerar_figuras.py</code> e substituirá este marcador.</caption>
+</table>
+<p style="font-style:italic;font-size:9.4pt;color:var(--cinza)">Previsão a testar: a curva de C1 acompanha o crescimento
+super-linear do Insertion Sort sobre os candidatos, enquanto C2 e C3 crescem de forma quase linear-logarítmica; a vantagem de
+C2 se amplia com N por evitar tocar chunks sem os termos da consulta.</p>
+
+<!-- ============================ 13 ============================ -->
+<h2>13. Discussão de escalabilidade</h2>
+<p>Para o corpus atual (~330 chunks) as três configurações rodam em milissegundos e as diferenças de tempo são pequenas em
+valor absoluto — mas a <b>tendência</b> é o que interessa. À medida que o acervo cresce (imagine dezenas de livros abertos, com
+N na casa dos milhares ou dezenas de milhares de chunks):</p>
+<ul>
+  <li><b>C1</b> torna-se inviável: o Insertion Sort sobre C<sub>q</sub> candidatos cresce como C<sub>q</sub>², e a varredura
+      linear toca todos os N chunks a cada consulta.</li>
+  <li><b>C2</b> desacopla o custo de consulta do tamanho total do corpus: passa a depender da <b>seletividade dos termos</b>
+      (P e C<sub>q</sub>) e de log V, não de N. É a única das três que escala para acervos grandes — ao custo de memória extra
+      para o índice invertido (Θ(V + P<sub>total</sub>)).</li>
+  <li><b>C3</b> mantém a ordenação em Θ(N log N), mas ainda paga a varredura linear Θ(N·m) por consulta.</li>
+</ul>
+<p>Esse é exatamente o trade-off central de sistemas de recuperação: gastar memória e tempo de indexação uma vez para tornar
+cada consulta sublinear. Bibliotecas como FAISS levam essa ideia ao caso vetorial denso, inclusive para coleções que não cabem
+em RAM; aqui a demonstramos no caso lexical, com estruturas clássicas.</p>
+
+<!-- ============================ 14 ============================ -->
+<div class="quebra"></div>
+<h2>14. Relação com IA generativa e RAG</h2>
+<p>O contexto recuperado pelo protótipo é precisamente a etapa de <i>retrieval</i> de um sistema RAG
+(<i>Retrieval-Augmented Generation</i>). Discutimos os sete pontos pedidos:</p>
+<ol>
+  <li><b>Incorporação ao prompt.</b> Os k chunks retornados seriam concatenados em um bloco de contexto — “Contexto:
+      &lt;chunks&gt;\n\nPergunta: &lt;q&gt;” — cada trecho acompanhado da sua origem (notebook, seção) para permitir citação.</li>
+  <li><b>Impacto de k, tamanho de chunk e ordenação no custo de contexto.</b> Mais chunks e chunks maiores gastam mais tokens da
+      janela do LLM, aumentando latência e custo de geração. A ordem também importa: modelos tendem a subaproveitar informação
+      no meio do contexto (<i>lost in the middle</i>), então colocar os trechos mais relevantes primeiro (o que nossa ordem ≼
+      garante) é vantajoso.</li>
+  <li><b>Lexical vs. semântico.</b> O TF-IDF captura <b>sobreposição de termos</b>, não sinônimos nem paráfrases. No nosso corpus
+      em português com termos técnicos em inglês, uma consulta por <i>“laço”</i> pode não casar com um trecho que diz
+      <i>“loop”</i> — caso em que a busca semântica com embeddings recuperaria o trecho e a lexical não.</li>
+  <li><b>Riscos de recuperação ruim.</b> Recuperação <b>incompleta</b> (o trecho certo não está entre os k), <b>enviesada</b>
+      (um único livro cobre só uma visão), <b>desatualizada</b> (commit fixo — desatualização controlada, mas real) ou
+      <b>irrelevante</b> comprometem diretamente a resposta final.</li>
+  <li><b>Afirmações não sustentadas.</b> Mesmo com bom contexto, o LLM pode “alucinar” além do que foi recuperado. Mitiga-se com
+      instrução explícita de responder apenas com base no contexto e de citar a origem de cada afirmação.</li>
+  <li><b>Rastreabilidade.</b> Como cada chunk carrega a proveniência (notebook, seção), a resposta pode citar a fonte exata,
+      permitindo ao usuário verificar — melhoria direta de confiabilidade sobre um LLM sem recuperação.</li>
+  <li><b>Trade-offs.</b> Há tensão entre precisão, tempo de resposta, uso de memória e custo de geração: aumentar k eleva o
+      <i>recall</i> potencial, mas também o custo em tokens e o ruído; indexar (C2) acelera a consulta ao preço de memória.</li>
+</ol>
+
+<!-- ============================ 15 ============================ -->
+<h2>15. Limitações e ameaças à validade</h2>
+<ul>
+  <li><b>Validade de construção.</b> A Precision@k depende de julgamentos de relevância subjetivos; mitigamos com dois
+      avaliadores e adjudicação, mas a referência não é perfeita.</li>
+  <li><b>Validade interna.</b> Medições de tempo em Python sofrem com coletor de lixo, cache e aquecimento; por isso reportamos
+      medianas de repetições, descartamos as duas primeiras execuções e contamos operações elementares como métrica independente do
+      hardware.</li>
+  <li><b>Validade externa.</b> Um único livro introdutório em português, do domínio de programação, não generaliza para todo o
+      universo dos materiais educacionais abertos; os resultados valem como estudo de caso.</li>
+  <li><b>Viés do corpus.</b> A tradução mistura português e termos técnicos em inglês, o que penaliza a busca lexical em
+      consultas que usam apenas uma das formas.</li>
+  <li><b>Validade de conclusão.</b> Todas as medidas vêm de um único ambiente de hardware; diferenças pequenas de tempo devem ser
+      lidas com cautela e sempre junto da análise assintótica.</li>
+</ul>
+
+<!-- ============================ 16 ============================ -->
+<div class="quebra"></div>
+<h2>16. Declaração de uso de IA generativa</h2>
+<p>A declaração detalhada é mantida <b>durante</b> o trabalho em <code>docs/USO_DE_IA.md</code>, com ferramenta, modelo,
+finalidade, até cinco prompts reais, sugestões aproveitadas, sugestões corrigidas ou rejeitadas, erros identificados e a
+verificação aplicada. Resumo do uso até esta versão:</p>
+<table>
+  <tr><th style="width:20%">Ferramenta / modelo</th><th>Finalidade</th><th>Verificação exigida</th></tr>
+  <tr><td>Assistente de IA generativa (a registrar com o modelo exibido na interface)</td>
+      <td>Apoio à estruturação e redação deste relatório e à formatação da prova de corretude e dos pseudocódigos.</td>
+      <td>Toda saída de IA será conferida pela equipe quanto a corretude, complexidade, casos de borda, estabilidade de
+      ordenação e desempate, e coerência entre a análise formal e o experimento, conforme §9 do enunciado. Código, prova ou
+      análise não verificados não entram no trabalho.</td></tr>
+</table>
+<p class="nota"><b>Compromisso de uso crítico.</b> A prova de corretude da Seção 7 será validada por testes que exercitam
+estabilidade e desempate; os pseudocódigos, por implementação e testes unitários; e as previsões da Seção 12, pela execução
+real. O arquivo <code>docs/USO_DE_IA.md</code> registra cada uso no dia em que ocorre, com o responsável.</p>
+
+<!-- ============================ 17 ============================ -->
+<h2>17. Contribuição individual</h2>
+<p>O enunciado pede contribuição <b>com evidência</b>, não cargo. A tabela final, com commits, arquivos, análises e execuções
+que comprovam cada frente, é mantida em <code>docs/CONTRIBUICOES.md</code> e será consolidada na entrega. A distribuição de
+frentes proposta consta na Seção 1. Todos os integrantes participam da revisão coletiva do código, da prova e dos resultados,
+e da apresentação e do vídeo.</p>
+<table>
+  <tr><th style="width:34%">Integrante</th><th>Frente</th><th>Evidências (a consolidar)</th></tr>
+  <tr><td>João Cosme Sena Sá</td><td>Índice invertido / busca binária (C2); dados de teste, pacote e protocolo</td><td><code>src/paa_context/indice.py</code>, <code>busca_binaria.py</code>, <code>modelos.py</code>, fixtures</td></tr>
+  <tr><td>Eduardo Henrique do Lago Silva</td><td>Experimentos / figuras / baseline sklearn (C4)</td><td><code>rodar_experimentos.py</code>, <code>gerar_figuras.py</code>, análise de C4</td></tr>
+  <tr><td>Helena Carvalho Leal</td><td>Consultas / qrels / métricas / IA / limitações</td><td><code>data/queries.csv</code>, <code>data/qrels.csv</code>, <code>metricas.py</code></td></tr>
+  <tr><td>Hernandison da Silva Bispo</td><td>Ingestão / normalização / fragmentação / relatório</td><td><code>preprocessing.py</code>, <code>fragmentacao.py</code>, <code>scripts/</code>, <code>relatorio/</code></td></tr>
+  <tr><td>Nadianne Maria dos Santos Galvão</td><td>Corretude / RAM / complexidade / recorrências</td><td><code>docs/CORRETUDE.md</code>, <code>test_sort_key.py</code>, Seções 7–10</td></tr>
+  <tr><td>Rafael Takeguma Goto</td><td>Busca linear / Insertion / Merge / pontuação (C1 e 3)</td><td><code>linear_search.py</code>, <code>insertion_sort.py</code>, <code>merge_sort.py</code>, <code>relevance.py</code></td></tr>
+</table>
+
+<!-- ============================ 18 ============================ -->
+<h2>18. Vídeo da atividade</h2>
+<p><b>URL:</b> <i>a preencher até 22/09/2026</i>. O vídeo terá até 10 minutos, com participação de todos os integrantes e
+identificação clara de cada contribuição. A mesma URL constará, obrigatoriamente, no <code>README.md</code> (seção “Vídeo da
+atividade”), na capa deste relatório, no arquivo <code>VIDEO.md</code> (com data de gravação e participantes) e na área da
+atividade no Google Classroom quando solicitado. O vídeo apresentará: identificação da equipe, tema e corpus; o problema de
+recuperação; os algoritmos; uma demonstração breve do protótipo; a justificativa de corretude; a análise assintótica e as
+recorrências; os resultados e o gráfico principal; a relação com RAG; e as limitações e decisões de projeto.</p>
+
+<!-- ============================ 19 ============================ -->
+<h2>19. Referências</h2>
+<ol style="font-size:9.6pt;font-family:'Segoe UI',Arial,sans-serif;">
+  <li>CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. <i>Introduction to Algorithms</i>. 4. ed. Cambridge: MIT Press, 2022.</li>
+  <li>KLEINBERG, J.; TARDOS, É. <i>Algorithm Design</i>. Boston: Pearson, 2006.</li>
+  <li>SKIENA, S. S. <i>The Algorithm Design Manual</i>. 3. ed. Cham: Springer, 2020.</li>
+  <li>SEDGEWICK, R.; WAYNE, K. <i>Algorithms</i>. 4. ed. Boston: Addison-Wesley, 2011.</li>
+  <li>MANNING, C. D.; RAGHAVAN, P.; SCHÜTZE, H. <i>Introduction to Information Retrieval</i>. Cambridge University Press, 2008. (TF-IDF e índice invertido.)</li>
+  <li>LEWIS, P. et al. Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks. <i>NeurIPS</i>, 2020. arXiv:2005.11401.</li>
+  <li>ZHOU, Z. et al. A Survey on Efficient Inference for Large Language Models. arXiv:2404.14294, 2024.</li>
+  <li>GAN, A. et al. Retrieval Augmented Generation Evaluation in the Era of Large Language Models: A Comprehensive Survey. arXiv:2504.14891, 2025.</li>
+  <li>FAISS. <i>Faiss documentation</i>. Disponível em: https://faiss.ai/.</li>
+  <li>SENTENCE TRANSFORMERS. Repositório oficial. Disponível em: https://github.com/huggingface/sentence-transformers.</li>
+  <li>PEDREGOSA, F. et al. Scikit-learn: Machine Learning in Python. <i>JMLR</i>, v. 12, 2011. (Baseline TF-IDF — Config. 4.)</li>
+  <li>DOWNEY, A. B. <i>Think Python</i>. 3. ed. O’Reilly, 2024. Tradução livre <i>Pense Python</i> por CARLSON, R. C. Disponível em: https://rodrigocarlson.github.io/PensePython3ed/ (corpus).</li>
+</ol>
+
+</body>
+</html>
