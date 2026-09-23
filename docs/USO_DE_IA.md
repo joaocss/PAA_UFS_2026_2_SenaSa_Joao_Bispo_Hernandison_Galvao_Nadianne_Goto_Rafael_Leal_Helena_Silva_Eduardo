@@ -7,7 +7,7 @@ Este arquivo é preenchido durante o trabalho, não na véspera da entrega. Cada
 | Ferramenta | Modelo exibido na interface | Período de uso |
 | --- | --- | --- |
 | OpenAI Codex (João) | conferir na interface | 01/09/2026 |
-| Claude Code, Anthropic (João) | Claude Fable 5.1; Claude Opus 5.5 | 02/09/2026 a 22/09/2026 |
+| Claude Code, Anthropic (João) | Claude Fable 5.1; Claude Opus 5.5 | 02/09/2026 a 23/09/2026 |
 | ChatGPT, OpenAI (Nadianne) | GPT-5.6 Sol | 18/09/2026 a 19/09/2026 |
 | a preencher | a preencher | a preencher |
 
@@ -20,6 +20,7 @@ Este arquivo é preenchido durante o trabalho, não na véspera da entrega. Cada
 | 14/09 a 16/09 | João | Fixtures sintéticos com gabarito, fragmentação, índice invertido e revisão do código de pontuação e desempate | `tests/fixtures/`, `src/paa_context/fragmentacao.py`, `indice.py`, `relevance.py`, `sort_key.py` |
 | 19/09 | João | Medição dos contadores contra a previsão assintótica e teste de mutação do Merge Sort, em cópia descartável | Números usados na análise e em `tests/README.md` |
 | 22/09 | João | Conversão das 30 perguntas para `data/queries.csv`, com as seções conferidas contra o corpus, e redação de `tests/README.md` | `data/queries.csv`, `docs/CONTRATOS.md`, `tests/README.md` |
+| 23/09 | João | Levantamento das pendências da entrega, reprodução completa em máquina limpa, script de ingestão e sensibilidade ao tamanho do chunk, atualização da documentação | `scripts/medir_ingestao.py`, `experimentos/processados/ingestao_e_sensibilidade.md`, `docs/RESULTADOS.md`, `data/README.md`, `tests/README.md` |
 | 18/09 a 19/09 | Nadianne | Apoio na análise formal de corretude do Merge Sort, definição das hipóteses, prova por indução, invariante de `_merge`, término e limites do argumento | `docs/CORRETUDE.md` |
 | 18/09 a 19/09 | Nadianne | Apoio na análise no modelo RAM, melhor/pior/médio caso e recorrências dos algoritmos | documento de análise em `docs/` e slides |
 | 19/09 | Nadianne | Apoio na elaboração de testes específicos da relação de ordenação por `score` e `source_order` | `tests/unit/test_sort_key.py` |
@@ -33,8 +34,7 @@ O enunciado admite até cinco. Registrar o texto real enviado, não uma reconstr
 2. (João, 22/09) "converte o PDF para o queries.csv, veja o que mais posso fazer pelo grupo"
 3. (Nadianne, 19/09) "Como ligar esse trecho e a  análise teórica as configurações C1, C2 e C3?"
 4. a preencher
-5. 5. preencher
-6. a preencher
+5. a preencher
 
 ## Sugestões aproveitadas
 
@@ -70,7 +70,7 @@ Registrar erros concretos de corretude, complexidade, casos de borda, estabilida
 
 Descrever os testes, provas, execuções e revisões por pares usados para validar cada trecho aproveitado. Código, prova ou análise sugerida por IA e não verificada não entra no trabalho.
 
-João: cada módulo entrou com testes próprios (118 no total, `python -m pytest`). O gabarito dos fixtures foi calculado à parte em `tests/fixtures/calcular_gabarito.py` e conferido à mão para um escore. A equivalência C1 = C2 = C3 é testada em `tests/integration/test_equivalencia.py`. Os contadores de comparações foram confrontados com a previsão assintótica (Merge Sort a 1% de P log₂ P; Insertion Sort a 9% de P²/4). O teste de mutação de 19/09 mostrou um limite da suíte, registrado em `tests/README.md`.
+João: cada módulo entrou com testes próprios (131 no total em 23/09, `python -m pytest`). O gabarito dos fixtures foi calculado à parte em `tests/fixtures/calcular_gabarito.py` e conferido à mão para um escore. A equivalência C1 = C2 = C3 é testada em `tests/integration/test_equivalencia.py`. Os contadores de comparações foram confrontados com a previsão assintótica (Merge Sort a 1% de P log₂ P; Insertion Sort a 9% de P²/4). O teste de mutação de 19/09 mostrou um limite da suíte, registrado em `tests/README.md`.
 
 Nadianne: a análise formal foi conferida contra a implementação de `merge_sort.py` e `sort_key.py`. Foram adicionados três testes em `tests/unit/test_sort_key.py`, verificando prioridade por maior `score`, desempate por menor `source_order` e um caso de transitividade. Os testes específicos passaram (`3 passed`) e, em seguida, a suíte completa foi executada com `118 passed`, sem regressões.
 

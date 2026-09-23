@@ -1,5 +1,7 @@
 # Semana 1: de 04 a 10/09, Rafael, Hernandison e João
 
+Plano de 04/09, mantido como registro. Os nomes finais de pacote e módulos diferem dos daqui: o pacote é `paa_context`, e pontuação, busca e ordenação ficaram em `relevance.py`, `linear_search.py`, `insertion_sort.py`, `merge_sort.py`, `sort_key.py` e `pipeline.py`. A lista atual de arquivos e testes está em `tests/README.md`.
+
 Objetivo do checkpoint de 10/09, em sala: uma pergunta entra pelo terminal e os cinco melhores trechos do livro saem, sobre pelo menos 8 capítulos reais, com o contador de comparações impresso junto. Tudo o que está aqui serve a isso. O que não serve fica para a semana 2.
 
 Os contratos em `docs/CONTRATOS.md` valem para todo arquivo desta lista. Nomes de módulos, funções e variáveis em português, sem acento, `snake_case`.

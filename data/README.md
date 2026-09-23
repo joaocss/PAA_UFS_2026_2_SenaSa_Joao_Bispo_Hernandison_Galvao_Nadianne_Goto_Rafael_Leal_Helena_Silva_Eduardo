@@ -13,7 +13,7 @@
 | Formato | 21 notebooks Jupyter: prefácio, introdução e capítulos 1 a 19 |
 | Tamanho auditado | 817.578 bytes, 2.789 células, 73.867 palavras de texto e código na extração canônica |
 | SHA-256 do recorte bruto | 20106262588b9041517ab675fccee3034d879f08b381b584cdd99f40a5768dc5 |
-| SHA-256 da extração | pendente, será gravado por `preparar_corpus.py` |
+| SHA-256 da extração | 2af8c533a2a872a6381307ae8e5b02eadd20c9b110a84e892d4b18bb12863cc4 (`data/processed/chunks.jsonl`, 256/32, gravado por `preparar_corpus.py` em `corpus_manifest.csv`) |
 | Idioma | Português brasileiro |
 | Licença do texto | CC BY-NC-SA 4.0 |
 | Licença dos códigos | MIT |
@@ -33,7 +33,7 @@ A licença do texto é não comercial e com compartilhamento pelas mesmas condi�
 
 A normalização é deliberadamente simples, para poder ser auditada. Células Markdown passam por NFKC, minúsculas, separação controlada de pontuação e compactação de espaços, com acentos preservados. Células de código guardam a fonte intacta e ganham uma visão lexical à parte, sem alteração de indentação. Stopwords não são removidas na configuração principal, porque em português isso apaga termos funcionais que importam para a consulta.
 
-A segmentação respeita notebook, título e seção, e nunca mistura célula de texto com célula de código. A configuração principal usa 256 tokens com sobreposição de 32, o que rende algo em torno de 330 chunks. As configurações de 128/16 e 512/64 entram apenas no experimento de sensibilidade.
+A segmentação respeita notebook, título e seção, e nunca mistura célula de texto com célula de código. A configuração principal usa 256 tokens com sobreposição de 32. Como o corte respeita a célula do notebook, a maior parte das células é menor que a janela e vira um chunk só: o corpus inteiro rende 2.737 chunks, com mediana de 13 tokens, e só 0,8 % deles vêm de células cortadas em mais de uma janela. A estimativa de cerca de 330 chunks, feita na reserva do corpus, supunha janelas contínuas sobre o texto e não se confirmou. As configurações de 128/16 e 512/64 entram apenas no experimento de sensibilidade (`scripts/medir_ingestao.py`, tabela em `experimentos/processados/ingestao_e_sensibilidade.md`).
 
 ## Riscos conhecidos
 
@@ -43,4 +43,5 @@ A tradução ainda carrega termos em inglês vindos do Python e do Jupyter, o qu
 
 - `corpus_manifest.csv`: um registro por arquivo baixado, com URL, tamanho, SHA-256 e data de acesso, mais o hash agregado do recorte.
 - `queries.csv`: as 30 consultas, escritas antes de qualquer resultado ser observado.
-- `qrels.csv`: julgamentos de relevância em escala 0, 1 e 2, com dois avaliadores independentes e a adjudicação registrada.
+- `perguntas_30_com_chunks_justificativas.csv`: gabarito de relevância de Helena, com os chunks que respondem cada consulta e a justificativa de cada escolha.
+- `qrels.csv`: julgamentos de relevância no formato do contrato 03, gerados a partir do gabarito por `scripts/montar_qrels.py importar`. Binários (1 para os chunks do gabarito), com uma avaliadora; a escala 0, 1 e 2 e o segundo avaliador previstos no contrato ficam para a etapa `pool`/`consolidar`, não usada na entrega.

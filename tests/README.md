@@ -11,7 +11,7 @@ pip install -e ".[dev]"
 python -m pytest
 ```
 
-A saída esperada termina em `118 passed`. O `pyproject.toml` já configura `testpaths = ["tests"]` e `pythonpath = ["src"]`, então basta ter o `pytest` instalado para a suíte rodar.
+A saída esperada termina em `131 passed`. O `pyproject.toml` já configura `testpaths = ["tests"]` e `pythonpath = ["src"]`, então basta ter o `pytest` instalado para a suíte rodar.
 
 A suíte não precisa do corpus baixado. Nenhum teste lê `data/raw/` nem `data/processed/`: os testes usam os cinco trechos curtos de `CHUNKS_PYTHON`, definidos em `src/paa_context/linear_search.py`, os dados sintéticos de `tests/fixtures/` e notebooks mínimos gravados em diretório temporário durante o próprio teste.
 
@@ -30,8 +30,10 @@ A suíte não precisa do corpus baixado. Nenhum teste lê `data/raw/` nem `data/
 | `tests/unit/test_pipeline.py` | 12 | corte top-k e `retrieve` com os dois algoritmos de ordenação |
 | `tests/unit/test_fragmentacao.py` | 12 | leitura dos notebooks e fragmentação em chunks de 256 tokens com sobreposição de 32 |
 | `tests/unit/test_modelos.py` | 12 | contrato 01: formato do chunk, validação, leitura e escrita do JSONL |
+| `tests/unit/test_metricas.py` | 9 | Precision@k, Recall@k, nDCG@k e reciprocal rank, com os casos de k zero e de consulta sem relevante julgado |
+| `tests/unit/test_referencia.py` | 4 | referência C4 (scikit-learn): no máximo k resultados com escore positivo, escores decrescentes, termo inexistente, k zero |
 | `tests/integration/test_equivalencia.py` | 5 | C1, C2 e C3 contra o gabarito dos dados sintéticos |
-| **Total** | **118** | |
+| **Total** | **131** | |
 
 Terminologia, conforme `docs/CONTRATOS.md`: C1 é busca linear com Insertion Sort; C2 é índice invertido com busca binária no vocabulário e Merge Sort nos candidatos; C3 é busca linear com Merge Sort. As três ordenam pela mesma regra: maior escore primeiro e, em empate, menor `source_order`.
 

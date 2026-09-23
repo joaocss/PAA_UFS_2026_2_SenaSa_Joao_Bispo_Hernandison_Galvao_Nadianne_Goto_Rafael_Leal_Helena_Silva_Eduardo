@@ -14,6 +14,10 @@ Cada execução é medida de ponta a ponta: estatísticas do corpus (N e df), co
 
 C1, C2 e C3 devolveram a mesma lista, na mesma ordem, em todas as 180 combinações de tamanho, consulta e k. O script confere isso a cada bloco e registrou zero divergências. A diferença entre as três configurações é só de custo.
 
+## Reprodução em máquina limpa
+
+Em 23/09/2026 o repositório foi clonado num ambiente Linux x86_64 sem nada instalado além do Python e das dependências de `requirements.lock`, e `python scripts/reproduzir_tudo.py` rodou do download aos gráficos sem intervenção, em cerca de 21 minutos. O hash do recorte bruto e o da extração (`2af8c533…`) bateram com `data/corpus_manifest.csv`, os 131 testes passaram, e as 3.600 execuções tiveram os mesmos identificadores, as mesmas comparações, trocas, candidatos e listas devolvidas que as do experimento principal, com zero divergências entre C1, C2 e C3. As tabelas de qualidade, sobreposição e seções mais devolvidas saíram idênticas byte a byte. Só os tempos mudam: nessa máquina o total ficou cerca de 2,1 vezes maior em todas as configurações (C1 350,6 ms, C2 260,4, C3 215,1, C4 178,5 no corpus inteiro), com a mesma ordem entre elas, C4 < C3 < C2 < C1.
+
 ## Custo por configuração, corpus inteiro
 
 Medianas sobre 300 execuções por linha (30 consultas, 2 valores de k, 5 repetições).
@@ -57,9 +61,34 @@ A C2 tem a consulta mais rápida entre as configurações da equipe (47,7 ms con
 
 A ingestão (contagem de N e df, 39 ms no corpus inteiro) é igual em todas as configurações e é a maior parcela isolada do custo da C3. Numa aplicação real ela seria feita uma vez, junto com o índice.
 
+## Ingestão e sensibilidade ao tamanho do chunk
+
+A coluna `ingestao_ms` do experimento principal mede só as estatísticas do corpus (N e df), refeitas a cada execução. A ingestão de fato, que lê os 21 notebooks, extrai e normaliza as células e fragmenta, é medida à parte por `scripts/medir_ingestao.py`, com 5 medidas depois de 2 aquecimentos, mediana e IQR. O download fica de fora, porque depende da rede. O mesmo script roda as três configurações de chunk previstas na ficha do corpus.
+
+Os tempos abaixo foram medidos em 23/09/2026 numa máquina diferente da do experimento principal (Linux x86_64, 4 núcleos, registro em `experimentos/logs/ambiente_ingestao.json`), então valem pela proporção entre as linhas, não pelo valor absoluto. Candidatos, comparações e `na_secao@10` não dependem da máquina.
+
+| Chunk (tokens/sobreposição) | Chunks | Mediana de tokens | Chunks de célula cortada | Extração (ms) | Fragmentação (ms) | Ingestão (ms) | Candidatos (P) | Comparações C1 | Comparações C3 | Top-10 na seção esperada |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 128/16 | 2.821 | 14 | 6,2 % | 53,1 | 86,3 | 138,8 | 1.484 | 514.962 | 13.588 | 10,0 % |
+| 256/32 (principal) | 2.737 | 13 | 0,8 % | 55,2 | 82,9 | 137,8 | 1.403 | 461.702 | 12.746 | 7,3 % |
+| 512/64 | 2.726 | 13 | 0 % | 51,2 | 81,0 | 132,0 | 1.392 | 455.706 | 12.636 | 6,7 % |
+
+A linha 256/32 reproduz exatamente os números do experimento principal no corpus inteiro (P = 1.403, 461.702 comparações no C1, 7,3 % no indicador auxiliar), o que confere os dois scripts um contra o outro.
+
+O tamanho da janela quase não muda o corpus: como o corte respeita a célula e a mediana das células fica em 13 tokens, só as células longas são divididas, e o número de chunks varia 3,5 % entre 512 e 128 tokens. A ingestão também fica praticamente igual, dominada pela fragmentação (cerca de 60 %) e pela leitura dos notebooks. O efeito aparece onde a análise prevê: com 128 tokens, P cresce 5,8 % em relação a 256, as comparações do Insertion Sort crescem 11,5 %, perto do quadrado de 1,058 (11,9 %), e as do Merge Sort 6,6 %, perto de P log P. O indicador de qualidade sobe de 7,3 % para 10 % com janelas menores, o que é compatível com a causa apontada na seção de qualidade: trechos longos como o Glossário acumulam termos sem normalização por tamanho, e cortá-los reduz essa vantagem. As posições de top-10 ocupadas pelo Glossário caem de 114 (512/64) e 110 (256/32) para 89 (128/16), das 300. Com 30 consultas, a diferença é pequena demais para ir além de tendência.
+
 ## Qualidade da recuperação
 
-Enquanto os julgamentos de relevância (`data/qrels.csv`) não estão concluídos, a tabela `experimentos/processados/qualidade_por_configuracao.md` traz um indicador auxiliar: a fração do top-k que cai na seção do livro indicada para cada consulta em `data/queries.csv`. Não substitui Precision@k, porque um trecho de outra seção pode responder a pergunta, mas mostra a tendência.
+A referência de relevância é o gabarito de Helena (`data/perguntas_30_com_chunks_justificativas.csv`): para cada uma das 30 consultas, os chunks que a respondem, de 2 a 8 por consulta, 146 no total, cada um com uma justificativa escrita, escolhidos no corpus fragmentado antes de qualquer ranking ser observado. Por não ter sido montado a partir das listas devolvidas, o gabarito não favorece nenhuma configuração, inclusive a C4. `python scripts/montar_qrels.py importar` confere os ids contra o corpus e as perguntas contra `data/queries.csv` e grava `data/qrels.csv`; o julgamento é binário (chunk listado conta como relevante, os demais como não relevantes) e feito por uma avaliadora, sem segundo avaliador nem adjudicação. As métricas estão em `experimentos/processados/qualidade_por_configuracao.md`, no corpus inteiro.
+
+| Configuração | P@5 | P@10 | R@10 | nDCG@10 | MRR | Consultas sem relevante no top-10 |
+| --- | --- | --- | --- | --- | --- | --- |
+| C1, C2, C3 | 0,087 | 0,077 | 0,158 | 0,141 | 0,248 | 14 de 30 |
+| C4 scikit-learn | 0,247 | 0,183 | 0,387 | 0,366 | 0,551 | 2 de 30 |
+
+C1, C2 e C3 têm exatamente as mesmas métricas, porque devolvem a mesma lista em todas as combinações. A C4 acerta quase três vezes mais no top-5 e deixa sem nenhum trecho relevante só 2 das 30 consultas, contra 14 da equipe. Por categoria, a vantagem da C4 está nas consultas fáceis e médias (P@5 de 0,32 e 0,30 contra 0,12 e 0,04); nas difíceis as duas empatam em nível baixo (0,12 contra 0,10), o que é compatível com o limite de qualquer busca lexical quando a pergunta usa palavras diferentes das do livro.
+
+O indicador auxiliar usado antes do gabarito, a fração do top-k na seção esperada de `data/queries.csv`, segue na mesma tabela e aponta a mesma tendência:
 
 | Configuração | Top-5 na seção esperada | Fáceis | Médias | Difíceis |
 | --- | --- | --- | --- | --- |
@@ -70,21 +99,21 @@ A lista da equipe e a da referência têm em comum só 10,7 % do top-5. A causa 
 
 A conclusão é que, neste trabalho, a escolha do algoritmo define o custo e a escolha da função de relevância define a qualidade. C1, C2 e C3 diferem em até 36 vezes nas comparações e devolvem exatamente a mesma lista; C4 muda a lista.
 
-Quando `data/qrels.csv` existir, `python scripts/gerar_figuras.py` acrescenta Precision@k, Recall@k, nDCG@k e MRR à mesma tabela, sem refazer o experimento.
+As métricas de qualidade foram calculadas sobre as listas já gravadas em `experimentos/brutos/execucoes.jsonl`, por `python scripts/gerar_figuras.py`, sem refazer o experimento.
 
 ## Métricas mínimas da seção 7.3 do enunciado
 
 | Métrica pedida | Onde está |
 | --- | --- |
-| Tempo de pré-processamento/ingestão | coluna `ingestao_ms` |
+| Tempo de pré-processamento/ingestão | coluna `ingestao_ms` (estatísticas do corpus) e `experimentos/processados/ingestao_e_sensibilidade.md` (leitura, normalização e fragmentação) |
 | Tempo de ordenação ou construção de índice | colunas `indice_ms` e `ordenacao_ms` |
 | Tempo de consulta e tempo total | colunas `consulta_ms` e `total_ms` |
 | Memória | coluna `memoria_pico_kib` |
 | Comparações | colunas `comparacoes` e `trocas` |
 | Tamanho do corpus e número de chunks | colunas `tamanho_%` e `n_chunks` |
 | k | 5 e 10, uma linha por valor no log |
-| Precision@k | quando houver `data/qrels.csv`; até lá, indicador auxiliar |
-| Falhas, vazios, irrelevantes | `vazios_%` (zero em todas); irrelevantes pelo indicador auxiliar e depois pelo qrels |
+| Precision@k | colunas `P@k`, `R@k`, `nDCG@k` e `MRR` de `qualidade_por_configuracao.md`, contra o gabarito de Helena |
+| Falhas, vazios, irrelevantes | `vazios_%` (zero em todas); irrelevantes por 1 − P@k; consultas sem nenhum relevante no top-10: 14 de 30 na equipe, 2 de 30 na C4 |
 | Custo e limitações | seções acima e a seguir |
 
 ## Custo e limitações de cada abordagem

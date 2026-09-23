@@ -74,6 +74,7 @@ python scripts/baixar_corpus.py        # baixa e registra hashes em data/corpus_
 python scripts/preparar_corpus.py      # normaliza e gera data/processed/chunks.jsonl
 python scripts/rodar_experimentos.py   # C1 a C4 x 3 tamanhos x 30 consultas x k 5 e 10 x 5 repetições, grava em experimentos/brutos
 python scripts/gerar_figuras.py        # tabelas em experimentos/processados e gráficos em experimentos/figuras
+python scripts/medir_ingestao.py       # tempo de ingestão e sensibilidade ao tamanho do chunk (128/16, 256/32, 512/64)
 ```
 
 Para uma consulta avulsa, depois de preparar o corpus (`--config` aceita C1, C2 ou C3):
@@ -82,7 +83,7 @@ Para uma consulta avulsa, depois de preparar o corpus (`--config` aceita C1, C2 
 python scripts/consultar.py --consulta "o que é recursão" --k 5 --config C1
 ```
 
-O julgamento de relevância é humano: `python scripts/montar_qrels.py pool` gera a planilha de julgamento e `python scripts/montar_qrels.py consolidar` grava `data/qrels.csv` depois de preenchida.
+O julgamento de relevância é humano. O gabarito da equipe está em `data/perguntas_30_com_chunks_justificativas.csv`, e `python scripts/montar_qrels.py importar` o converte em `data/qrels.csv`. Como alternativa, `python scripts/montar_qrels.py pool` gera uma planilha de julgamento a partir dos resultados e `python scripts/montar_qrels.py consolidar` grava o `qrels.csv` depois de preenchida.
 
 `preparar_corpus.py --notebooks 8` limita o corte aos oito primeiros notebooks, como no checkpoint de 10/09. O protocolo de medição está em `docs/PROTOCOLO_EXPERIMENTAL.md`.
 
