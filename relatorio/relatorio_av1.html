@@ -1,0 +1,903 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8">
+<title>Relatório Técnico AV1 — Recuperação de contexto para IA generativa em materiais educacionais abertos</title>
+<style>
+@page { size: A4; margin: 2cm 2cm 2.2cm 2cm; @bottom-center { content: counter(page); font-family: "Liberation Sans", sans-serif; font-size: 9pt; color: #666; } }
+body { font-family: "Liberation Serif", "Times New Roman", serif; font-size: 11pt; line-height: 1.4; color: #1a1a1a; }
+h1 { font-family: "Liberation Sans", Arial, sans-serif; font-size: 16pt; color: #1F3D2B; margin: 22pt 0 8pt 0; page-break-after: avoid; }
+h2 { font-family: "Liberation Sans", Arial, sans-serif; font-size: 12.5pt; color: #1F3D2B; margin: 14pt 0 5pt 0; page-break-after: avoid; }
+h3 { font-family: "Liberation Sans", Arial, sans-serif; font-size: 11pt; color: #2f4f3b; margin: 10pt 0 3pt 0; page-break-after: avoid; }
+p { margin: 0 0 7pt 0; text-align: justify; }
+ul, ol { margin: 0 0 7pt 0; } li { margin-bottom: 2pt; }
+table { border-collapse: collapse; width: 100%; font-size: 9.5pt; margin: 6pt 0 10pt 0; page-break-inside: auto; }
+th { background: #1F3D2B; color: #fff; text-align: left; padding: 3pt 5pt; font-family: "Liberation Sans", sans-serif; font-weight: bold; }
+td { padding: 3pt 5pt; border-bottom: 1px solid #d8ded9; vertical-align: top; }
+tr:nth-child(even) td { background: #f3f6f1; }
+code { font-family: "Liberation Mono", monospace; font-size: 9pt; background: #f3f6f1; padding: 0 2pt; }
+pre { font-family: "Liberation Mono", monospace; font-size: 9pt; background: #f3f6f1; padding: 6pt 8pt; border-radius: 3pt; white-space: pre-wrap; margin: 4pt 0 8pt 0; }
+blockquote { margin: 4pt 0 8pt 12pt; padding-left: 8pt; border-left: 3px solid #6E9B4E; color: #333; }
+.capa { text-align: center; page-break-after: always; padding-top: 0.5cm; }
+.capa .logos { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2cm; }
+.capa .logos img { height: 2.2cm; }
+.capa .inst { font-family: "Liberation Sans", sans-serif; font-size: 10.5pt; color: #444; line-height: 1.5; }
+.capa h1.titulo { font-size: 22pt; margin: 1.6cm 0 0.4cm 0; line-height: 1.25; }
+.capa .sub { font-size: 13pt; color: #444; margin-bottom: 1.4cm; }
+.capa .equipe { font-size: 11.5pt; line-height: 1.6; margin-bottom: 1.2cm; }
+.capa table { width: 88%; margin: 0 auto; font-size: 10pt; text-align: left; }
+.capa .data { margin-top: 1.2cm; font-family: "Liberation Sans", sans-serif; font-size: 10.5pt; color: #444; }
+.fig { text-align: center; margin: 8pt 0 10pt 0; page-break-inside: avoid; }
+.fig img { max-width: 100%; max-height: 8.5cm; }
+.fig .leg { font-size: 9.5pt; color: #444; margin-top: 3pt; text-align: center; }
+.duas-figs { display: grid; grid-template-columns: 1fr 1fr; gap: 10pt; }
+.nota { font-size: 9.5pt; color: #444; }
+.sumario ol { columns: 2; column-gap: 24pt; font-size: 10.5pt; }
+.quebra { page-break-before: always; }
+</style></head><body>
+
+<div class="capa">
+  <div class="logos"><img src="../slides/logo_ufs.png" alt="UFS"><img src="../slides/logo_procc.png" alt="PROCC"></div>
+  <div class="inst">Universidade Federal de Sergipe · Programa de Pós-Graduação em Ciência da Computação (PROCC)<br>
+  Projeto e Análise de Algoritmos (PROCC0083), turma T01, período 2026.2 · Prof. Glauco de Figueiredo Carneiro<br>
+  Módulo I: Fundamentos e Eficiência na Era dos Dados · Atividade 1 (AV1) · Relatório técnico</div>
+  <h1 class="titulo">Recuperação de contexto para IA generativa em materiais educacionais abertos</h1>
+  <div class="sub">Corretude, eficiência e qualidade de três estratégias de ordenação e busca sobre o livro <i>Pense Python</i></div>
+  <div class="equipe">João Cosme Sena Sá · Eduardo Henrique do Lago Silva · Helena Carvalho Leal<br>Hernandison da Silva Bispo · Nadianne Maria dos Santos Galvão · Rafael Takeguma Goto</div>
+  <table>
+    <tr><th>Tema</th><td>8, materiais educacionais abertos</td></tr>
+    <tr><th>Corpus</th><td><i>Pense Python</i>, tradução livre da 3ª edição de <i>Think Python</i> (Allen B. Downey; trad. Rodrigo Castelan Carlson)</td></tr>
+    <tr><th>Repositório</th><td>https://github.com/joaocss/PAA_UFS_2026_2_SenaSa_Joao_Bispo_Hernandison_Galvao_Nadianne_Goto_Rafael_Leal_Helena_Silva_Eduardo</td></tr>
+    <tr><th>Licença · versão</th><td>MIT · commit <code>68fa986</code> do <code>main</code>; tag <code>v1.0.0</code> na entrega</td></tr>
+    <tr><th>Vídeo da atividade</th><td>Gravações individuais: João, https://www.loom.com/share/aab4b4cd6a934bb892fd6c4bb73bcd85; Nadianne, https://drive.google.com/file/d/1WWhyEl1k9qLuE8Sod03WE9qJ3bNDWx3Y/view?usp=drive_link; Rafael, https://drive.google.com/file/d/13jiWmtcPA6ZGqowYDyxqEHd5966waPa8/view?usp=sharing. A URL do vídeo consolidado substitui esta lista em <code>README.md</code> e <code>VIDEO.md</code>.</td></tr>
+  </table>
+  <div class="data">São Cristóvão, SE · 23 de setembro de 2026 · Apresentação em 24/09/2026</div>
+</div>
+
+<div class="sumario">
+<h1>Sumário</h1>
+<ol>
+<li>Identificação da equipe</li><li>Tema, corpus e fonte</li><li>Repositório, licença, versão e data de acesso</li>
+<li>Definição formal do problema</li><li>Representação dos dados e estratégia de chunking</li><li>Algoritmos e pseudocódigo</li>
+<li>Justificativa de corretude</li><li>Análise no modelo RAM</li><li>Melhor, pior e caso médio</li><li>Recorrências</li>
+<li>Metodologia experimental</li><li>Resultados e gráficos</li><li>Discussão de escalabilidade</li>
+<li>Relação com IA generativa e RAG</li><li>Limitações e ameaças à validade</li><li>Declaração de uso de IA generativa</li>
+<li>Contribuição individual</li><li>Vídeo da atividade</li><li>Referências</li>
+</ol>
+<p class="nota">Este relatório foi montado a partir dos documentos versionados no repositório: <code>docs/RESULTADOS.md</code>, <code>docs/CORRETUDE.md</code>, <code>docs/PROTOCOLO_EXPERIMENTAL.md</code>, <code>docs/CONTRATOS.md</code>, <code>docs/USO_DE_IA.md</code>, <code>docs/CONTRIBUICOES.md</code>, <code>data/README.md</code> e das tabelas e figuras de <code>experimentos/</code>. Todos os números vêm de <code>experimentos/brutos/execucoes.jsonl</code>, gerado por <code>scripts/rodar_experimentos.py</code>.</p>
+</div>
+
+<h1>1. Identificação da equipe</h1>
+<p>Equipe de seis discentes matriculados em Projeto e Análise de Algoritmos (PROCC0083), turma T01, período 2026.2, na modalidade de trabalho em equipe (5 a 7 integrantes).</p>
+<table><tr><th>Integrante</th><th>Frente principal</th></tr>
+<tr><td>João Cosme Sena Sá</td><td>Dados de teste, pacote e testes, protocolo e execução dos experimentos, índice invertido e busca binária (C2), entrega</td></tr>
+<tr><td>Eduardo Henrique do Lago Silva</td><td>Experimentos, tabelas, gráficos e baseline de referência (C4)</td></tr>
+<tr><td>Helena Carvalho Leal</td><td>Consultas, julgamentos de relevância, métricas, relação com IA generativa e limitações</td></tr>
+<tr><td>Hernandison da Silva Bispo</td><td>Ingestão, normalização e fragmentação; manutenção do relatório</td></tr>
+<tr><td>Nadianne Maria dos Santos Galvão</td><td>Corretude, modelo RAM, complexidade e recorrências</td></tr>
+<tr><td>Rafael Takeguma Goto</td><td>Busca linear, Insertion Sort, Merge Sort, pontuação e consulta (C1 e C3)</td></tr></table>
+<p>A tabela de contribuição individual com evidências (commits, arquivos, execuções) está na Seção 17 e em <code>docs/CONTRIBUICOES.md</code>. A revisão de código, da prova e dos resultados é responsabilidade coletiva.</p>
+
+<h1>2. Tema, corpus e fonte</h1>
+<p>O tema é o de número 8 do enunciado, materiais educacionais abertos, com a pergunta de recuperação "quais são os conceitos-chave de um tópico?" instanciada em 30 consultas de estudante sobre o livro. O corpus é <i>Pense Python</i>, tradução livre da 3ª edição de <i>Think Python</i>, de Allen B. Downey, traduzida por Rodrigo Castelan Carlson: conteúdo didático público, sem dados pessoais ou sigilosos.</p>
+<table><tr><th>Campo</th><th>Registro</th></tr>
+<tr><td>Fonte</td><td>https://rodrigocarlson.github.io/PensePython3ed/ e https://github.com/rodrigocarlson/PensePython3ed</td></tr>
+<tr><td>Commit de referência</td><td><code>cfde2c450bf4f2ea65326da88e9968f400597e92</code> (branch <code>main</code>)</td></tr>
+<tr><td>Data de acesso</td><td>02/09/2026 (aquisição registrada em <code>data/corpus_manifest.csv</code>)</td></tr>
+<tr><td>Recorte e formato</td><td>21 notebooks Jupyter (<code>capitulos/*.ipynb</code>): prefácio, introdução ao Jupyter e capítulos 1 a 19; as pastas <code>brancos</code>, <code>solucoes</code> e <code>capitulos/teste</code> ficam de fora</td></tr>
+<tr><td>Tamanho auditado</td><td>817.578 bytes, 2.789 células, 73.867 palavras; SHA-256 do recorte <code>20106262…68dc5</code></td></tr>
+<tr><td>Extração</td><td>2.737 chunks em <code>data/processed/chunks.jsonl</code>; SHA-256 <code>2af8c533…63cc4</code>, conferido em reprodução independente</td></tr>
+<tr><td>Idioma</td><td>Português brasileiro, com estrangeirismos técnicos do Python e do Jupyter</td></tr>
+<tr><td>Licenças</td><td>Texto CC BY-NC-SA 4.0; códigos do livro MIT; código da equipe MIT</td></tr>
+<tr><td>Dados removidos</td><td>Saídas de execução das células, descartadas para não introduzir texto derivado de execução; nenhum dado sensível</td></tr></table>
+<p>Como a licença do texto é não comercial e com compartilhamento pelas mesmas condições, o texto não é redistribuído como parte do código MIT da equipe: <code>scripts/baixar_corpus.py</code> baixa o material no commit fixado e o manifesto de hashes permite conferir que o download reproduz o mesmo recorte. Trechos citados preservam a atribuição a autor e tradutor.</p>
+
+<h1>3. Repositório, licença, versão e data de acesso</h1>
+<table><tr><th>Item</th><th>Registro</th></tr>
+<tr><td>URL do repositório</td><td>https://github.com/joaocss/PAA_UFS_2026_2_SenaSa_Joao_Bispo_Hernandison_Galvao_Nadianne_Goto_Rafael_Leal_Helena_Silva_Eduardo</td></tr>
+<tr><td>Licença do código</td><td>MIT (arquivo <code>LICENSE</code>)</td></tr>
+<tr><td>Commit / tag</td><td>commit <code>68fa986</code> do <code>main</code> em 23/09/2026; tag <code>v1.0.0</code> criada na entrega; <code>CITATION.cff</code></td></tr>
+<tr><td>Data de acesso ao corpus</td><td>02/09/2026</td></tr>
+<tr><td>Ambiente</td><td>Python 3.11 ou superior; dependências em <code>requirements.lock</code> (pytest 8.3.4, scikit-learn 1.6.1, matplotlib 3.11.2, numpy 2.2.2); C1, C2 e C3 não usam biblioteca externa</td></tr>
+<tr><td>Reprodução</td><td><code>python scripts/reproduzir_tudo.py</code>: download, chunks, testes, experimentos, tabelas, figuras, ingestão e sensibilidade; cerca de 15 a 20 minutos</td></tr></table>
+<p>O repositório não contém chaves, senhas, tokens ou dados pessoais. O corpus baixado e os dados intermediários ficam fora do versionamento por <code>.gitignore</code>; os dados brutos, as tabelas e as figuras dos experimentos são versionados por serem entregáveis.</p>
+
+<h1>4. Definição formal do problema</h1>
+<p>O protótipo é um recuperador de contexto: dada uma consulta, devolve os trechos mais relevantes do corpus, ordenados por relevância. Não é um chatbot; o interesse está nas operações algorítmicas anteriores à geração de texto.</p>
+<h2>4.1 Entradas e saída</h2>
+<ul>
+<li><b>Corpus</b> C = ⟨c₁, …, c_N⟩: sequência de N chunks. Cada chunk tem <code>chunk_id</code> textual único, <code>source_order</code> inteiro único em 0..N−1 (posição no livro, usada no desempate), o texto normalizado e a origem (notebook, capítulo, seção, célula).</li>
+<li><b>Consulta</b> q: cadeia em português; após normalização vira um multiconjunto de m termos.</li>
+<li><b>k</b> ∈ ℕ: número máximo de trechos a devolver.</li>
+<li><b>Saída</b> R: sequência de até k chunks de C, sem repetição, ordenada de forma não crescente pela função de relevância, com desempate explícito.</li>
+</ul>
+<h2>4.2 Função de relevância e ordem total</h2>
+<p>A pontuação é tf-idf lexical, definida pela equipe (contrato 02 de <code>docs/CONTRATOS.md</code>) e usada de forma idêntica nas três configurações obrigatórias. Para um termo t da consulta e um chunk c, com f(t, c) ocorrências de t em c, N chunks e df(t) chunks que contêm t:</p>
+<pre>tf(t, c)     = 1 + ln f(t, c), se f(t, c) &gt; 0; senão 0
+idf(t)       = ln((N + 1) / (df(t) + 1)) + 1
+escore(q, c) = Σ_t qtf(t) · tf(t, c) · idf(t)      (t sobre os termos distintos de q; qtf = ocorrências de t em q)</pre>
+<p>As formas suavizadas são as mesmas do <code>TfidfVectorizer</code> do scikit-learn, o que mantém limpa a comparação com a configuração de referência e nunca zera um termo presente em todos os chunks. A ordem total ≼ usada na ordenação é: c_a ≼ c_b ⇔ escore(q, c_a) &gt; escore(q, c_b) ∨ (escores iguais ∧ source_order_a &lt; source_order_b). O desempate por posição no livro torna o resultado independente da ordem de entrada e da configuração.</p>
+<h2>4.3 Pré-condições, pós-condições, casos de borda e hipótese sobre os dados</h2>
+<table><tr><th>Categoria</th><th>Especificação</th></tr>
+<tr><td>Pré-condições</td><td>N ≥ 0; k ≥ 0; todo escore é real finito; os <code>source_order</code> são únicos; ≼ é uma ordem total sobre os chunks</td></tr>
+<tr><td>Pós-condições</td><td>Seja n′ o número de chunks com escore &gt; 0. Então |R| = min(k, n′); todo elemento de R pertence a C e é único; R está ordenado por ≼; não existe chunk fora de R com relevância maior, por ≼, que algum elemento de R</td></tr>
+<tr><td>Casos de borda</td><td>consulta vazia após normalização → R = ⟨⟩; k = 0 → ⟨⟩; k &gt; n′ → devolve os n′ com escore &gt; 0; nenhum termo casa → ⟨⟩; empates resolvidos por <code>source_order</code>; termo fora do vocabulário ignorado. Todos cobertos por testes em <code>tests/</code></td></tr>
+<tr><td>Hipótese sobre os dados</td><td>A vantagem do índice invertido (C2) supõe esparsidade: os termos da consulta ocorrem em poucos chunks (df ≪ N), de modo que o conjunto de candidatos é bem menor que N. A corretude não depende dessa hipótese, só a eficiência. <b>A hipótese foi testada e não se confirmou neste corpus</b> (Seções 12 e 13): a mediana de candidatos é 51 % dos chunks</td></tr></table>
+
+<h1>5. Representação dos dados e estratégia de chunking</h1>
+<h2>5.1 Normalização</h2>
+<p>Deliberadamente simples, para poder ser auditada. Na ingestão (<code>fragmentacao.py</code>), as células Markdown passam por NFKC, minúsculas, separação controlada de pontuação e compactação de espaços, com acentos preservados no texto guardado no chunk; as células de código guardam a fonte intacta. Na pontuação (<code>preprocessing.normalize</code>), consulta e chunk passam pela mesma função: minúsculas, remoção de acentos (NFD sem marcas combinantes) e separação em tokens alfanuméricos; por isso "função" e "funcao" produzem o mesmo escore. Stopwords não são removidas: em português isso apagaria termos funcionais que mudam o sentido de consultas como "diferença entre while e for". Saídas de execução são descartadas.</p>
+<h2>5.2 Segmentação</h2>
+<p>A segmentação respeita notebook, título e seção, nunca mistura célula de texto com célula de código e usa janelas de 256 tokens com sobreposição de 32 dentro de cada célula (token é uma palavra após a normalização). Como a maior parte das células é menor que a janela, o corte por célula domina: o corpus inteiro rende <b>2.737 chunks</b>, com mediana de 13 tokens, e só 0,8 % deles vêm de células divididas em mais de uma janela. A estimativa inicial de cerca de 330 chunks, feita na reserva do corpus supondo janelas contínuas, não se confirmou. As configurações 128/16 e 512/64 entram no experimento de sensibilidade (Seção 12.5).</p>
+<h2>5.3 Representações computacionais</h2>
+<ul>
+<li><b>Chunk</b> (contrato 01): registro com <code>chunk_id</code>, <code>source_order</code>, texto, tipo, arquivo, capítulo, seção, célula e offsets, um objeto JSON por linha.</li>
+<li><b>Estatísticas do corpus</b>: N e df por termo, calculados uma vez antes das consultas.</li>
+<li><b>Índice invertido</b> (C2): vocabulário como vetor ordenado de termos e, para cada termo, a lista crescente das posições dos chunks que o contêm (postings). O dicionário usado na construção é descartado; a consulta localiza termos só por busca binária.</li>
+<li><b>Referência C4</b>: matriz esparsa tf-idf do scikit-learn com norma L2; escore por cosseno.</li>
+</ul>
+
+<h1>6. Algoritmos e pseudocódigo</h1>
+<p>Os cinco algoritmos obrigatórios (§5.2 do enunciado) são cobertos assim: busca linear na pontuação de todos os chunks; ordenação por Insertion Sort e Merge Sort implementados pela equipe; busca binária no vocabulário do índice invertido; divisão e conquista pelo próprio Merge Sort; comparação com biblioteca pelo tf-idf do scikit-learn, usado apenas como referência (C4). Os pseudocódigos abaixo descrevem o código real de <code>src/paa_context/</code>.</p>
+<h2>6.1 Busca linear com pontuação (C1 e C3)</h2>
+<pre>função PontuarLinear(q, C, estatísticas):
+  termos_q ← Contagem(normalize(q))                 # m termos distintos
+  candidatos ← ⟨⟩
+  para cada chunk c em C:                           # N iterações
+    termos_c ← Contagem(normalize(c.texto))         # Θ(n) para um chunk de n tokens
+    s ← Σ_{t ∈ termos_q, f = termos_c[t] &gt; 0} qtf(t) · (1 + ln f) · idf(t)
+    se s &gt; 0: candidatos.anexar((c, s))
+  retorne candidatos                                # na ordem do livro</pre>
+<h2>6.2 Insertion Sort (C1)</h2>
+<pre>função InsertionSort(A, ≼):
+  para i ← 1 até |A|−1:
+    chave ← A[i]; j ← i − 1
+    enquanto j ≥ 0 e chave ≼ A[j]:                  # comparação contada
+      A[j+1] ← A[j]; j ← j − 1                      # deslocamento contado como troca
+    A[j+1] ← chave
+  retorne A</pre>
+<h2>6.3 Merge Sort (C3, e ordenação dos candidatos em C2)</h2>
+<pre>função MergeSort(A, ≼):
+  se |A| ≤ 1: retorne cópia de A
+  meio ← ⌊|A| / 2⌋
+  E ← MergeSort(A[0..meio−1]); D ← MergeSort(A[meio..])
+  retorne Merge(E, D, ≼)
+
+função Merge(E, D, ≼):
+  O ← ⟨⟩; i ← 0; j ← 0
+  enquanto i &lt; |E| e j &lt; |D|:
+    se E[i] ≼ D[j]: O.anexar(E[i]); i ← i+1         # empate nunca ocorre entre ids distintos
+    senão: O.anexar(D[j]); j ← j+1
+  O.anexar(E[i..]); O.anexar(D[j..])
+  retorne O</pre>
+<h2>6.4 Índice invertido e busca binária (C2)</h2>
+<pre>função ConstruirÍndice(C):
+  por_termo ← dicionário vazio
+  para cada posição p, chunk c em C:
+    para cada termo t distinto em normalize(c.texto): por_termo[t].anexar(p)
+  vocab ← ordenar(chaves de por_termo)              # uma vez, fora da consulta
+  postings[i] ← por_termo[vocab[i]]
+  retorne (C, vocab, postings)
+
+função BuscaBinária(vocab, t):                      # vocab ordenado pela mesma chave
+  lo ← 0; hi ← |vocab| − 1
+  enquanto lo ≤ hi:
+    mid ← ⌊(lo + hi) / 2⌋
+    se vocab[mid] = t: retorne mid
+    senão se vocab[mid] &lt; t: lo ← mid + 1
+    senão: hi ← mid − 1
+  retorne −1
+
+função ConsultarÍndice(q, índice, estatísticas):
+  posições ← ⟨⟩
+  para cada termo t distinto em normalize(q):        # m termos
+    i ← BuscaBinária(vocab, t)                       # Θ(log V)
+    se i ≥ 0: posições ← UniãoOrdenada(posições, postings[i])   # dois ponteiros
+  candidatos ← ⟨(c, escore(q, c)) para p em posições, c = C[p], se escore &gt; 0⟩   # repontua só os candidatos
+  retorne MergeSort(candidatos, ≼)</pre>
+<h2>6.5 Seleção dos k melhores</h2>
+<pre>função TopK(ordenados, k): retorne os primeiros min(k, |ordenados|) elementos</pre>
+<p>Como a lista já está totalmente ordenada por ≼, os primeiros min(k, n′) elementos são os k mais relevantes (corolário da Seção 7). A referência C4 chama <code>TfidfVectorizer</code> e ordena os cossenos com <code>numpy.argsort</code>; a equipe impõe só o corte por escore &gt; 0 e o desempate.</p>
+
+<h1 class="quebra">7. Justificativa de corretude</h1>
+<p>A prova cobre o Merge Sort, núcleo de C3 e da ordenação de C2. Texto integral de <code>docs/CORRETUDE.md</code>, de Nadianne Maria dos Santos Galvão, conferido contra <code>merge_sort.py</code> e <code>sort_key.py</code>.</p>
+<h3>O que se deseja provar</h3>
+<p>Dada uma lista finita de registros válidos e uma ordem total definida por pontuação decrescente e, em caso de empate, identificador de origem crescente, o Merge Sort implementado pela equipe termina e devolve uma permutação da entrada ordenada por essa relação. Como consequência, os primeiros min(k, n) elementos do resultado são exatamente os k mais relevantes.</p>
+<h3>Hipóteses</h3>
+<p>Para que a justificativa de corretude seja válida, consideram-se as seguintes condições:</p>
+<ol>
+<li>A entrada do algoritmo é uma lista finita de candidatos.</li>
+<li>Cada candidato possui um <code>score</code> numérico válido, definido e comparável.</li>
+<li>Cada candidato possui um valor de <code>source_order</code> válido, utilizado como critério de desempate quando dois candidatos apresentam o mesmo <code>score</code>.</li>
+<li>A regra de ordenação considera primeiro o maior <code>score</code> e, em caso de empate, o menor <code>source_order</code>.</li>
+<li>A relação de comparação utilizada é consistente e transitiva. Isso significa que, se um elemento deve aparecer antes de um segundo elemento, e esse segundo deve aparecer antes de um terceiro, então o primeiro também deve aparecer antes do terceiro.</li>
+<li>O procedimento de merge recebe duas listas previamente ordenadas segundo essa mesma regra.</li>
+</ol>
+<p>Essas hipóteses garantem que os elementos possam ser comparados de forma consistente durante a execução do algoritmo e que exista uma ordem bem definida para o resultado final.</p>
+<h3>Prova por indução</h3>
+<p>Para demonstrar a corretude do Merge Sort implementado no projeto, utiliza-se uma prova por indução sobre o tamanho da lista de candidatos. Esse tipo de raciocínio é compatível com a estrutura recursiva do algoritmo: o problema é dividido em subproblemas menores até atingir casos triviais e, em seguida, os resultados são combinados. Essa organização segue o paradigma de divisão e conquista apresentado por Cormen et al. (2001, Seção 2.3).</p>
+<p>Seja <code>P(n)</code> a seguinte proposição:</p>
+<blockquote>
+<p>Para toda lista válida de tamanho <code>n</code>, o algoritmo <code>merge_sort</code> termina e retorna uma permutação da entrada ordenada segundo a regra definida por <code>sort_key</code>.</p>
+</blockquote>
+<p>A função <code>sort_key</code> utiliza como critério <code>(-score, source_order)</code>, isto é, maior <code>score</code> primeiro e, em caso de empate, menor <code>source_order</code>.</p>
+<h4>Caso base</h4>
+<p>Para listas de tamanho <code>n &lt;= 1</code>, não é necessário realizar nenhuma divisão adicional. Uma lista vazia ou contendo apenas um elemento já está ordenada por definição.</p>
+<p>Na implementação da equipe, quando o tamanho da entrada é menor ou igual a um, a função retorna diretamente uma cópia da própria lista.</p>
+<p>Portanto, para <code>n = 0</code> e <code>n = 1</code>, o algoritmo:</p>
+<ul>
+<li>termina;</li>
+<li>preserva os elementos da entrada;</li>
+<li>retorna uma lista já ordenada.</li>
+</ul>
+<p>Assim, a proposição <code>P(n)</code> é verdadeira nos casos base.</p>
+<h4>Hipótese de indução</h4>
+<p>Assume-se que a proposição seja verdadeira para todas as listas de tamanho menor que <code>n</code>.</p>
+<p>Em outras palavras, considera-se que, para qualquer lista válida de tamanho <code>j &lt; n</code>, o algoritmo <code>merge_sort</code>:</p>
+<ul>
+<li>termina;</li>
+<li>preserva todos os elementos da entrada;</li>
+<li>retorna esses elementos ordenados segundo <code>sort_key</code>.</li>
+</ul>
+<p>Essa hipótese permite analisar o comportamento do algoritmo para uma lista de tamanho <code>n</code>.</p>
+<h4>Passo indutivo</h4>
+<p>Considere agora uma lista válida de tamanho <code>n &gt; 1</code>.</p>
+<p>O algoritmo divide essa lista em duas partes menores, <code>left</code> e <code>right</code>. Como ambas possuem tamanho inferior a <code>n</code>, aplica-se a hipótese de indução: as chamadas recursivas <code>merge_sort(left)</code> e <code>merge_sort(right)</code> terminam e produzem duas listas corretamente ordenadas.</p>
+<p>Na implementação da equipe, essas duas chamadas recursivas são executadas antes da etapa de combinação.</p>
+<p>Em seguida, o procedimento <code>_merge</code> combina as duas listas já ordenadas. A cada comparação, é selecionado o elemento que deve aparecer primeiro segundo <code>sort_key</code>, mantendo a ordem definida pelo projeto.</p>
+<p>Como todos os elementos das duas metades são copiados para a lista resultante, sem alteração do conjunto de elementos da entrada, o resultado final é uma permutação da lista original. Os elementos restantes de uma das metades, após o término do laço principal, também são adicionados ao resultado.</p>
+<p>Portanto, se o algoritmo funciona corretamente para os dois subproblemas menores, então também funciona corretamente para a lista de tamanho <code>n</code>.</p>
+<p>Assim, <code>P(n)</code> é verdadeira.</p>
+<p>Conclui-se, por indução, que o Merge Sort implementado pela equipe termina e retorna uma permutação da entrada ordenada segundo a relação definida por <code>sort_key</code>, para toda lista finita que satisfaça as hipóteses estabelecidas.</p>
+<h3>Invariante do merge</h3>
+<p>Para demonstrar que o procedimento <code>_merge</code> mantém a ordenação correta durante a combinação de duas listas já ordenadas, considera-se o seguinte invariante de laço:</p>
+<blockquote>
+<p>Antes de cada iteração do laço principal, a lista <code>merged</code> contém exatamente os elementos já consumidos de <code>left</code> e <code>right</code>, na ordem correta segundo <code>sort_key</code>.</p>
+</blockquote>
+<p>Além disso, todos os elementos já inseridos em <code>merged</code> aparecem antes dos elementos ainda não consumidos, de acordo com a mesma relação de ordenação.</p>
+<p>Na implementação da equipe, <code>_merge</code> compara os elementos atuais das duas listas e acrescenta ao resultado aquele que deve aparecer primeiro segundo <code>sort_key</code>.</p>
+<h4>Inicialização</h4>
+<p>Antes da primeira iteração:</p>
+<ul>
+<li><code>merged</code> está vazia;</li>
+<li>nenhum elemento de <code>left</code> foi consumido;</li>
+<li>nenhum elemento de <code>right</code> foi consumido.</li>
+</ul>
+<p>Logo, o invariante é verdadeiro nesse momento, pois a lista <code>merged</code> contém exatamente os elementos já processados — nesse caso, nenhum — e está trivialmente ordenada.</p>
+<p>A demonstração por inicialização, manutenção e término segue a estrutura de prova por invariante de laço apresentada por Cormen et al. (2001, Seção 2.1).</p>
+<h4>Manutenção</h4>
+<p>Suponha que o invariante seja verdadeiro no início de uma determinada iteração.</p>
+<p>Como <code>left</code> e <code>right</code> já estão ordenadas, seus primeiros elementos ainda não consumidos são os próximos candidatos possíveis segundo a relação de ordenação utilizada no projeto.</p>
+<p>O algoritmo compara esses dois elementos por meio de <code>sort_key</code> e acrescenta a <code>merged</code> aquele que deve aparecer primeiro. Em seguida, o índice correspondente é incrementado.</p>
+<p>Dessa forma:</p>
+<ul>
+<li>nenhum elemento já inserido precisa ser reposicionado;</li>
+<li><code>merged</code> continua ordenada;</li>
+<li><code>merged</code> continua contendo exatamente os elementos já consumidos de <code>left</code> e <code>right</code>.</li>
+</ul>
+<p>Portanto, o invariante é preservado após cada iteração.</p>
+<h4>Término</h4>
+<p>O laço principal termina quando todos os elementos de uma das duas listas foram consumidos.</p>
+<p>Nesse momento, os elementos restantes pertencem apenas à outra lista. Como essa lista já está ordenada, seus elementos podem ser acrescentados ao final de <code>merged</code> sem violar a ordem estabelecida. A implementação realiza essa etapa por meio dos laços que copiam os elementos restantes de <code>left</code> ou <code>right</code>.</p>
+<p>Ao término do procedimento:</p>
+<ul>
+<li>todos os elementos de <code>left</code> e <code>right</code> estão presentes em <code>merged</code>;</li>
+<li>nenhum elemento é perdido;</li>
+<li>nenhum elemento é duplicado;</li>
+<li>a lista resultante permanece ordenada segundo <code>sort_key</code>.</li>
+</ul>
+<p>Assim, o invariante permite justificar que o procedimento <code>_merge</code> combina corretamente duas listas previamente ordenadas, produzindo uma única lista também ordenada.</p>
+<h3>Término</h3>
+<p>A prova de término considera separadamente a recursão do <code>merge_sort</code> e os laços do procedimento <code>_merge</code>.</p>
+<h4>Término das chamadas recursivas</h4>
+<p>Para uma lista com mais de um elemento, o <code>merge_sort</code> divide a entrada em duas partes menores.</p>
+<p>Essas partes possuem tamanho estritamente menor que o tamanho da lista original. O processo de divisão continua até que sejam alcançadas listas de tamanho zero ou um, que correspondem ao caso base do algoritmo. Na implementação da equipe, quando <code>len(items) &lt;= 1</code>, a função retorna diretamente uma cópia da lista.</p>
+<p>Como o tamanho do problema diminui a cada chamada recursiva, não é possível ocorrer uma sequência infinita de divisões. Assim, as chamadas recursivas terminam.</p>
+<p>Esse comportamento é compatível com a estratégia de divisão e conquista descrita por Cormen et al. (2001, Seção 2.3), na qual o problema é dividido em subproblemas menores até atingir casos simples.</p>
+<h4>Término do procedimento <code>_merge</code></h4>
+<p>No procedimento <code>_merge</code>, dois índices são utilizados para percorrer as listas <code>left</code> e <code>right</code>.</p>
+<p>A cada iteração do laço principal, pelo menos um desses índices é incrementado, indicando que um elemento foi consumido de uma das listas.</p>
+<p>Como <code>left</code> e <code>right</code> são listas finitas, os índices não podem ser incrementados indefinidamente. O laço principal termina quando uma das listas é completamente consumida.</p>
+<p>Em seguida, os elementos restantes da outra lista são copiados para o resultado por meio de laços que também avançam seus respectivos índices a cada iteração.</p>
+<p>Portanto, todos os laços executados por <code>_merge</code> também terminam.</p>
+<p>Dessa forma, como tanto as chamadas recursivas quanto os laços de combinação possuem progresso finito e alcançam uma condição de parada, conclui-se que o Merge Sort implementado pela equipe termina para toda entrada finita que satisfaça as hipóteses estabelecidas.</p>
+<h3>Limites do argumento</h3>
+<p>A prova apresentada garante propriedades relacionadas ao funcionamento do algoritmo de ordenação, mas não garante que todo o processo de recuperação de informação esteja semanticamente correto.</p>
+<p>Em particular, a prova garante que:</p>
+<ul>
+<li>o <code>merge_sort</code> termina para toda entrada finita que satisfaça as hipóteses estabelecidas;</li>
+<li>os elementos da entrada são preservados durante a ordenação;</li>
+<li>nenhum candidato é perdido ou duplicado pelo procedimento de ordenação;</li>
+<li>a saída é ordenada segundo a regra definida por <code>sort_key</code>;</li>
+<li>o critério de desempate por <code>source_order</code> é respeitado.</li>
+</ul>
+<p>A regra usada pelo projeto prioriza maior <code>score</code> e, em caso de empate, menor <code>source_order</code>. Essa relação é implementada diretamente pela função <code>sort_key</code>.</p>
+<p>Entretanto, essa demonstração não garante que o valor de <code>score</code> represente perfeitamente a intenção do usuário. Um candidato pode estar corretamente ordenado segundo a função de relevância utilizada e, ainda assim, não ser o trecho semanticamente mais adequado para responder à consulta.</p>
+<p>Também não se pode concluir, apenas pela corretude da ordenação, que:</p>
+<ul>
+<li>todos os chunks recuperados sejam semanticamente relevantes;</li>
+<li>o corpus contenha todas as informações necessárias para responder à consulta;</li>
+<li>a função de relevância escolhida seja a melhor possível;</li>
+<li>o primeiro resultado ordenado seja necessariamente o melhor do ponto de vista humano;</li>
+<li>uma etapa posterior de geração de resposta produza conteúdo correto.</li>
+</ul>
+<p>Assim, a prova demonstra a corretude do processo de ordenação em relação à regra definida pelo sistema, mas não a corretude semântica de todo o processo de recuperação.</p>
+<p>Em outras palavras, o algoritmo pode ordenar corretamente os candidatos segundo o <code>score</code> calculado, mesmo que esse <code>score</code> não represente de forma perfeita o que o usuário pretendia encontrar.</p>
+<h3>Casos em que a prova não se aplica</h3>
+<p>A prova não se aplica, por exemplo, nos seguintes casos:</p>
+<ul>
+<li>quando algum candidato possui <code>score</code> indefinido, inválido ou não comparável;</li>
+<li>quando o campo <code>source_order</code> está ausente ou não pode ser comparado;</li>
+<li>quando a relação de comparação deixa de ser consistente ou transitiva;</li>
+<li>quando o procedimento <code>_merge</code> recebe listas que não estão previamente ordenadas segundo <code>sort_key</code>;</li>
+<li>quando as chamadas recursivas deixam de produzir subproblemas menores;</li>
+<li>quando a implementação utiliza um critério de comparação diferente daquele definido em <code>sort_key</code>;</li>
+<li>quando a estrutura dos elementos de entrada não corresponde ao formato esperado pelo algoritmo.</li>
+</ul>
+<p>Na implementação atual, a ordenação depende da chave <code>(-score, source_order)</code>. Portanto, qualquer alteração nessa regra exige uma nova análise de corretude, pois a relação de ordem considerada na prova também mudaria.</p>
+<p>Da mesma forma, a prova do Merge Sort pressupõe que cada metade seja ordenada antes da chamada ao procedimento <code>_merge</code>. Essa condição é satisfeita pela implementação atual por meio das chamadas recursivas realizadas antes da combinação das duas partes.</p>
+<p>Assim, a demonstração é válida para a implementação e para as condições analisadas neste trabalho, não podendo ser generalizada automaticamente para versões modificadas do algoritmo.</p>
+<h3>Testes que ancoram o argumento</h3>
+<p>A prova formal de corretude apresentada neste trabalho é baseada em indução, invariante de laço e argumento de término. Os testes automatizados não substituem essa demonstração, mas funcionam como evidência prática de que a implementação respeita as propriedades assumidas na prova.</p>
+<h4>Teste específico da relação de ordenação</h4>
+<p>Como parte desta análise, foi criado o arquivo:</p>
+<pre><code class="language-text">tests/unit/test_sort_key.py
+</code></pre>
+<p>Esse arquivo testa diretamente a regra de ordenação definida em:</p>
+<pre><code class="language-text">src/paa_context/sort_key.py
+</code></pre>
+<p>A função <code>sort_key</code> utiliza a chave:</p>
+<pre><code class="language-python">(-score, source_order)
+</code></pre>
+<p>Essa regra estabelece que:</p>
+<ul>
+<li>candidatos com maior <code>score</code> devem aparecer primeiro;</li>
+<li>em caso de empate de <code>score</code>, o menor <code>source_order</code> deve aparecer primeiro.</li>
+</ul>
+<p>Essa relação é a mesma utilizada ao longo da prova formal para definir quando um candidato deve aparecer antes de outro.</p>
+<p>Foram implementados três testes específicos:</p>
+<ul>
+<li><code>test_maior_score_vem_primeiro</code>: com escores 20,0 e 10,0, o item de escore 20,0 tem a chave menor e vem antes, mesmo tendo <code>source_order</code> maior.</li>
+<li><code>test_empate_usa_menor_source_order</code>: com escores iguais a 10,0, o item de <code>source_order</code> 1 vem antes do de <code>source_order</code> 2.</li>
+<li><code>test_ordem_transitiva</code>: com três itens de escores 30,0, 20,0 e 10,0, as três comparações entre pares são coerentes entre si.</li>
+</ul>
+<p>A estabilidade e o desempate dentro das ordenações são exercitados em <code>tests/unit/test_insertion_sort.py</code> e <code>tests/unit/test_merge_sort.py</code> (casos <code>test_empate_*</code>), e a equivalência entre as três configurações em <code>tests/integration/test_equivalencia.py</code>. O mapa completo está em <code>tests/README.md</code>.</p>
+
+<h1 class="quebra">8. Análise no modelo RAM</h1>
+<h2>8.1 Parâmetros</h2>
+<table><tr><th>Símbolo</th><th>Significado</th><th>Valor no corpus inteiro</th></tr>
+<tr><td>N</td><td>número de chunks</td><td>2.737</td></tr>
+<tr><td>L</td><td>total de tokens do corpus</td><td>72.205</td></tr>
+<tr><td>n</td><td>tokens de um chunk</td><td>mediana 13, máximo 256</td></tr>
+<tr><td>m</td><td>termos distintos da consulta</td><td>mediana 13</td></tr>
+<tr><td>V</td><td>termos distintos do vocabulário</td><td>5.028</td></tr>
+<tr><td>P</td><td>candidatos com escore &gt; 0 para a consulta</td><td>mediana 1.403 (51 % de N)</td></tr>
+<tr><td>S</td><td>soma dos postings dos termos da consulta, Σ_t df(t)</td><td>2.565 na consulta Q01</td></tr>
+<tr><td>k</td><td>resultados devolvidos</td><td>5 e 10</td></tr>
+<tr><td>r</td><td>repetições experimentais</td><td>5</td></tr></table>
+<h2>8.2 Operações elementares e custo por algoritmo</h2>
+<p>Contam-se como operações elementares: comparação de chaves, acesso a vetor ou lista, atribuição, incremento, chamada recursiva, consulta a tabela de dispersão e anexação a lista. Os contadores instrumentados registram comparações entre chaves e trocas (deslocamentos no Insertion Sort, cópias para a saída no merge).</p>
+<ul>
+<li><b>Pontuação linear.</b> Para cada um dos N chunks, <code>relevance_score</code> reconstrói a contagem de termos do chunk (Θ(n)) e percorre os m termos da consulta com consulta O(1) à tabela. Custo Θ(N·m + L). Declarar só Θ(N·m), tratando a comparação como constante, esconde o termo dominante: no corpus inteiro L = 72.205 &gt; N·m ≈ 35.600, e o tempo cresce linearmente com n a N·m fixo. Espaço extra Θ(P), a lista de candidatos.</li>
+<li><b>Insertion Sort</b> sobre P candidatos: o laço externo executa P−1 vezes e o interno desloca, no pior caso, todos os já ordenados: Σ i = P(P−1)/2 comparações, mesma ordem de trocas. Espaço Θ(1), no lugar.</li>
+<li><b>Merge Sort</b> sobre P candidatos: cada nível da recursão percorre os P elementos uma vez no merge (no máximo P−1 comparações e P cópias por nível) e há ⌈log₂ P⌉ níveis: Θ(P log P) comparações; pior caso P log₂ P − P + 1. Espaço Θ(P) para as listas auxiliares.</li>
+<li><b>Busca binária</b> no vocabulário: Θ(log V) comparações por termo; Θ(1) de espaço.</li>
+<li><b>Consulta indexada (C2).</b> m buscas binárias, Θ(m log V); união repetida das listas de postings com dois ponteiros, no total O(m·S); repontuação dos P candidatos, Θ(P·(m + n)); Merge Sort, Θ(P log P). Custo O(m log V + m·S + P(m + n) + P log P). Construção do índice, feita uma vez: Θ(L + V log V); espaço Θ(V + Σ_t df(t)).</li>
+</ul>
+<table><tr><th>Etapa</th><th>C1 (linear + Insertion)</th><th>C2 (índice + binária + Merge)</th><th>C3 (linear + Merge)</th></tr>
+<tr><td>Pontuação / seleção de candidatos</td><td>Θ(N·m + L)</td><td>O(m log V + m·S + P(m + n))</td><td>Θ(N·m + L)</td></tr>
+<tr><td>Ordenação dos candidatos</td><td>O(P²)</td><td>Θ(P log P)</td><td>Θ(P log P)</td></tr>
+<tr><td>Seleção top-k</td><td>Θ(k)</td><td>Θ(k)</td><td>Θ(k)</td></tr>
+<tr><td>Espaço adicional na consulta</td><td>Θ(P)</td><td>Θ(V + Σ df) do índice + Θ(P)</td><td>Θ(P)</td></tr></table>
+<p><b>Fatores fora do modelo RAM.</b> Hierarquia de cache, E/S na leitura dos notebooks, alocação e coletor de lixo do Python, e a diferença entre código interpretado (C1 a C3) e rotinas vetorizadas em C do scikit-learn (C4). Por isso a Seção 12 mede tempo de parede além de contar operações, e os contadores são a evidência principal.</p>
+
+<h1>9. Melhor, pior e caso médio</h1>
+<table><tr><th>Algoritmo</th><th>Melhor caso</th><th>Pior caso</th><th>Caso médio</th><th>Espaço</th></tr>
+<tr><td>Busca/pontuação linear</td><td>Θ(N·m + L)</td><td>Θ(N·m + L)</td><td>Θ(N·m + L)</td><td>Θ(P)</td></tr>
+<tr><td>Insertion Sort (P candidatos)</td><td>Θ(P), já ordenado</td><td>Θ(P²), invertido</td><td>Θ(P²), ≈ P²/4 comparações</td><td>Θ(1)</td></tr>
+<tr><td>Merge Sort (P candidatos)</td><td>Θ(P log P)</td><td>Θ(P log P)</td><td>Θ(P log P)</td><td>Θ(P)</td></tr>
+<tr><td>Busca binária (por termo)</td><td>Θ(1)</td><td>Θ(log V)</td><td>Θ(log V)</td><td>Θ(1)</td></tr>
+<tr><td>Consulta via índice (C2)</td><td>Θ(m log V), termos ausentes ou raros</td><td>O(m log V + m·N + N(m + n) + N log N), termos em todos os chunks</td><td>depende de S e P; neste corpus P ≈ N/2</td><td>Θ(V + Σ df)</td></tr></table>
+<ul>
+<li>A pontuação linear sempre visita todos os chunks: melhor, pior e médio coincidem. O que varia entre consultas é P, e portanto o custo da ordenação.</li>
+<li>O Insertion Sort só é competitivo com P pequeno ou lista quase ordenada; a varredura entrega os candidatos na ordem do livro, que não é aleatória em relação aos escores, e por isso a medição ficou em 93 % de P²/4 (Seção 12.2).</li>
+<li>O Merge Sort custa Θ(P log P) nos três casos, independentemente da distribuição, o que o torna a escolha segura. A medição ficou em 85 % de P log₂ P, porque cada intercalação para quando uma metade se esgota.</li>
+<li>A consulta via índice tem melhor caso quando os termos são raros e degenera ao custo de C3 quando P ≈ N. É a hipótese de esparsidade da Seção 4.3, e ela falha em consultas em português corrente, onde "que", "de" e "como" aparecem em 15 % a 31 % dos chunks.</li>
+</ul>
+
+<h1>10. Recorrências</h1>
+<h2>10.1 Merge Sort</h2>
+<pre>T(P) = 2·T(P/2) + Θ(P),   T(1) = Θ(1)</pre>
+<p>Origem dos termos na implementação: o fator 2 vem das duas chamadas recursivas sobre <code>left</code> e <code>right</code>; cada T(P/2) é o custo de ordenar uma metade; o Θ(P) é o custo de <code>_merge</code>, que percorre as duas metades uma única vez e copia cada elemento para a saída. Pela árvore de recorrência, cada um dos ⌈log₂ P⌉ + 1 níveis realiza trabalho Θ(P), somando Θ(P log P). O Teorema Mestre confirma: a = 2, b = 2, P^(log_b a) = P; como f(P) = Θ(P), vale o caso 2 e T(P) = Θ(P log P). A medição de comparações por dobra de P (razão 2,22 e 2,29) é compatível com esse crescimento.</p>
+<h2>10.2 Busca binária</h2>
+<pre>T(V) = T(V/2) + Θ(1),   T(1) = Θ(1)</pre>
+<p>Há uma única chamada sobre metade do vocabulário, a outra metade é descartada a cada passo, e o Θ(1) corresponde ao cálculo do meio e à comparação com <code>vocab[mid]</code>. Pelo Teorema Mestre, a = 1, b = 2, V^0 = 1 = f(V): caso 2, T(V) = Θ(log V). Na implementação o laço é iterativo, mas a recorrência descreve a mesma redução do intervalo. Com V = 5.028, são cerca de 12 comparações por termo; no experimento, a busca binária somou poucas dezenas de comparações por consulta, o que explica a diferença pequena entre C2 e C3 nas comparações totais (13.039 contra 12.746).</p>
+
+<h1 class="quebra">11. Metodologia experimental</h1>
+<h2>11.1 Configurações comparadas</h2>
+<table><tr><th>Config.</th><th>Descrição</th><th>Papel</th></tr>
+<tr><td>C1, baseline</td><td>varredura linear + Insertion Sort (equipe)</td><td>busca linear com ordenação mínima</td></tr>
+<tr><td>C2, indexada</td><td>índice invertido + busca binária no vocabulário + Merge Sort dos candidatos</td><td>busca ordenada/indexada</td></tr>
+<tr><td>C3, divisão e conquista</td><td>varredura linear + Merge Sort (equipe)</td><td>otimização da ordenação</td></tr>
+<tr><td>C4, referência</td><td>tf-idf do scikit-learn com norma L2 e cosseno</td><td>baseline externo; não substitui nenhuma exigência</td></tr></table>
+<p>As três configurações obrigatórias usam os mesmos dados e a mesma função de pontuação; diferem só na estrutura de busca e na ordenação. Consequência para a validação: devem produzir listas idênticas, diferindo apenas em custo, o que o script confere a cada bloco (hipótese H1). C4 pode divergir por usar normalização L2 e é analisada à parte.</p>
+<h2>11.2 Cargas, repetições e execuções</h2>
+<p>Desenho fatorial: 4 configurações × 3 tamanhos de corpus (25 %, 50 % e 100 % dos chunks, sorteados por capítulo com semente 2026: 684, 1.368 e 2.737 chunks) × 30 consultas × k ∈ {5, 10} × 5 repetições, após 2 execuções de aquecimento descartadas, com a ordem das configurações sorteada em cada bloco. São 3.600 execuções registradas, uma linha por execução em <code>experimentos/brutos/execucoes.jsonl</code>; por consulta e valor de k são 45 execuções mensuráveis das configurações obrigatórias, contra o mínimo de 12 do enunciado. O experimento de sensibilidade varia o chunking em 128/16, 256/32 e 512/64.</p>
+<h2>11.3 Métricas registradas</h2>
+<p>Por execução: tempo de ingestão (estatísticas N e df), de construção do índice, de busca e pontuação, de ordenação, de consulta e total, com <code>time.perf_counter_ns</code>; memória de pico com <code>tracemalloc</code> em execução extra, fora do cronômetro; comparações e trocas por contadores internos; tamanho do corpus, número de chunks, candidatos, k, resultados devolvidos e lista devolvida. A partir das listas: Precision@k, Recall@k, nDCG@k e MRR contra o gabarito de relevância; taxa de resultados vazios; fração do top-k na seção esperada. À parte, o tempo real de ingestão (leitura, normalização e fragmentação dos 21 notebooks) por <code>scripts/medir_ingestao.py</code>.</p>
+<h2>11.4 Ambiente e reprodutibilidade</h2>
+<p>Execução principal em 22/09/2026, das 20h28 às 20h36 (horário de Brasília), num Apple M5 com 24 GB, macOS, Python 3.14.7, scikit-learn 1.6.1, numpy 2.2.2, commit e linha de comando completos em <code>experimentos/logs/ambiente.json</code>. Tabelas com mediana e intervalo interquartil por célula, porque um pico do coletor de lixo distorce a média e não a mediana. Tudo roda com <code>python scripts/reproduzir_tudo.py</code>; os scripts são idempotentes. A reprodução em máquina limpa (Linux x86_64, 23/09) reproduziu os hashes do corpus e da extração, os 131 testes e as 3.600 execuções com as mesmas comparações, candidatos e listas, mudando apenas os tempos.</p>
+<h2>11.5 Julgamentos de relevância</h2>
+<p>As 30 consultas de <code>data/queries.csv</code> foram escritas por Helena antes de qualquer resultado ser observado, em três categorias de dificuldade lexical (10 fáceis, 10 médias, 10 difíceis), com capítulo e seção esperados. O gabarito de relevância (<code>data/perguntas_30_com_chunks_justificativas.csv</code>) lista, para cada consulta, os chunks que a respondem, de 2 a 8 por consulta, 146 no total, cada um com justificativa, escolhidos no corpus fragmentado sem consultar os rankings; por isso não favorece nenhuma configuração. <code>scripts/montar_qrels.py importar</code> confere ids e perguntas e grava <code>data/qrels.csv</code>. O julgamento é binário e de uma avaliadora; a escala 0, 1, 2 com dois avaliadores prevista no contrato 03 não foi executada, o que consta como limitação.</p>
+
+<h1 class="quebra">12. Resultados e gráficos</h1>
+<h2>12.1 Equivalência e custo por configuração (H1)</h2>
+<p>C1, C2 e C3 devolveram a mesma lista, na mesma ordem, em todas as 180 combinações de tamanho, consulta e k; o script registrou zero divergências. Nenhuma das 3.600 execuções devolveu lista vazia. A tabela traz as medianas no corpus inteiro, sobre 300 execuções por linha.</p>
+<table><tr><th>Configuração</th><th>Total (ms)</th><th>Ingestão</th><th>Índice</th><th>Busca e pontuação</th><th>Ordenação</th><th>Consulta</th><th>Comparações</th><th>Memória de pico</th></tr>
+<tr><td>C1 varredura + Insertion Sort</td><td>167,0</td><td>39,4</td><td>0</td><td>63,2</td><td>63,2</td><td>127,9</td><td>461.702</td><td>451 KiB</td></tr>
+<tr><td>C2 índice + busca binária + Merge Sort</td><td>128,6</td><td>39,4</td><td>40,8</td><td>45,2</td><td>2,3</td><td>47,7</td><td>13.039</td><td>1.659 KiB</td></tr>
+<tr><td>C3 varredura + Merge Sort</td><td>105,7</td><td>39,4</td><td>0</td><td>63,0</td><td>2,4</td><td>65,8</td><td>12.746</td><td>452 KiB</td></tr>
+<tr><td>C4 scikit-learn (referência)</td><td>87,1</td><td>39,4</td><td>47,2</td><td>0,4</td><td>(junto com a busca)</td><td>0,4</td><td>não se aplica</td><td>2.581 KiB</td></tr></table>
+<p class="nota">Tempos em milissegundos. "Consulta" soma busca, ordenação e corte, sem ingestão e sem índice. A mediana de candidatos com escore &gt; 0 (P) foi 1.403 no corpus inteiro, cerca de metade dos chunks, porque palavras frequentes da consulta como "que", "como" e "uma" aparecem em quase todo trecho.</p>
+<div class="fig"><img src="../experimentos/figuras/decomposicao_do_tempo.png" alt="Decomposição do tempo"><div class="leg">Figura 1. Decomposição do tempo por etapa, corpus inteiro (mediana de 300 execuções por configuração).</div></div>
+
+<h2>12.2 Comparações contra a previsão assintótica (H2)</h2>
+<table><tr><th>Chunks (N)</th><th>Candidatos (P)</th><th>Comparações C1</th><th>Razão</th><th>Comparações C3</th><th>Razão</th></tr>
+<tr><td>684</td><td>352</td><td>29.349</td><td></td><td>2.512</td><td></td></tr>
+<tr><td>1.368</td><td>710</td><td>115.210</td><td>3,93</td><td>5.752</td><td>2,29</td></tr>
+<tr><td>2.737</td><td>1.403</td><td>461.702</td><td>4,01</td><td>12.746</td><td>2,22</td></tr></table>
+<p>Quando P dobra, as comparações do Insertion Sort multiplicam por cerca de 4, o comportamento de Θ(P²), e as do Merge Sort por pouco mais de 2, o de Θ(P log P). No corpus inteiro, C1 faz 36 vezes mais comparações que C3 para devolver a mesma lista. Por consulta, o Insertion Sort fez de 85 % a 100 % de P²/4 (mediana 93 %), um pouco abaixo porque a varredura entrega os candidatos na ordem do livro; o Merge Sort fez de 81 % a 88 % de P log₂ P (mediana 85 %), já que cada intercalação para quando uma metade se esgota. A C2 soma às comparações do Merge Sort as da busca binária, poucas dezenas por consulta.</p>
+<div class="duas-figs">
+<div class="fig"><img src="../experimentos/figuras/comparacoes_por_tamanho.png" alt="Comparações por tamanho"><div class="leg">Figura 2. Comparações por tamanho do corpus, eixos logarítmicos: inclinações distintas para P² e P log P.</div></div>
+<div class="fig"><img src="../experimentos/figuras/comparacoes_por_candidatos.png" alt="Comparações por candidatos"><div class="leg">Figura 3. Comparações medidas por consulta sobre as curvas teóricas P²/4 e P log₂ P.</div></div>
+</div>
+
+<h2>12.3 Tempo e escalabilidade (H3)</h2>
+<table><tr><th>Chunks (N)</th><th>Total C1 (ms)</th><th>Total C2</th><th>Total C3</th><th>Total C4</th><th>Consulta C2</th><th>Consulta C3</th></tr>
+<tr><td>684</td><td>29,0</td><td>31,3</td><td>25,6</td><td>22,0</td><td>11,5</td><td>16,0</td></tr>
+<tr><td>1.368</td><td>68,1</td><td>65,6</td><td>53,4</td><td>45,6</td><td>24,0</td><td>32,9</td></tr>
+<tr><td>2.737</td><td>167,0</td><td>128,6</td><td>105,7</td><td>87,1</td><td>47,7</td><td>65,8</td></tr></table>
+<div class="fig"><img src="../experimentos/figuras/tempo_por_tamanho.png" alt="Tempo por tamanho"><div class="leg">Figura 4. Tempo total por execução em função do número de chunks.</div></div>
+<p>C3, C2 e C4 crescem de forma aproximadamente linear em N. C1 cresce mais (2,35 e 2,45 vezes a cada dobra), porque a fatia da ordenação quadrática aumenta com o corpus: 13 % do total com 684 chunks e 38 % com 2.737. A C2 tem a consulta mais rápida entre as configurações da equipe (47,7 ms contra 65,8 ms), porque pontua só os chunks que contêm algum termo da consulta, mas construir o índice custa 40,8 ms e no experimento ele é reconstruído a cada execução; por isso o total da C2 fica acima do da C3. Com o índice construído uma vez, a C2 passa a sair mais barata que a C3 no acumulado a partir da terceira consulta (40,8 + 47,7n contra 65,8n). O preço é memória: o índice ocupa 3,7 vezes o pico da C3.</p>
+
+<h2>12.4 Qualidade da recuperação</h2>
+<table><tr><th>Configuração</th><th>P@5</th><th>P@10</th><th>R@10</th><th>nDCG@10</th><th>MRR</th><th>Consultas sem relevante no top-10</th><th>Vazios</th></tr>
+<tr><td>C1, C2, C3</td><td>0,087</td><td>0,077</td><td>0,158</td><td>0,141</td><td>0,248</td><td>14 de 30</td><td>0 %</td></tr>
+<tr><td>C4 scikit-learn</td><td>0,247</td><td>0,183</td><td>0,387</td><td>0,366</td><td>0,551</td><td>2 de 30</td><td>0 %</td></tr></table>
+<p>C1, C2 e C3 têm exatamente as mesmas métricas, porque devolvem a mesma lista: a escolha do algoritmo define o custo, não a qualidade. A C4 acerta quase três vezes mais no top-5. Por categoria, a vantagem está nas consultas fáceis e médias (P@5 de 0,32 e 0,30 contra 0,12 e 0,04); nas difíceis as duas empatam em nível baixo (0,12 contra 0,10), o limite de qualquer busca lexical quando a pergunta usa palavras diferentes das do livro. A causa da diferença aparece em <code>experimentos/processados/secoes_mais_devolvidas_C1.md</code>: das 300 posições de top-10 da equipe, 110 (36,7 %) são do Glossário, que reúne muitos termos técnicos; a fórmula do contrato 02 soma a contribuição de cada termo sem normalizar pelo tamanho do trecho, e a C4, com norma L2, transforma o escore em cosseno e o Glossário deixa de dominar. A lista da equipe e a da referência têm em comum só 10,7 % do top-5. Itens irrelevantes por consulta: 1 − P@k, ou seja, 91 % do top-5 na equipe e 75 % na C4.</p>
+
+<h2>12.5 Ingestão e sensibilidade ao tamanho do chunk</h2>
+<p>O tempo real de ingestão (leitura dos 21 notebooks, extração e normalização das células e fragmentação) foi medido por <code>scripts/medir_ingestao.py</code>, 5 medidas após 2 aquecimentos, numa máquina diferente da do experimento principal (Linux x86_64, 4 núcleos), então os tempos valem pela proporção entre linhas; candidatos, comparações e o indicador de seção não dependem da máquina.</p>
+<table>
+<thead>
+<tr>
+<th>tamanho</th>
+<th>sobreposicao</th>
+<th>n_chunks</th>
+<th>tokens_mediana</th>
+<th>tokens_max</th>
+<th>chunks_de_celula_cortada_%</th>
+<th>extracao_ms</th>
+<th>fragmentacao_ms</th>
+<th>ingestao_ms</th>
+<th>ingestao_iqr_ms</th>
+<th>candidatos_P</th>
+<th>comparacoes_C1</th>
+<th>comparacoes_C3</th>
+<th>na_secao@10</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>128</td>
+<td>16</td>
+<td>2821</td>
+<td>14</td>
+<td>128</td>
+<td>6.2</td>
+<td>53.13</td>
+<td>86.27</td>
+<td>138.76</td>
+<td>4.05</td>
+<td>1484</td>
+<td>514962.5</td>
+<td>13587.5</td>
+<td>0.1</td>
+</tr>
+<tr>
+<td>256</td>
+<td>32</td>
+<td>2737</td>
+<td>13</td>
+<td>256</td>
+<td>0.8</td>
+<td>55.21</td>
+<td>82.92</td>
+<td>137.78</td>
+<td>7.85</td>
+<td>1403</td>
+<td>461702</td>
+<td>12746.5</td>
+<td>0.073</td>
+</tr>
+<tr>
+<td>512</td>
+<td>64</td>
+<td>2726</td>
+<td>13</td>
+<td>388</td>
+<td>0.0</td>
+<td>51.16</td>
+<td>81.03</td>
+<td>131.97</td>
+<td>2.14</td>
+<td>1392</td>
+<td>455706</td>
+<td>12636.5</td>
+<td>0.067</td>
+</tr>
+</tbody>
+</table>
+<p>O tamanho da janela quase não muda o corpus, porque o corte respeita a célula e a mediana das células fica em 13 tokens: o número de chunks varia 3,5 % entre 512 e 128 tokens, e a ingestão fica em torno de 135 ms, dominada pela fragmentação. O efeito aparece onde a análise prevê: com 128 tokens, P cresce 5,8 % e as comparações do Insertion Sort crescem 11,5 %, perto do quadrado de 1,058 (11,9 %); as do Merge Sort, 6,6 %. O indicador de qualidade sobe de 7,3 % para 10 % com janelas menores, porque cortar o Glossário reduz a vantagem dos trechos longos (as posições de top-10 do Glossário caem de 110 para 89 das 300). A linha 256/32 reproduz os números do experimento principal, o que confere os dois scripts um contra o outro.</p>
+
+<h1>13. Discussão de escalabilidade</h1>
+<p>Para o corpus atual as três configurações rodam em dezenas a centenas de milissegundos, e a tendência é o que interessa. Extrapolando as razões medidas: com um livro quatro vezes maior, a ordenação de C1 passaria de 1 s por consulta, enquanto a de C3 ficaria perto de 10 ms. C1 torna-se inviável em acervos grandes porque o Insertion Sort cresce como P² e a varredura toca todos os N chunks. C3 mantém a varredura Θ(N·m + L) por consulta, mas a ordenação passa a ser 2 % do tempo; o gargalo vira a pontuação, que numa aplicação real seria feita uma vez, junto com as estatísticas do corpus.</p>
+<p>A previsão de que C2 desacoplaria o custo da consulta do tamanho do corpus dependia da hipótese de esparsidade, e os dados a refutaram: os candidatos são 51 % dos chunks (de 39 % a 60 % conforme a consulta), porque as consultas em português corrente carregam palavras como "que" (29 % dos chunks), "de" (31 %) e "como" (15 %). Com P ≈ N/2, o custo de C2 continua crescendo com N, e o ganho na consulta foi de 1,4 vez sobre C3, não de ordens de grandeza. Ainda assim o índice é a única das três que evita visitar todos os chunks, e o ganho cresceria com remoção de stopwords ou com listas de postings mais seletivas; o trade-off clássico permanece: gastar memória e tempo de indexação uma vez (40,8 ms e 3,7 vezes a memória) para tornar cada consulta mais barata, o que compensa a partir da terceira consulta sobre o mesmo corpus. Bibliotecas como FAISS levam a mesma ideia ao caso vetorial denso; aqui ela foi demonstrada no caso lexical, com estruturas clássicas e medida contra a hipótese que a sustenta.</p>
+
+<h1>14. Relação com IA generativa e RAG</h1>
+<p>O contexto recuperado pelo protótipo é a etapa de <i>retrieval</i> de um sistema RAG. Sobre os sete pontos pedidos:</p>
+<ol>
+<li><b>Incorporação ao prompt.</b> Os k chunks devolvidos seriam concatenados em um bloco de contexto ("Contexto: ⟨chunks⟩ / Pergunta: ⟨q⟩"), cada trecho acompanhado da origem (notebook, seção) para citação. Com k = 5 e chunks de mediana 13 tokens, o bloco é pequeno; com trechos longos como o Glossário, cresce várias vezes.</li>
+<li><b>Impacto de k, tamanho de chunk e ordenação no custo de contexto.</b> Mais chunks e chunks maiores gastam tokens da janela do LLM, aumentando latência e custo de geração. A ordem importa: modelos tendem a subaproveitar informação no meio do contexto (<i>lost in the middle</i>), e a ordem total ≼ garante que o trecho de maior escore venha primeiro. O experimento de sensibilidade mostra que chunks menores custam um pouco mais de ordenação e melhoram levemente a qualidade.</li>
+<li><b>Lexical contra semântico.</b> O tf-idf captura sobreposição de termos, não sinônimos nem paráfrases: "laço" não casa com "loop". As 14 consultas sem nenhum trecho relevante no top-10 e o empate em nível baixo nas consultas difíceis mostram esse limite; busca semântica com embeddings recuperaria trechos que a lexical não alcança.</li>
+<li><b>Riscos de recuperação incompleta, enviesada, desatualizada ou irrelevante.</b> Incompleta: Recall@10 de 0,158 na equipe. Enviesada: um único livro cobre uma visão, e a fórmula sem normalização favorece o Glossário. Desatualizada: o commit fixo controla a desatualização, mas a torna real. Irrelevante: 91 % do top-5 da equipe não está no gabarito.</li>
+<li><b>Afirmações não sustentadas.</b> Mesmo com bom contexto, o LLM pode alucinar além do recuperado; com contexto irrelevante, o risco cresce. Mitiga-se com instrução explícita de responder só com base no contexto e citar a origem de cada afirmação, e com a rastreabilidade do item seguinte.</li>
+<li><b>Rastreabilidade.</b> Cada chunk carrega a proveniência (notebook, seção, célula, offsets), então a resposta pode citar a fonte exata e o usuário confere no livro, uma melhoria direta de confiabilidade sobre um LLM sem recuperação.</li>
+<li><b>Trade-offs.</b> Precisão contra tempo, memória e custo de geração: C4 triplica a precisão e tem a consulta mais rápida, com 6 vezes a memória de C3; C2 acelera a consulta em 1,4 vez ao preço de um índice com 3,7 vezes a memória; aumentar k eleva o recall potencial e também o custo em tokens e o ruído.</li>
+</ol>
+
+<h1>15. Limitações e ameaças à validade</h1>
+<ul>
+<li><b>Validade de construção.</b> A Precision@k depende de julgamentos de relevância: o gabarito foi montado antes dos rankings e com justificativas, mas é binário, de uma só avaliadora, e sem a adjudicação prevista no contrato 03. O indicador de seção esperada confirma a mesma tendência.</li>
+<li><b>Validade interna.</b> O cronômetro mede o interpretador Python tanto quanto o algoritmo; por isso medianas de cinco repetições, aquecimento descartado, ordem sorteada, e os contadores de comparações como evidência principal. A memória vem do <code>tracemalloc</code>, não do RSS do processo.</li>
+<li><b>Validade externa.</b> Um livro introdutório em português, do domínio de programação, é um estudo de caso, não uma amostra dos materiais educacionais abertos. Os três tamanhos são subconjuntos do mesmo livro e P cresce junto com N, o que mistura os dois efeitos; três tamanhos mostram tendência, não provam ordem assintótica.</li>
+<li><b>Viés do corpus e do chunking.</b> A tradução mistura português e termos em inglês. Os chunks seguem as células dos notebooks (mediana de 13 tokens), não janelas contínuas de 256, o que multiplica trechos curtos e deixa o Glossário como trecho longo dominante. A dificuldade das consultas coincide com a ordem dos capítulos, confundindo dificuldade lexical com assunto.</li>
+<li><b>Hipótese de esparsidade.</b> Declarada na definição do problema e refutada pelos dados: metade dos chunks vira candidato. É a principal lição de projeto do trabalho.</li>
+<li><b>Validade de conclusão.</b> Os tempos vêm de um único ambiente; a reprodução em máquina limpa manteve as comparações e listas idênticas e mudou só os tempos, por um fator uniforme de 2,1.</li>
+</ul>
+
+<h1 class="quebra">16. Declaração de uso de IA generativa</h1>
+<p>Reprodução de <code>docs/USO_DE_IA.md</code>, preenchido durante o trabalho. As linhas "a preencher" correspondem a integrantes que não registraram uso até a entrega.</p>
+<p>Este arquivo é preenchido durante o trabalho, não na véspera da entrega. Cada uso relevante entra aqui no dia em que aconteceu, com o que foi verificado e por quem.</p>
+<h3>Ferramentas e modelos</h3>
+<table>
+<thead>
+<tr>
+<th>Ferramenta</th>
+<th>Modelo exibido na interface</th>
+<th>Período de uso</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OpenAI Codex (João)</td>
+<td>conferir na interface</td>
+<td>01/09/2026</td>
+</tr>
+<tr>
+<td>Claude Code, Anthropic (João)</td>
+<td>Claude Fable 5.1; Claude Opus 5.5</td>
+<td>02/09/2026 a 24/09/2026</td>
+</tr>
+<tr>
+<td>ChatGPT, OpenAI (João)</td>
+<td>GPT-6 Astra</td>
+<td>setembro de 2026</td>
+</tr>
+<tr>
+<td>ChatGPT, OpenAI (Nadianne)</td>
+<td>GPT-5.6 Sol</td>
+<td>18/09/2026 a 19/09/2026</td>
+</tr>
+<tr>
+<td>a preencher</td>
+<td>a preencher</td>
+<td>a preencher</td>
+</tr>
+</tbody>
+</table>
+<h3>Finalidade de cada uso</h3>
+<table>
+<thead>
+<tr>
+<th>Data</th>
+<th>Integrante</th>
+<th>Finalidade</th>
+<th>Onde entrou no trabalho</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>01/09</td>
+<td>João</td>
+<td>Rascunho do plano de 19 seções a partir do enunciado</td>
+<td>Planejamento interno, não versionado</td>
+</tr>
+<tr>
+<td>02/09 a 04/09</td>
+<td>João</td>
+<td>Estrutura do repositório, script de aquisição com manifesto de hashes, contratos técnicos e divisão de frentes</td>
+<td><code>README.md</code>, <code>scripts/baixar_corpus.py</code>, <code>docs/CONTRATOS.md</code>, <code>docs/SEMANA1.md</code></td>
+</tr>
+<tr>
+<td>14/09 a 16/09</td>
+<td>João</td>
+<td>Fixtures sintéticos com gabarito, fragmentação, índice invertido e revisão do código de pontuação e desempate</td>
+<td><code>tests/fixtures/</code>, <code>src/paa_context/fragmentacao.py</code>, <code>indice.py</code>, <code>relevance.py</code>, <code>sort_key.py</code></td>
+</tr>
+<tr>
+<td>19/09</td>
+<td>João</td>
+<td>Medição dos contadores contra a previsão assintótica e teste de mutação do Merge Sort, em cópia descartável</td>
+<td>Números usados na análise e em <code>tests/README.md</code></td>
+</tr>
+<tr>
+<td>22/09</td>
+<td>João</td>
+<td>Conversão das 30 perguntas para <code>data/queries.csv</code>, com as seções conferidas contra o corpus, e redação de <code>tests/README.md</code></td>
+<td><code>data/queries.csv</code>, <code>docs/CONTRATOS.md</code>, <code>tests/README.md</code></td>
+</tr>
+<tr>
+<td>23/09</td>
+<td>João</td>
+<td>Levantamento das pendências da entrega, reprodução completa em máquina limpa, script de ingestão e sensibilidade ao tamanho do chunk, atualização da documentação</td>
+<td><code>scripts/medir_ingestao.py</code>, <code>experimentos/processados/ingestao_e_sensibilidade.md</code>, <code>docs/RESULTADOS.md</code>, <code>data/README.md</code>, <code>tests/README.md</code></td>
+</tr>
+<tr>
+<td>23/09 a 24/09</td>
+<td>João</td>
+<td>Conferência do relatório contra o código e o enunciado, importação do gabarito de relevância para <code>qrels.csv</code>, roteiro do vídeo, apresentação em slides gerada a partir dos resultados</td>
+<td><code>scripts/montar_qrels.py</code>, <code>data/qrels.csv</code>, <code>slides/apresentacao_av1.pdf</code>, <code>VIDEO.md</code></td>
+</tr>
+<tr>
+<td>18/09 a 19/09</td>
+<td>Nadianne</td>
+<td>Apoio na análise formal de corretude do Merge Sort, definição das hipóteses, prova por indução, invariante de <code>_merge</code>, término e limites do argumento</td>
+<td><code>docs/CORRETUDE.md</code></td>
+</tr>
+<tr>
+<td>18/09 a 19/09</td>
+<td>Nadianne</td>
+<td>Apoio na análise no modelo RAM, melhor/pior/médio caso e recorrências dos algoritmos</td>
+<td>documento de análise em <code>docs/</code> e slides</td>
+</tr>
+<tr>
+<td>19/09</td>
+<td>Nadianne</td>
+<td>Apoio na elaboração de testes específicos da relação de ordenação por <code>score</code> e <code>source_order</code></td>
+<td><code>tests/unit/test_sort_key.py</code></td>
+</tr>
+<tr>
+<td>a preencher</td>
+<td>a preencher</td>
+<td>a preencher</td>
+<td>a preencher</td>
+</tr>
+</tbody>
+</table>
+<h3>Prompts relevantes</h3>
+<p>O enunciado admite até cinco. Registrar o texto real enviado, não uma reconstrução aproximada.</p>
+<ol>
+<li>(João, 22/09) "Você analisou o [repositório] preciso saber o que realmente interfere na nota, pois não quero ficar sendo o chato pedindo pra o pessoal corrigir"</li>
+<li>(João, 22/09) "converte o PDF para o queries.csv, veja o que mais posso fazer pelo grupo"</li>
+<li>(Nadianne, 19/09) "Como ligar esse trecho e a  análise teórica as configurações C1, C2 e C3?"</li>
+<li>a preencher</li>
+<li>a preencher</li>
+</ol>
+<h3>Sugestões aproveitadas</h3>
+<table>
+<thead>
+<tr>
+<th>Sugestão</th>
+<th>Por que foi aceita</th>
+<th>Quem validou</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Postings como listas de posições crescentes e vocabulário ordenado, para que a busca binária tenha papel real na C2</td>
+<td>Com dicionário na consulta a busca binária seria decorativa</td>
+<td>João, com os testes de <code>test_indice.py</code> e a equivalência C1 = C2 = C3</td>
+</tr>
+<tr>
+<td>Registrar <code>secao_esperada</code> com o nome exato da seção no corpus</td>
+<td>Permite montar o julgamento de relevância a partir das seções</td>
+<td>João, conferindo as 30 linhas contra <code>data/processed/chunks.jsonl</code></td>
+</tr>
+<tr>
+<td>Estruturar a prova do Merge Sort com hipótese, indução, invariante e término</td>
+<td>A estrutura corresponde ao comportamento recursivo da implementação e à metodologia estudada na disciplina</td>
+<td>Nadianne, comparando a análise com <code>merge_sort.py</code>, <code>sort_key.py</code> e os testes existentes</td>
+</tr>
+<tr>
+<td>Criar testes específicos para <code>sort_key</code>, cobrindo maior <code>score</code>, desempate por <code>source_order</code> e transitividade</td>
+<td>As propriedades são usadas diretamente como hipóteses na prova formal</td>
+<td>Nadianne, executando <code>test_sort_key.py</code> e a suíte completa com 118 testes aprovados</td>
+</tr>
+<tr>
+<td>a preencher</td>
+<td>a preencher</td>
+<td>a preencher</td>
+</tr>
+</tbody>
+</table>
+<h3>Sugestões corrigidas ou rejeitadas</h3>
+<table>
+<thead>
+<tr>
+<th>Sugestão</th>
+<th>Problema identificado</th>
+<th>O que a equipe fez no lugar</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Integração contínua no GitHub como item obrigatório</td>
+<td>O enunciado não exige CI</td>
+<td>Mantida fora do escopo</td>
+</tr>
+<tr>
+<td>Numeração do plano inicial: C2 = Merge Sort, C3 = índice</td>
+<td>Invertida em relação ao enunciado</td>
+<td>Adotada a numeração do professor em <code>docs/CONTRATOS.md</code></td>
+</tr>
+<tr>
+<td>Descrever o comportamento de empate apenas como “estabilidade” do Merge Sort</td>
+<td>A ordem entre candidatos com mesmo <code>score</code> não depende simplesmente da ordem de entrada, há um critério explícito de desempate por <code>source_order</code></td>
+<td>A análise passou a usar “desempate determinístico por <code>source_order</code>”, mantendo estabilidade clássica separada desse conceito</td>
+</tr>
+<tr>
+<td>a preencher</td>
+<td>a preencher</td>
+<td>a preencher</td>
+</tr>
+</tbody>
+</table>
+<h3>Erros identificados</h3>
+<p>Registrar erros concretos de corretude, complexidade, casos de borda, estabilidade de ordenação ou desempate que a equipe encontrou em saída de IA. Este é o item que o enunciado cobra com mais rigor, porque distingue uso crítico de uso passivo.</p>
+<table>
+<thead>
+<tr>
+<th>Erro</th>
+<th>Como foi detectado</th>
+<th>Correção aplicada</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(João) Na revisão da análise de complexidade, a fórmula da C2 não trazia o termo Θ(P(m + n)) da pontuação dos candidatos</td>
+<td>Medição do tempo por etapa em 19/09, feita com apoio de IA: a pontuação é 96% do tempo da consulta e a ordenação, 4%</td>
+<td>Termo apontado para inclusão no relatório; os números estão em <code>docs/RESULTADOS.md</code></td>
+</tr>
+<tr>
+<td>Plano de 01/09 com as configurações C2 e C3 trocadas</td>
+<td>Conferência contra o PDF do enunciado em 04/09</td>
+<td>Numeração corrigida antes de qualquer código</td>
+</tr>
+<tr>
+<td>(Nadianne) Tratamento inicial do desempate como simples estabilidade da ordenação</td>
+<td>Conferência da implementação de <code>sort_key</code>, que usa explicitamente <code>(-score, source_order)</code></td>
+<td>A prova passou a descrever o comportamento como desempate determinístico por <code>source_order</code></td>
+</tr>
+<tr>
+<td>a preencher</td>
+<td>a preencher</td>
+<td>a preencher</td>
+</tr>
+</tbody>
+</table>
+<h3>Verificação</h3>
+<p>Descrever os testes, provas, execuções e revisões por pares usados para validar cada trecho aproveitado. Código, prova ou análise sugerida por IA e não verificada não entra no trabalho.</p>
+<p>João: cada módulo entrou com testes próprios (131 no total em 23/09, <code>python -m pytest</code>). O gabarito dos fixtures foi calculado à parte em <code>tests/fixtures/calcular_gabarito.py</code> e conferido à mão para um escore. A equivalência C1 = C2 = C3 é testada em <code>tests/integration/test_equivalencia.py</code>. Os contadores de comparações foram confrontados com a previsão assintótica (Merge Sort a 1% de P log₂ P; Insertion Sort a 9% de P²/4). O teste de mutação de 19/09 mostrou um limite da suíte, registrado em <code>tests/README.md</code>.</p>
+<p>Nadianne: a análise formal foi conferida contra a implementação de <code>merge_sort.py</code> e <code>sort_key.py</code>. Foram adicionados três testes em <code>tests/unit/test_sort_key.py</code>, verificando prioridade por maior <code>score</code>, desempate por menor <code>source_order</code> e um caso de transitividade. Os testes específicos passaram (<code>3 passed</code>) e, em seguida, a suíte completa foi executada com <code>118 passed</code>, sem regressões.</p>
+<h3>Contribuição individual no uso de IA</h3>
+<table>
+<thead>
+<tr>
+<th>Integrante</th>
+<th>O que fez com apoio de IA</th>
+<th>O que fez sem apoio de IA</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>João Cosme Sena Sá</td>
+<td>Estrutura do repositório, fixtures, fragmentação, índice invertido, conversão das consultas, documentação de testes</td>
+<td>Decisões de escopo e divisão de frentes, revisão de cada trecho antes do commit, execução dos testes e das medições</td>
+</tr>
+<tr>
+<td>Nadianne Maria dos Santos Galvão</td>
+<td>Estruturação e revisão textual da prova de corretude; apoio na análise RAM, complexidade e recorrências, elaboração inicial dos testes de <code>sort_key</code></td>
+<td>Conferência da análise com o código da equipe, execução e validação dos testes, revisão das hipóteses da prova, adaptação do conteúdo ao trabalho e gravação da própria participação no vídeo</td>
+</tr>
+<tr>
+<td>a preencher</td>
+<td>a preencher</td>
+<td>a preencher</td>
+</tr>
+</tbody>
+</table>
+
+<h1 class="quebra">17. Contribuição individual</h1>
+<p>O enunciado pede contribuição com evidência, não cargo. Reprodução de <code>docs/CONTRIBUICOES.md</code>: cada linha aponta commits, arquivos, análises ou execuções que comprovam o trabalho descrito. As linhas "a preencher" correspondem a integrantes que não registraram evidências até a entrega. A revisão de código, da prova e dos resultados é responsabilidade coletiva.</p>
+<table>
+<thead>
+<tr>
+<th>Integrante</th>
+<th>Frente</th>
+<th>Evidências</th>
+<th>Participação no vídeo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>João Cosme Sena Sá</td>
+<td>Dados de teste, pacote e testes, protocolo experimental, índice invertido e busca binária (C2), entrega</td>
+<td>Estrutura do repositório e aquisição do corpus com manifesto de hashes (<code>60447c2</code>, <code>766e210</code>); contratos técnicos e plano da semana 1 (<code>5f25ff0</code>); <code>pyproject.toml</code> e configuração do pytest (<code>ebf7698</code>); modelo do chunk e fixtures sintéticos com gabarito calculado (<code>8fab1d3</code>, <code>46f436c</code>, <code>4ecf106</code>, <code>56ffd8f</code>); busca binária (<code>3a0fe46</code>); fragmentação dos notebooks e <code>preparar_corpus.py</code>, assumidas como apoio à frente de ingestão (<code>2926971</code>, <code>2f14b3a</code>); <code>consultar.py</code> com C1 e C3 (<code>663e767</code>); protocolo experimental (<code>2e85a1a</code>); pontuação tf-idf, desempate por <code>source_order</code> e ordenação só dos candidatos (<code>4370ad2</code>); índice invertido e C2 integrada (<code>91b4466</code>, <code>d18ce80</code>); <code>data/queries.csv</code> a partir das 30 perguntas da equipe; <code>tests/README.md</code>; pool de julgamento de relevância (<code>scripts/montar_qrels.py</code>); baseline de referência C4, métricas de qualidade, <code>rodar_experimentos.py</code>, <code>gerar_figuras.py</code> e <code>reproduzir_tudo.py</code>, assumidos na ausência da frente de experimentos (<code>b8498d5</code>); execução do experimento principal, 3.600 execuções, com tabelas e figuras (<code>6cfbcd4</code>); análise dos resultados em <code>docs/RESULTADOS.md</code></td>
+<td>Abertura da equipe, tema e corpus; índice invertido e busca binária (C2) no código; demonstração das três configurações com a mesma consulta; lição e limite dos resultados; gravação individual: https://www.loom.com/share/aab4b4cd6a934bb892fd6c4bb73bcd85</td>
+</tr>
+<tr>
+<td>Eduardo Henrique do Lago Silva</td>
+<td>Experimentos, tabelas, gráfico e baseline de referência (C4)</td>
+<td>a preencher</td>
+<td>a preencher</td>
+</tr>
+<tr>
+<td>Helena Carvalho Leal</td>
+<td>Consultas, julgamentos de relevância, métricas, relação com IA generativa e limitações</td>
+<td>Elaboração e revisão das 30 consultas de avaliação (<code>Q01</code>–<code>Q30</code>), organizadas em 10 fáceis, 10 médias e 10 difíceis e alinhadas ao corpus da 3ª edição em português de <em>Pense Python</em>; definição dos temas, palavras-chave e capítulos/seções esperados para cada consulta; preenchimento manual do CSV de gabarito de relevância, associando as consultas aos <code>chunk_id</code> relevantes do corpus fragmentado (<code>chunks.jsonl</code>) antes da avaliação dos rankings.</td>
+<td>a preencher</td>
+</tr>
+<tr>
+<td>Hernandison da Silva Bispo</td>
+<td>Ingestão, normalização e fragmentação; manutenção do relatório</td>
+<td>a preencher</td>
+<td>a preencher</td>
+</tr>
+<tr>
+<td>Nadianne Maria dos Santos Galvão</td>
+<td>Corretude, modelo RAM, complexidade e recorrências</td>
+<td><code>docs/CORRETUDE.md</code>; análise RAM/complexidade/recorrências em <code>docs/</code>; criação de <code>tests/unit/test_sort_key.py</code> com testes de prioridade por <code>score</code>, desempate por <code>source_order</code> e transitividade; suíte completa com 118 testes aprovados; commit <code>6a5923c</code> e PR da branch <code>Nadianne_01</code></td>
+<td>Apresentação de RAM e complexidade, recorrências/C1-C2-C3 e corretude formal do Merge Sort; gravação individual da participação no https://drive.google.com/file/d/1WWhyEl1k9qLuE8Sod03WE9qJ3bNDWx3Y/view?usp=drive_link</td>
+</tr>
+<tr>
+<td>Rafael Takeguma Goto</td>
+<td>Busca linear, Insertion Sort, Merge Sort, pontuação e consulta (C1 e C3)</td>
+<td>Pré-processamento de texto (<code>preprocessing.py</code>) e primeira versão da função de relevância (<code>relevance.py</code>), com testes unitários (<code>9ae619b</code>); busca linear sobre os chunks (<code>linear_search.py</code>, <code>test_linear_search.py</code>, <code>edc590d</code>); Insertion Sort (<code>insertion_sort.py</code>, <code>test_insertion_sort.py</code>, <code>6f025c0</code>); Merge Sort (<code>merge_sort.py</code>, <code>test_merge_sort.py</code>, <code>3338455</code>); contador de operações elementares (<code>contador.py</code>), seleção dos top-k, critério de desempate nas ordenações e pipeline de consulta (<code>pipeline.py</code>, <code>test_pipeline.py</code>) (<code>f660124</code>); merge do PR #1 (branch <code>Nadianne_01</code>, <code>c1ca7a2</code>)</td>
+<td>https://drive.google.com/file/d/13jiWmtcPA6ZGqowYDyxqEHd5966waPa8/view?usp=sharing</td>
+</tr>
+</tbody>
+</table>
+
+<h1>18. Vídeo da atividade</h1>
+<p>O vídeo tem até 10 minutos, com participação de todos os integrantes e identificação da contribuição de cada um. Até o fechamento deste relatório as gravações estão publicadas individualmente, com reprodução liberada por link:</p>
+<ul>
+<li>João Cosme Sena Sá: https://www.loom.com/share/aab4b4cd6a934bb892fd6c4bb73bcd85 (abertura, C2 no código, demonstração das três configurações, lição e limite)</li>
+<li>Nadianne Maria dos Santos Galvão: https://drive.google.com/file/d/1WWhyEl1k9qLuE8Sod03WE9qJ3bNDWx3Y/view?usp=drive_link (modelo RAM, complexidade, recorrências e corretude do Merge Sort)</li>
+<li>Rafael Takeguma Goto: https://drive.google.com/file/d/13jiWmtcPA6ZGqowYDyxqEHd5966waPa8/view?usp=sharing (busca linear, Insertion Sort, Merge Sort, pontuação e consulta)</li>
+</ul>
+<p>A URL do vídeo consolidado substitui esta lista no <code>README.md</code> (seção "Vídeo da atividade"), no <code>VIDEO.md</code> (com data de gravação e participantes) e na capa deste relatório quando a junção for publicada.</p>
+
+<h1>19. Referências</h1>
+<ol>
+<li>CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. <i>Introduction to Algorithms</i>. 4. ed. Cambridge: MIT Press, 2022.</li>
+<li>KLEINBERG, J.; TARDOS, É. <i>Algorithm Design</i>. Boston: Pearson, 2006.</li>
+<li>SKIENA, S. S. <i>The Algorithm Design Manual</i>. 3. ed. Cham: Springer, 2020.</li>
+<li>SEDGEWICK, R.; WAYNE, K. <i>Algorithms</i>. 4. ed. Boston: Addison-Wesley, 2011.</li>
+<li>MANNING, C. D.; RAGHAVAN, P.; SCHÜTZE, H. <i>Introduction to Information Retrieval</i>. Cambridge University Press, 2008.</li>
+<li>LEWIS, P. et al. Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks. <i>NeurIPS</i>, 2020. arXiv:2005.11401.</li>
+<li>ZHOU, Z. et al. A Survey on Efficient Inference for Large Language Models. arXiv:2404.14294, 2024.</li>
+<li>GAN, A. et al. Retrieval Augmented Generation Evaluation in the Era of Large Language Models: A Comprehensive Survey. arXiv:2504.14891, 2025.</li>
+<li>PEDREGOSA, F. et al. Scikit-learn: Machine Learning in Python. <i>JMLR</i>, v. 12, 2011.</li>
+<li>FAISS. <i>Faiss documentation</i>. https://faiss.ai/.</li>
+<li>DOWNEY, A. B. <i>Think Python</i>. 3. ed. O'Reilly, 2024. Tradução livre <i>Pense Python</i> por CARLSON, R. C. https://rodrigocarlson.github.io/PensePython3ed/.</li>
+<li>CARNEIRO, G. F. <i>Projeto e Análise de Algoritmos: Atividade 1 (AV1)</i> e notas de aula 02 a 05, PROCC/UFS, 2026.2.</li>
+</ol>
+</body></html>
