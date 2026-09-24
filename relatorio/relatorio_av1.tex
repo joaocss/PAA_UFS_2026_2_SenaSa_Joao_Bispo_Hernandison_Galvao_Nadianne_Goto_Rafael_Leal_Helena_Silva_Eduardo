@@ -22,11 +22,13 @@
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{placeins}
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{tabularx}
 \usepackage{enumitem}
 \usepackage{listings}
+\usepackage{float}
 \usepackage{mdframed}
 \usepackage{titlesec}
 \usepackage{fancyhdr}
@@ -142,16 +144,14 @@ Entrega dos artefatos até 23/09/2026 $\cdot$ Apresentação em 24/09/2026\par}
 
 % ---------------------------- STATUS ----------------------------
 \begin{status}
-\textbf{\color{laranja}Estado desta versão do relatório (checkpoint de 04/09/2026).}
-Este documento consolida a \textbf{especificação formal}, os \textbf{algoritmos e pseudocódigos},
-a \textbf{prova de corretude}, a \textbf{análise no modelo RAM}, as \textbf{recorrências}, a
-\textbf{metodologia experimental} e a \textbf{relação com RAG} --- partes que não dependem da
-execução do pipeline. As Figuras~\ref{fig:crescimento} e~\ref{fig:arvore} são \textbf{curvas e
-diagramas teóricos}, derivados das funções de complexidade, e não medições. As tabelas da
-Seção~\ref{sec:resultados} (resultados empíricos) trazem a estrutura definitiva de colunas e estão
-marcadas \emph{``a preencher após a execução''}; os números serão inseridos após rodar
-\texttt{scripts/reproduzir\_tudo.py}, conforme o cronograma (demonstração inicial no checkpoint de
-10/09/2026 e resultados completos até 23/09/2026). Nenhum dado experimental foi estimado ou inventado.
+\textbf{Estado desta versão do relatório.}
+Este documento consolida a especificação formal, os algoritmos e pseudocódigos,
+a prova de corretude, a análise no modelo RAM, as recorrências, a metodologia experimental, os resultados obtidos e a relação com RAG.
+
+As figuras teóricas são explicitamente identificadas como diagramas ou curvas derivadas
+das funções de complexidade, enquanto as tabelas e gráficos da Seção~\ref{sec:resultados} apresentam resultados experimentais obtidos a partir da execução do pipeline.
+
+O experimento principal foi concluído com 3600 execuções mensuráveis, cobrindo quatro configurações, três tamanhos de corpus, 30 consultas, dois valores de $k$ e cinco repetições, além de duas execuções de aquecimento descartadas por cenário.
 \end{status}
 
 \tableofcontents
@@ -263,19 +263,26 @@ no desempate), o texto normalizado e $\text{origem}_i=(\text{notebook},\text{se�
 \item \textbf{Saída} $R$: sequência de até $k$ chunks de $C$, sem repetição, ordenada de forma não
 crescente pela função de relevância.
 \end{itemize}
-
 \subsection{Função de relevância}
 A pontuação é \textbf{TF-IDF} lexical, definida pela equipe e usada de forma idêntica nas três
 configurações obrigatórias:
 \begin{align*}
-\mathrm{tf}(t,c) &= 1 + \ln f_{t,c} \quad (\text{se } f_{t,c}>0;\ \text{senão } 0), &
+\mathrm{tf}(t,c) &= 1 + \ln f_{t,c}
+\quad (\text{se } f_{t,c}>0;\ \text{senão } 0),\\
 \mathrm{idf}(t) &= \ln\!\left(\frac{N+1}{\mathrm{df}(t)+1}\right)+1,\\[2pt]
-\mathrm{score}(q,c) &= \sum_{t\in q} \mathrm{tf}(t,c)\cdot\mathrm{idf}(t). & &
+\mathrm{score}(q,c) &=
+\sum_{t\in \mathrm{Termos}(q)}
+qtf_t \cdot \mathrm{tf}(t,c)\cdot\mathrm{idf}(t).
 \end{align*}
-$f_{t,c}$ é a frequência do termo $t$ no chunk $c$ e $\mathrm{df}(t)$ é o número de chunks que
-contêm $t$. Termos ausentes do vocabulário não contribuem. As formas suavizadas ($\ln f$ no tf e
-$\ln\frac{N+1}{\mathrm{df}+1}+1$ no idf) são as mesmas do TF-IDF do scikit-learn, o que mantém limpa a
-comparação com a Config.~4 e evita zerar um termo presente em todos os chunks. A \textbf{ordem total}
+
+$qtf_t$ representa a frequência do termo $t$ na consulta,
+$f_{t,c}$ é a frequência do termo $t$ no chunk $c$ e
+$\mathrm{df}(t)$ é o número de chunks que contêm $t$.
+Termos ausentes do vocabulário não contribuem para a pontuação.
+
+A suavização adotada para o IDF segue a mesma forma utilizada pela configuração de referência com scikit-learn, enquanto a ponderação TF-IDF da implementação própria foi mantida explícita para permitir a comparação entre as configurações.
+
+A \textbf{ordem total}
 $\preceq$ é:
 \[
 c_a \preceq c_b \iff \mathrm{score}(q,c_a) > \mathrm{score}(q,c_b)\ \lor\
@@ -320,7 +327,7 @@ funcionais que mudam o sentido de consultas como \emph{``diferença entre \textt
 \subsection{Segmentação (chunking)}
 Respeita a hierarquia do livro --- notebook, título e seção --- e \textbf{nunca mistura} célula de
 texto com célula de código no mesmo chunk. A configuração principal usa \textbf{256 tokens} com
-\textbf{sobreposição de 32}, produzindo cerca de \textbf{330 chunks}. As configurações 128/16 e
+\textbf{sobreposição de 32}, produzindo cerca de \textbf{2737 chunks}. As configurações 128/16 e
 512/64 entram apenas no experimento de sensibilidade.
 
 \subsection{Representações computacionais}
@@ -391,7 +398,7 @@ funcao Merge(E, D):
 \subsection{Índice invertido e busca binária --- Config.~2}
 \begin{lstlisting}
 funcao BuscaBinaria(vocab, t):           # vocab = vetor ORDENADO de termos
-  lo <- 0;  hi <- |vocab| - 1
+  lo <- 0; hi <- |vocab| - 1
   enquanto lo <= hi faca
     mid <- floor((lo + hi) / 2)
     se vocab[mid] = t entao retorne mid
@@ -399,24 +406,47 @@ funcao BuscaBinaria(vocab, t):           # vocab = vetor ORDENADO de termos
     senao hi <- mid - 1
   retorne NAO_ENCONTRADO
 
-funcao ConsultarIndice(q, vocab, postings, idf):
-  acc <- mapa id -> score (vazio)
-  para cada termo t em q faca            # m termos
-    p <- BuscaBinaria(vocab, t)          # Theta(log V)
+funcao BuscarIndexado(q, indice, estatisticas):
+  termos <- termos distintos normalizados de q
+  posicoes <- lista vazia
+
+  para cada termo t em termos faca
+    p <- BuscaBinaria(indice.vocabulario, t)   # Theta(log V)
     se p != NAO_ENCONTRADO entao
-      para cada (id, f) em postings[t] faca   # so os candidatos!
-        acc[id] <- acc[id] + (1 + ln f) * idf[t]
-  candidatos <- [ (s, id, chunk(id)) para (id, s) em acc ]
-  retorne MergeSort(candidatos)          # ordena so os candidatos
+      posicoes <- UnirPostings(
+        posicoes,
+        indice.postings[p]
+      )
+
+  candidatos <- lista vazia
+
+  para cada posicao em posicoes faca
+    c <- indice.chunks[posicao]
+    s <- RelevanceScore(q, c, estatisticas)
+
+    se s > 0 entao
+      candidatos.anexar((c, s))
+
+  retorne MergeSort(candidatos)          # ordena apenas os candidatos
 \end{lstlisting}
 
 \subsection{Seleção dos $k$ melhores (comum a todas)}
 \begin{lstlisting}
-funcao TopK(candidatos_ordenados, k):
-  retorne os primeiros min(k, |candidatos_ordenados|) elementos
+funcao TopK(resultados_ordenados, k):
+  se k <= 0 entao
+    retorne lista vazia
+
+  candidatos <- lista vazia
+
+  para cada (chunk, score) em resultados_ordenados faca
+    se score > 0 entao
+      candidatos.anexar((chunk, score))
+
+  retorne os primeiros min(k, |candidatos|) elementos
 \end{lstlisting}
-Como a lista já está totalmente ordenada por $\preceq$, os primeiros $\min(k,n')$ elementos são, por
-definição, os $k$ mais relevantes (corolário na Seção~\ref{sec:corretude}).
+Como a lista já está ordenada pela relação $\preceq$, a filtragem preserva essa
+ordem. Assim, os primeiros $\min(k,|candidatos|)$ elementos correspondem aos
+ $k$ resultados válidos mais relevantes.
 
 % ============================ 7 ============================
 \section{Justificativa de corretude}\label{sec:corretude}
@@ -501,9 +531,7 @@ menor \texttt{source\_order}. Três testes cobrem os pilares do argumento:
 \item \texttt{test\_ordem\_transitiva}: transitividade da relação (condição para $\preceq$ ser ordem total).
 \end{itemize}
 Os três passam isoladamente e a suíte completa do projeto é executada e aprovada
-% ATUALIZAR o número na versão congelada (quinta): 87 testes em 23/09; 118 na versão da Nadianne.
-(87 testes na versão de 23/09/2026). Esta subseção consolida a análise de corretude conduzida por
-Nadianne Galvão (\texttt{docs/CORRETUDE.md} e o documento de corretude, RAM, complexidade e
+(118 testes aprovados na suíte completa do projeto, incluindo os três testes específicos de \texttt{sort\_key}). Esta subseção consolida a análise de corretude conduzida por Nadianne Galvão (\texttt{docs/CORRETUDE.md} e o documento de corretude, RAM, complexidade e
 recorrências).
 
 % ============================ 8 ============================
@@ -515,10 +543,11 @@ recorrências).
 \toprule
 \textbf{Símbolo} & \textbf{Significado}\\
 \midrule
-$N$ & número de chunks ($\approx$330 na configuração principal)\\
+$N$ & número de chunks (2737 na configuração principal)\\
 $V$ & tamanho do vocabulário (termos distintos)\\
 $L$ & total de tokens do corpus\\
 $m$ & número de termos da consulta\\
+$\ell$ & número de termos do chunk analisado\\
 $k$ & número de resultados retornados\\
 $C_q$ & número de chunks candidatos (score $>0$) para a consulta $q$\\
 $P$ & tamanho total das listas de postings percorridas $=\sum_{t\in q}\mathrm{df}(t)$\\
@@ -533,8 +562,7 @@ incremento, chamada recursiva, consulta a tabela de dispersão e atualização d
 
 \textbf{Insertion Sort (sobre $C_q$ candidatos).} O laço externo executa $C_q-1$ vezes; o interno
 desloca, no pior caso, todos os já ordenados. Comparações
-$\sum_{i=1}^{C_q-1} i = C_q(C_q-1)/2$ no pior caso, com igual ordem de acessos e atribuições. Espaço
-auxiliar $\Theta(1)$.
+$\sum_{i=1}^{C_q-1} i = C_q(C_q-1)/2$ no pior caso, com igual ordem de acessos e atribuições. Como a implementação cria uma cópia da lista de entrada antes da ordenação, o espaço adicional é $O(C_q)$.
 
 \textbf{Merge Sort (sobre $C_q$ candidatos).} Cada nível percorre todos os elementos uma vez
 ($\Theta(C_q)$ por nível) e há $\lceil\log_2 C_q\rceil$ níveis, dando $\Theta(C_q\log C_q)$
@@ -547,9 +575,11 @@ comparações. Espaço $\Theta(C_q)$ pelas listas auxiliares.
 \toprule
 \textbf{Etapa} & \textbf{C1 (lin.+Insertion)} & \textbf{C2 (índice+bin.+Merge)} & \textbf{C3 (lin.+Merge)}\\
 \midrule
-Pontuação / candidatos & $\Theta(N m)$ & $\Theta(m\log V + P)$ & $\Theta(N m)$\\
-Ordenação dos candidatos & $O(C_q^2)$ & $\Theta(C_q\log C_q)$ & $\Theta(C_q\log C_q)$\\
-Seleção top-$k$ & $\Theta(k)$ & $\Theta(k)$ & $\Theta(k)$\\
+Pontuação / candidatos
+& $\Theta(N(m+\ell))$
+& $O(m\log V + mP + C_q(m+\ell))$
+& $\Theta(N(m+\ell))$\\
+Seleção top-$k$ & $\Theta(C_q)$ & $\Theta(C_q)$ & $\Theta(C_q)$\\
 Espaço adicional (consulta) & $\Theta(C_q)$ & $\Theta(V+P_{\text{tot}})+\Theta(C_q)$ & $\Theta(C_q)$\\
 \bottomrule
 \end{tabularx}
@@ -558,7 +588,7 @@ Espaço adicional (consulta) & $\Theta(C_q)$ & $\Theta(V+P_{\text{tot}})+\Theta(
 \textbf{Fatores fora do modelo RAM.} O modelo ignora hierarquia de cache, custo de E/S ao ler os
 notebooks, alocação de memória, coletor de lixo do Python e a diferença entre código interpretado
 (C1--C3) e rotinas vetorizadas em C/NumPy (Config.~4). Por isso a Seção~\ref{sec:resultados} mede
-tempo de parede além de contar operações.
+tempo de parede além de contar operações. 
 \end{nota}
 
 % ============================ 9 ============================
@@ -569,23 +599,29 @@ tempo de parede além de contar operações.
 \toprule
 \textbf{Algoritmo} & \textbf{Melhor} & \textbf{Pior} & \textbf{Médio} & \textbf{Espaço}\\
 \midrule
-Busca/pontuação linear & $\Theta(Nm)$ & $\Theta(Nm)$ & $\Theta(Nm)$ & $\Theta(C_q)$\\
-Insertion Sort & $\Theta(n)$ & $\Theta(n^2)$ & $\Theta(n^2)$ & $\Theta(1)$\\
+Busca/pontuação linear & $\Theta(N(m+\ell))$ & $\Theta(N(m+\ell))$ & $\Theta(N(m+\ell))$ & $\Theta(C_q)$\\
+Insertion Sort & $\Theta(n)$ & $\Theta(n^2)$ & $\Theta(n^2)$ & $O(n)$\\
 Merge Sort & $\Theta(n\log n)$ & $\Theta(n\log n)$ & $\Theta(n\log n)$ & $\Theta(n)$\\
 Busca binária (por termo) & $\Theta(1)$ & $\Theta(\log V)$ & $\Theta(\log V)$ & $\Theta(1)$\\
-Consulta via índice (C2) & $\Theta(m\log V + C_q\log C_q)$ & $\Theta(m\log V + N\log N)$ & $\Theta(m\log V + P + C_q\log C_q)$ & $\Theta(V+P_{\text{tot}})$\\
+Consulta via índice (C2)
+& $O(m\log V + mP + C_q(m+\ell) + C_q\log C_q)$
+& $O(m\log V + mP + C_q(m+\ell) + C_q\log C_q)$
+& $O(m\log V + mP + C_q(m+\ell) + C_q\log C_q)$
+& $\Theta(V+P_{\text{tot}}+C_q)$\\
 \bottomrule
 \end{tabularx}
 \end{table}
-Onde $n=C_q$ é o número de candidatos a ordenar.
+
+Onde $n=C_q$ é o número de candidatos a ordenar e $\ell$ é o número de termos do chunk analisado.
+
 \begin{itemize}[leftmargin=1.4em,itemsep=2pt]
-\item \textbf{Insertion Sort} só é competitivo com $C_q$ pequeno ou lista quase ordenada; melhor caso
-linear quando não há deslocamento.
+\item \textbf{Insertion Sort} só é competitivo com $C_q$ pequeno ou lista quase ordenada; melhor caso linear quando não há deslocamento.
+
 \item \textbf{Merge Sort} tem custo $\Theta(n\log n)$ \textbf{garantido} nos três casos ---
 escolha segura para a comparação.
-\item \textbf{Consulta via índice (C2)} tem melhor caso com termos \textbf{raros} ($P$ e $C_q$
-pequenos) e degenera ao custo de C3 quando $C_q\approx N$ (termo muito frequente). A hipótese de
-esparsidade é o que separa C2 de C3 na prática.
+
+\item \textbf{Na Configuração 2}, o custo depende fortemente da frequência dos termos consultados.
+Quando as listas de postings são pequenas, tanto $P$ quanto $C_q$ permanecem reduzidos, diminuindo o trabalho de união, pontuação e ordenação dos candidatos. No pior caso, termos muito frequentes podem fazer $C_q$ se aproximar de $N$, reduzindo a vantagem do índice em relação à busca linear.
 \end{itemize}
 
 % ============================ 10 ============================
@@ -599,7 +635,7 @@ $\lceil\log_2 N\rceil+1$ níveis realiza trabalho $\Theta(N)$, somando $\Theta(N
 \textbf{Teorema Mestre}, com $a=2$, $b=2$, tem-se $N^{\log_b a}=N^1$ e $f(N)=\Theta(N)$: caso~2,
 dando $T(N)=\Theta(N\log N)$.
 
-\begin{figure}[htbp]\centering
+\begin{figure}[H]\centering
 \includegraphics[width=0.86\textwidth]{figuras/arvore_recorrencia.png}
 \caption{Árvore de recorrência de $T(N)=2\,T(N/2)+\Theta(N)$: trabalho $\Theta(N)$ por nível e
 $\log_2 N + 1$ níveis, resultando em $\Theta(N\log N)$. Diagrama teórico.}
@@ -608,9 +644,10 @@ $\log_2 N + 1$ níveis, resultando em $\Theta(N\log N)$. Diagrama teórico.}
 
 \subsection{Busca binária}
 \[ T(V) = T(V/2) + \Theta(1),\qquad T(1)=\Theta(1). \]
-\textbf{Origem dos termos:} uma única chamada recursiva sobre metade do vocabulário; $\Theta(1)$ é o
-cálculo do meio e a comparação com \texttt{vocab[mid]}. Pelo Teorema Mestre, $a=1$, $b=2$,
-$N^{\log_b a}=N^0=1=f(N)$: caso~2, dando $T(V)=\Theta(\log V)$.
+\textbf{Origem dos termos:} embora a implementação da busca binária seja iterativa,
+a recorrência $T(V)=T(V/2)+\Theta(1)$ modela a redução do intervalo de busca
+a cada iteração. Em cada passo, aproximadamente metade do vocabulário é descartada, enquanto o trabalho para calcular o ponto médio, comparar com \texttt{vocab[mid]} e atualizar os limites é constante, representado por $\Theta(1)$. Assim, após aproximadamente $\log_2 V$ reduções, o intervalo atinge tamanho unitário, resultando em $T(V)=\Theta(\log V)$. 
+A mesma recorrência também pode ser resolvida pelo Teorema Mestre, com $a=1$ e $b=2$, obtendo-se igualmente $T(V)=\Theta(\log V)$.
 
 % ============================ 11 ============================
 \section{Metodologia experimental}
@@ -634,11 +671,18 @@ listas ranqueadas idênticas} (mesma ordem $\preceq$), diferindo apenas em custo
 consistência forte. A Config.~4 pode divergir por usar normalização L2 e TF sublinear próprias.
 
 \subsection{Cargas, repetições e execuções}
-Plano: \textbf{3 configurações $\times$ 3 tamanhos de corpus $\times$ 5 repetições $=$ 45 execuções
-mensuráveis} (bem acima do mínimo de 12). Os três tamanhos vêm de \textbf{subamostragem
-determinística} (semente fixa) de $\approx$25\%, 50\% e 100\% dos chunks; o experimento de
-sensibilidade varia o chunking em 128/16, 256/32 e 512/64. Cada consulta roda para $k=5$ e $k=10$.
-As \textbf{duas primeiras} execuções de cada cenário são descartadas como aquecimento; reporta-se a mediana das repetições com a dispersão.
+
+O experimento principal compreende
+\textbf{4 configurações $\times$ 3 tamanhos de corpus $\times$ 30 consultas
+$\times$ 2 valores de $k$ $\times$ 5 repetições $=$ 3600 execuções mensuráveis}.
+Antes das repetições medidas, são realizadas duas execuções de aquecimento por cenário, que são descartadas.
+
+Os três tamanhos de corpus correspondem a aproximadamente 25\% (684 chunks),
+50\% (1368 chunks) e 100\% (2737 chunks), obtidos por subamostragem determinística por capítulo com semente fixa. Cada consulta é executada para $k=5$ e $k=10$.
+
+Ao final das 3600 execuções, não foram observadas divergências entre os rankings
+produzidos por C1, C2 e C3. Esse resultado reforça que as três configurações
+implementadas preservam a mesma saída de recuperação sob a mesma função de relevância e o mesmo critério de ordenação, diferindo principalmente no custo computacional.
 
 \subsection{Métricas registradas}
 \begin{itemize}[leftmargin=1.4em,itemsep=1pt]
@@ -646,7 +690,7 @@ As \textbf{duas primeiras} execuções de cada cenário são descartadas como aq
 \item Memória aproximada (via \texttt{tracemalloc} e RSS).
 \item \textbf{Número de comparações}, por contador instrumentado.
 \item Tamanho do corpus, número de chunks e $k$.
-\item \textbf{Precision@k} contra \texttt{data/qrels.csv}, quando há referência.
+\item Precision@$k$ contra a referência manual de relevância construída para as 30 consultas.
 \item Taxa de falhas, resultados vazios ou irrelevantes; custo e limitações.
 \end{itemize}
 
@@ -654,17 +698,15 @@ As \textbf{duas primeiras} execuções de cada cenário são descartadas como aq
 Todo o pipeline roda com \texttt{python scripts/reproduzir\_tudo.py} (download $\to$ normalização
 $\to$ chunking $\to$ experimentos $\to$ figuras). Os scripts são \textbf{idempotentes}. Cada execução
 registra em \texttt{experimentos/logs}: hostname, processador, memória, SO, versão do Python, versões
-das bibliotecas, commit e a linha de comando completa. Consultas e qrels foram fixados \textbf{antes}
-de observar resultados, evitando viés de seleção.
+das bibliotecas, commit e a linha de comando completa. As consultas e a referência manual de relevância foram definidas antes da análise dos resultados,
+reduzindo o risco de viés de seleção.
 
-\subsection{Julgamentos de relevância}
-As 30 consultas recebem julgamentos em escala 0, 1 e 2 por \textbf{dois avaliadores independentes},
-com a adjudicação dos desacordos registrada em \texttt{data/qrels.csv}, o que dá a referência para o
-Precision@k e permite reportar a concordância entre avaliadores.
+\subsection{Referência de relevância}
 
+A avaliação da qualidade utiliza uma referência de relevância construída manualmente para as 30 consultas. Para cada consulta foi definido um conjunto de chunks considerados pertinentes, acompanhado de justificativa. No cálculo de Precision@$k$, os chunks presentes nessa referência são tratados como relevantes e os demais como não relevantes.
 % ============================ 12 ============================
 \section{Resultados e gráficos}\label{sec:resultados}
-\begin{figure}[htbp]\centering
+\begin{figure}[H]\centering
 \includegraphics[width=0.9\textwidth]{figuras/crescimento_teorico.png}
 \caption{Crescimento teórico do número de operações elementares em função de $N$ (escala log em $y$).
 A separação entre $\Theta(N^2)$ (Insertion), $\Theta(N\log N)$ (Merge) e $\Theta(\log N)$ (busca
@@ -672,80 +714,165 @@ binária) motiva as três configurações. Curvas teóricas, não medições.}
 \label{fig:crescimento}
 \end{figure}
 
-\begin{status}
-\textbf{Tabelas empíricas --- a preencher após a execução.} A estrutura de colunas abaixo é a
-definitiva; os valores serão inseridos a partir de \texttt{experimentos/processados} após rodar
-\texttt{scripts/rodar\_experimentos.py}. A previsão qualitativa (não medida) que os experimentos vão
-testar está indicada em itálico após cada tabela.
-\end{status}
 
-\subsection{Tempo por etapa e configuração (mediana de $r$ repetições)}
+\subsection{Tempo por etapa e configuração}
+
 \begin{table}[h]
 \small\centering
 \begin{tabularx}{\textwidth}{@{}llYYYYY@{}}
 \toprule
-\textbf{Config.} & \textbf{N} & \textbf{Ingestão} & \textbf{Ord./índice} & \textbf{Consulta} & \textbf{Total} & \textbf{Comparações}\\
+\textbf{Config.} & \textbf{N} & \textbf{Ingestão (ms)} &
+\textbf{Ord./índice (ms)} & \textbf{Consulta (ms)} &
+\textbf{Total (ms)} & \textbf{Comparações}\\
 \midrule
-C1 & $\sim$330 & --- & --- & --- & --- & ---\\
-C2 & $\sim$330 & --- & --- & --- & --- & ---\\
-C3 & $\sim$330 & --- & --- & --- & --- & ---\\
-C4 (ref.) & $\sim$330 & --- & --- & --- & --- & n/a\\
+C1 & 2737 & 39,31 & 63,87 & 128,03 & 166,81 & 461702\\
+C2 & 2737 & 39,35 & 40,96 & 47,14 & 127,98 & 13039\\
+C3 & 2737 & 39,47 & 2,34 & 65,55 & 105,95 & 12746,5\\
+C4 (ref.) & 2737 & 39,38 & 47,22 & 0,39 & 87,25 & n/a\\
 \bottomrule
 \end{tabularx}
+\caption{Tempos medianos por etapa e contagem de comparações para o corpus completo.}
+\label{tab:tempos-config}
 \end{table}
-\emph{\small Previsão a testar: o tempo de ordenação de C1 cresce como $C_q^2$, superando C2/C3
-conforme os candidatos aumentam; a consulta de C2 é a menor por tocar apenas os candidatos; as
-comparações de C2/C3 ficam perto de $C_q\log_2 C_q$ e as de C1 perto de $C_q^2/2$ no pior caso.}
+
+Os resultados mostram que C1 apresentou o maior tempo total entre as três
+implementações próprias, associado principalmente ao custo da ordenação por
+Insertion Sort. C2 reduziu o tempo de consulta em relação a C1, embora tenha
+incorporado o custo de construção do índice. C3 apresentou o menor tempo total
+entre C1--C3 no corpus completo. A configuração C4 apresentou o menor tempo
+total mediano, sendo utilizada apenas como referência externa baseada em biblioteca.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{figuras/decomposicao_do_tempo.png}
+\caption{Decomposição do tempo mediano por etapa para o corpus completo
+($N=2737$). Em C1, a ordenação representa parcela relevante do custo;
+C2 incorpora o custo de construção do índice; C3 reduz fortemente o custo
+de ordenação; e C4 é apresentada apenas como referência externa.}
+\label{fig:decomposicao-tempo}
+\end{figure}
+
 
 \subsection{Qualidade da recuperação e memória}
+
 \begin{table}[h]
 \small\centering
 \begin{tabularx}{\textwidth}{@{}lYYYY@{}}
 \toprule
-\textbf{Config.} & \textbf{Precision@5} & \textbf{Precision@10} & \textbf{Taxa de vazios} & \textbf{Memória pico (MB)}\\
+\textbf{Config.} & \textbf{Precision@5} & \textbf{Precision@10} &
+\textbf{Taxa de vazios} & \textbf{Memória pico (MB)}\\
 \midrule
-C1 & --- & --- & --- & ---\\
-C2 & --- & --- & --- & ---\\
-C3 & --- & --- & --- & ---\\
-C4 (ref.) & --- & --- & --- & ---\\
+C1 & 0,0867 & 0,0767 & 0\% & 0,44\\
+C2 & 0,0867 & 0,0767 & 0\% & 1,62\\
+C3 & 0,0867 & 0,0767 & 0\% & 0,44\\
+C4 (ref.) & 0,2467 & 0,1833 & 0\% & 2,52\\
 \bottomrule
 \end{tabularx}
+\caption{Qualidade da recuperação e memória para o corpus completo ($N=2737$).}
 \end{table}
-\emph{\small Previsão a testar: C1, C2 e C3 têm \textbf{Precision@k idêntica} (mesma pontuação e
-mesma ordem total), confirmando que a diferença é de custo, não de qualidade; C2 consome mais memória
-pelo índice; C4 pode divergir na Precision@k por usar normalização TF-IDF diferente.}
 
-\subsection{Escalabilidade medida (a preencher)}
+
+\subsection{Escalabilidade medida}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{figuras/comparacoes_por_candidatos.png}
+\caption{Número de comparações em função do número de candidatos com escore positivo.
+Os resultados de C1 apresentam crescimento compatível com o comportamento quadrático
+do Insertion Sort, enquanto C3 acompanha o crescimento $P\log_2 P$ esperado do Merge Sort.}
+\label{fig:comparacoes-candidatos}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{figuras/comparacoes_por_tamanho.png}
+\caption{Mediana do número de comparações por tamanho do corpus.
+C1 apresenta crescimento mais acentuado, enquanto C2 e C3 permanecem em uma faixa
+significativamente menor de comparações.}
+\label{fig:comparacoes-tamanho}
+\end{figure}
+
 \begin{table}[h]
 \small\centering
 \begin{tabularx}{\textwidth}{@{}lYYY@{}}
 \toprule
 \textbf{N (chunks)} & \textbf{C1 total (ms)} & \textbf{C2 total (ms)} & \textbf{C3 total (ms)}\\
 \midrule
-$\sim$82 (25\%) & --- & --- & ---\\
-$\sim$165 (50\%) & --- & --- & ---\\
-$\sim$330 (100\%) & --- & --- & ---\\
+684 (25\%) & 28,80 & 31,28 & 25,38\\
+1368 (50\%) & 68,04 & 65,38 & 53,31\\
+2737 (100\%) & 167,04 & 128,63 & 105,73\\
 \bottomrule
 \end{tabularx}
+\caption{Tempo total mediano por tamanho do corpus para as três configurações implementadas.}
+\label{tab:escalabilidade}
 \end{table}
-\emph{\small Previsão a testar: a curva de C1 acompanha o crescimento super-linear do Insertion Sort;
-C2 e C3 crescem de forma quase linear-logarítmica; a vantagem de C2 se amplia com $N$.}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{figuras/tempo_por_tamanho.png}
+\caption{Tempo total mediano por execução em função do tamanho do corpus.
+O tempo cresce nas três configurações, com crescimento mais acentuado em C1.
+No corpus completo, C3 apresenta o menor tempo total entre as implementações próprias.}
+\label{fig:tempo-tamanho}
+\end{figure}
 
 % ============================ 13 ============================
+\FloatBarrier
 \section{Discussão de escalabilidade}
-Para o corpus atual ($\sim$330 chunks) as três configurações rodam em milissegundos; interessa a
-\textbf{tendência}. À medida que o acervo cresce (dezenas de livros, $N$ na casa dos milhares):
+Para o corpus atual ($\sim$2737 chunks, dos quais a mediana de candidatos com escore positivo é
+$C_q\approx1.403$, cerca de metade) as três configurações rodam em milissegundos; o que interessa é a
+\textbf{tendência} quando o acervo cresce (dezenas de livros, $N$ na casa dos milhares). O comportamento
+de cada configuração segue diretamente das fórmulas dos algoritmos que a compõem:
 \begin{itemize}[leftmargin=1.4em,itemsep=2pt]
-\item \textbf{C1} torna-se inviável: Insertion Sort cresce como $C_q^2$ e a varredura toca todos os
-$N$ chunks por consulta.
-\item \textbf{C2} desacopla o custo de consulta do tamanho total: depende da \textbf{seletividade dos
-termos} ($P$, $C_q$) e de $\log V$, não de $N$. É a única que escala para acervos grandes --- ao
-custo de memória para o índice ($\Theta(V+P_{\text{tot}})$).
-\item \textbf{C3} mantém a ordenação em $\Theta(N\log N)$, mas ainda paga a varredura $\Theta(Nm)$.
+\item \textbf{C1 (varredura + Insertion Sort)} torna-se inviável: a varredura toca todos os $N$ chunks
+por consulta, $\Theta(N(m+\ell))$, e a ordenação cresce como $\Theta(C_q^2)$. É o termo quadrático que
+domina --- pela Tabela~\ref{tab:tempos-config} e pela Figura~\ref{fig:decomposicao-tempo}, a fatia da
+ordenação no tempo total do C1 sobe de $\approx 13\%$ com 684 chunks para $\approx 38\%$ com 2737.
+\item \textbf{C2 (índice + busca binária + Merge Sort)} desacopla a \emph{seleção} de candidatos do
+tamanho total: localiza os termos no vocabulário ordenado em $\Theta(m\log V)$ e pontua apenas os chunks
+presentes nas listas de postings, ordenando-os em $\Theta(C_q\log C_q)$. A consulta não depende de $N$,
+ao custo de memória para o índice.
+\item \textbf{C3 (varredura + Merge Sort)} troca a ordenação por $\Theta(C_q\log C_q)$, mas ainda paga a
+varredura completa $\Theta(N(m+\ell))$ por consulta.
 \end{itemize}
-Esse é o trade-off central da recuperação: gastar memória e indexação uma vez para tornar cada
-consulta sublinear. Bibliotecas como FAISS levam a ideia ao caso vetorial denso; aqui a demonstramos
-no caso lexical, com estruturas clássicas.
+
+\textbf{O que os contadores e os gráficos confirmam.} A instrumentação de comparações valida essas
+ordens de crescimento melhor que o cronômetro, que também mede o interpretador Python:
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+\item Ao \textbf{dobrar} o corpus, as comparações do C1 se multiplicam por $\approx 4{,}0$ (assinatura de
+$\Theta(C_q^2)$) e as do C3 por $\approx 2{,}2$ (assinatura de $\Theta(C_q\log C_q)$); os pontos medidos
+acompanham as curvas $C_q^2/4$ e $C_q\log_2 C_q$ (Figuras~\ref{fig:comparacoes-candidatos}
+e~\ref{fig:comparacoes-tamanho}). No corpus inteiro, pela Tabela~\ref{tab:tempos-config}, o C1 faz
+\textbf{461.702} comparações contra \textbf{12.746} do C3 --- cerca de 36 vezes mais para devolver a
+mesma lista.
+\item Em valor absoluto, o Insertion Sort ficou em torno de $93\%$ de $C_q^2/4$ e o Merge Sort em $85\%$
+de $C_q\log_2 C_q$: medições próximas da previsão teórica.
+\item No tempo (Figura~\ref{fig:tempo-tamanho} e Tabela~\ref{tab:escalabilidade}), C2, C3 e C4 crescem de
+forma aproximadamente \textbf{linear} em $N$ (dobrar o corpus dobra o tempo), enquanto o C1 cresce mais
+rápido ($\approx 2{,}4\times$ por dobra). Extrapolando, num acervo quatro vezes maior a ordenação do C1
+passaria de $1$\,s por consulta, enquanto a do C3 ficaria na casa de $10$\,ms.
+\end{itemize}
+
+\textbf{Qual escala melhor.} O C1 não escala: o gargalo quadrático da ordenação cresce mais rápido que o
+corpus. Entre C2 e C3 --- ambas com ordenação $\Theta(C_q\log C_q)$ --- a diferença está na
+\emph{seleção}: pela Tabela~\ref{tab:tempos-config}, o C2 tem a consulta mais rápida entre as
+implementações da equipe ($47{,}14$\,ms contra $65{,}55$\,ms do C3) por não pontuar todos os chunks. O
+preço é construir e guardar o índice ($\approx 41$\,ms e $\approx 3{,}7\times$ a memória do C3). Como o
+índice é reaproveitável, a partir de poucas consultas sobre o mesmo corpus o C2 sai mais barato no
+acumulado ($40{,}96 + 47{,}14\,n$ contra $65{,}55\,n$; o C2 vence a partir da terceira consulta).
+\textbf{Conclusão:} para um acervo estável consultado muitas vezes, o \textbf{C2 (índice)} é o que escala
+melhor; para consultas avulsas ou memória restrita, o \textbf{C3} é preferível; o C1 só se justifica em
+corpora pequenos.
+
+\textbf{Ressalva medida.} A vantagem do índice depende de \textbf{seletividade}: só se materializa quando
+$C_q\ll N$. Neste corpus $C_q\approx N/2$, porque termos frequentes das consultas (``que'', ``como'',
+``uma'') aparecem em quase todo chunk, o que limita o ganho do C2 aqui; com vocabulário de consulta mais
+seletivo (ou remoção de \emph{stopwords}) a distância entre $C_q$ e $N$ aumenta e a vantagem do C2 cresce.
+
+Essa comparação de custo só é legítima porque o \textbf{teste de equivalência} confirmou que C1, C2 e C3
+devolvem a \emph{mesma} lista, na mesma ordem, em todas as combinações de tamanho, consulta e $k$ (zero
+divergências nas 3600 execuções): a escolha entre elas é puramente de escalabilidade, não de qualidade.
+Esse é o trade-off central da recuperação --- gastar memória e tempo de indexação uma vez para reduzir o
+conjunto de chunks examinados em cada consulta seletiva. Bibliotecas como FAISS levam a ideia ao caso
+vetorial denso; aqui a demonstramos no caso lexical, com estruturas clássicas.
 
 % ============================ 14 ============================
 \section{Relação com IA generativa e RAG}\label{sec:rag}
@@ -775,8 +902,8 @@ de memória.
 % ============================ 15 ============================
 \section{Limitações e ameaças à validade}\label{sec:limit}
 \begin{itemize}[leftmargin=1.4em,itemsep=2pt]
-\item \textbf{Construção.} A Precision@k depende de julgamentos subjetivos; mitigada com dois
-avaliadores e adjudicação, mas imperfeita.
+\item \textbf{Construção.} A Precision@$k$ depende de uma referência manual de relevância, que envolve julgamento humano e pode conter subjetividade. Para reduzir esse risco, cada associação entre consulta e chunk relevante foi acompanhada de justificativa, mas a referência ainda é limitada
+ao conjunto de 30 consultas adotado no estudo.
 \item \textbf{Interna.} Medições de tempo em Python sofrem com coletor de lixo, cache e aquecimento;
 reportamos medianas, descartamos as duas primeiras execuções e contamos operações como métrica independente.
 \item \textbf{Externa.} Um único livro introdutório em português (domínio programação) não generaliza;
@@ -799,16 +926,17 @@ ou rejeitadas, erros identificados e a verificação aplicada. Resumo até esta 
 \midrule
 Assistente de IA generativa (registrar o modelo exibido na interface) &
 Apoio à estruturação e redação deste relatório e à formatação da prova e dos pseudocódigos. &
-Toda saída de IA será conferida quanto a corretude, complexidade, casos de borda, estabilidade de
-ordenação e desempate, e coerência entre análise e experimento (\S9 do enunciado). Código, prova ou
-análise não verificados não entram no trabalho.\\
+Toda saída de IA foi conferida quanto à corretude, complexidade, casos de borda,
+estabilidade de ordenação, desempate e coerência entre análise e experimento.
+Código, prova ou análise não verificados não foram incorporados ao trabalho.\\
 \bottomrule
 \end{tabularx}
 \end{table}
 \begin{nota}
-\textbf{Compromisso de uso crítico.} A prova da Seção~\ref{sec:corretude} será validada por testes de
-estabilidade e desempate; os pseudocódigos, por implementação e testes unitários; e as previsões da
-Seção~\ref{sec:resultados}, pela execução real.
+\textbf{Compromisso de uso crítico.}
+A prova da Seção 7 foi validada por testes de ordenação e desempate;
+os pseudocódigos foram confrontados com a implementação e os testes unitários;
+e as análises da Seção 12 foram verificadas por meio das execuções experimentais.
 \end{nota}
 
 % ============================ 17 ============================

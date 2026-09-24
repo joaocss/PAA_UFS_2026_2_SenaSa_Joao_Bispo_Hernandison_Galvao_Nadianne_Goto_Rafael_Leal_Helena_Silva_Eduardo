@@ -1,0 +1,85 @@
+========================================================================
+COMO RODAR O PROJETO NO WINDOWS (PowerShell)
+Recuperacao de contexto para IA generativa - AV1 PAA 2026.2 (PROCC/UFS)
+========================================================================
+
+PRE-REQUISITOS
+--------------
+- Python 3.11 ou superior. Para instalar as dependencias (testes, figuras e
+  o baseline C4) use o Python 3.12: os pacotes travados (numpy, scikit-learn,
+  matplotlib) podem nao ter versao pronta para o Python 3.14.
+- Git instalado. E necessario porque o corpus (o livro) e baixado via
+  "git clone" num commit fixo.
+- Conexao com a internet (apenas para baixar o corpus).
+
+Abra o PowerShell e entre na pasta do projeto:
+
+    cd "C:\Users\herna\Desktop\Trabalho_PAA\PAA_UFS_2026_2_SenaSa_Joao_Bispo_Hernandison_Galvao_Nadianne_Goto_Rafael_Leal_Helena_Silva_Eduardo"
+
+
+========================================================================
+CAMINHO A - RODAR UMA CONSULTA (o essencial, SEM instalar nada)
+========================================================================
+As configuracoes C1, C2 e C3 e o consultar.py usam apenas a biblioteca
+padrao do Python, entao nao precisam de "pip install".
+
+    python scripts\baixar_corpus.py       # baixa o livro (Git) -> data\raw
+    python scripts\preparar_corpus.py     # gera data\processed\chunks.jsonl
+    python scripts\consultar.py --consulta "o que e recursao" --k 5 --config C1
+
+- Troque --config por C2 ou C3 para comparar as tres (devem devolver a mesma
+  lista para a mesma consulta).
+- Mais rapido (so os 8 primeiros capitulos, como no checkpoint de 10/09):
+    python scripts\preparar_corpus.py --notebooks 8
+
+
+========================================================================
+CAMINHO B - RODAR TUDO (testes, experimentos, graficos, C4)
+========================================================================
+Precisa de ambiente virtual + dependencias. Use o Python 3.12:
+
+    py -3.12 -m venv .venv
+    .\.venv\Scripts\Activate.ps1
+    python -m pip install --upgrade pip
+    pip install -e ".[dev]"
+
+OBS: se o PowerShell bloquear a ativacao ("execucao de scripts desabilitada"),
+rode antes (vale so para a janela atual):
+
+    Set-ExecutionPolicy -Scope Process -Bypass -Force
+
+e ative de novo. Alternativa: use  .\.venv\Scripts\activate.bat
+
+Com o ambiente ativo (aparece "(.venv)" no inicio do prompt):
+
+    pytest                              # ~87 testes; usam fixtures, NAO precisa do corpus.
+                                        # Jeito mais rapido de ver se esta tudo ok.
+
+    python scripts\reproduzir_tudo.py           # pipeline completo (~15 min):
+                                                # download -> chunks -> experimentos -> figuras
+    python scripts\reproduzir_tudo.py --rapido  # versao reduzida, so para conferir o fluxo
+
+Ou os estagios isolados, na ordem:
+
+    python scripts\baixar_corpus.py
+    python scripts\preparar_corpus.py
+    python scripts\rodar_experimentos.py   # grava em experimentos\brutos
+    python scripts\gerar_figuras.py        # tabelas em experimentos\processados
+                                           # e graficos em experimentos\figuras
+
+Para sair do ambiente virtual depois:  deactivate
+
+
+========================================================================
+RESUMO RAPIDO
+========================================================================
+- So ver o protótipo respondendo:      Caminho A (3 comandos, sem instalar).
+- So verificar se o projeto esta ok:   Caminho B ate "pytest" (nao baixa nada).
+- Gerar tudo (relatorio/experimentos): Caminho B + reproduzir_tudo.py.
+
+Configuracoes:
+  C1 = busca linear + Insertion Sort
+  C2 = indice invertido + busca binaria + Merge Sort
+  C3 = busca linear + Merge Sort
+  C4 = TF-IDF do scikit-learn (referencia externa)
+========================================================================
