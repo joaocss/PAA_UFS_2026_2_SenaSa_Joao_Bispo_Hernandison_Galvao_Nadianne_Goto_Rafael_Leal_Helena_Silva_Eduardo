@@ -19,7 +19,11 @@ A tabela de contribuições com evidências está em `docs/CONTRIBUICOES.md`.
 
 ## Vídeo da atividade
 
-URL: a preencher até 22/09/2026.
+Gravações individuais (a URL do vídeo consolidado substitui esta lista quando a junção for publicada):
+
+- João Cosme Sena Sá: https://www.loom.com/share/aab4b4cd6a934bb892fd6c4bb73bcd85
+- Nadianne Maria dos Santos Galvão: https://drive.google.com/file/d/1WWhyEl1k9qLuE8Sod03WE9qJ3bNDWx3Y/view?usp=drive_link
+- Rafael Takeguma Goto: https://drive.google.com/file/d/13jiWmtcPA6ZGqowYDyxqEHd5966waPa8/view?usp=sharing
 
 Dados completos de gravação e participantes em `VIDEO.md`.
 
