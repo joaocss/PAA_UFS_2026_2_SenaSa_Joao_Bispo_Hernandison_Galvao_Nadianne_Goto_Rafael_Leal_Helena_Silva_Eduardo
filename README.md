@@ -22,6 +22,7 @@ A tabela de contribuições com evidências está em `docs/CONTRIBUICOES.md`.
 Gravações individuais (a URL do vídeo consolidado substitui esta lista quando a junção for publicada):
 
 - João Cosme Sena Sá: https://www.loom.com/share/aab4b4cd6a934bb892fd6c4bb73bcd85
+- Helena Carvalho Leal: https://drive.google.com/file/d/1mrltLobY4q7kejFFrKunLzwvc68bTs38/view?usp=drive_link
 - Nadianne Maria dos Santos Galvão: https://drive.google.com/file/d/1WWhyEl1k9qLuE8Sod03WE9qJ3bNDWx3Y/view?usp=drive_link
 - Rafael Takeguma Goto: https://drive.google.com/file/d/13jiWmtcPA6ZGqowYDyxqEHd5966waPa8/view?usp=sharing
 
