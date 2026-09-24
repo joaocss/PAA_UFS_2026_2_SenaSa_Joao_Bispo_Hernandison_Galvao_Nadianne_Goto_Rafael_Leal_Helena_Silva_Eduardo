@@ -7,7 +7,8 @@ Este arquivo é preenchido durante o trabalho, não na véspera da entrega. Cada
 | Ferramenta | Modelo exibido na interface | Período de uso |
 | --- | --- | --- |
 | OpenAI Codex (João) | conferir na interface | 01/09/2026 |
-| Claude Code, Anthropic (João) | Claude Fable 5.1; Claude Opus 5.5 | 02/09/2026 a 23/09/2026 |
+| Claude Code, Anthropic (João) | Claude Fable 5.1; Claude Opus 5.5 | 02/09/2026 a 24/09/2026 |
+| ChatGPT, OpenAI (João) | GPT-6 Astra | setembro de 2026 |
 | ChatGPT, OpenAI (Nadianne) | GPT-5.6 Sol | 18/09/2026 a 19/09/2026 |
 | a preencher | a preencher | a preencher |
 
@@ -21,6 +22,7 @@ Este arquivo é preenchido durante o trabalho, não na véspera da entrega. Cada
 | 19/09 | João | Medição dos contadores contra a previsão assintótica e teste de mutação do Merge Sort, em cópia descartável | Números usados na análise e em `tests/README.md` |
 | 22/09 | João | Conversão das 30 perguntas para `data/queries.csv`, com as seções conferidas contra o corpus, e redação de `tests/README.md` | `data/queries.csv`, `docs/CONTRATOS.md`, `tests/README.md` |
 | 23/09 | João | Levantamento das pendências da entrega, reprodução completa em máquina limpa, script de ingestão e sensibilidade ao tamanho do chunk, atualização da documentação | `scripts/medir_ingestao.py`, `experimentos/processados/ingestao_e_sensibilidade.md`, `docs/RESULTADOS.md`, `data/README.md`, `tests/README.md` |
+| 23/09 a 24/09 | João | Conferência do relatório contra o código e o enunciado, importação do gabarito de relevância para `qrels.csv`, roteiro do vídeo, apresentação em slides gerada a partir dos resultados | `scripts/montar_qrels.py`, `data/qrels.csv`, `slides/apresentacao_av1.pdf`, `VIDEO.md` |
 | 18/09 a 19/09 | Nadianne | Apoio na análise formal de corretude do Merge Sort, definição das hipóteses, prova por indução, invariante de `_merge`, término e limites do argumento | `docs/CORRETUDE.md` |
 | 18/09 a 19/09 | Nadianne | Apoio na análise no modelo RAM, melhor/pior/médio caso e recorrências dos algoritmos | documento de análise em `docs/` e slides |
 | 19/09 | Nadianne | Apoio na elaboração de testes específicos da relação de ordenação por `score` e `source_order` | `tests/unit/test_sort_key.py` |
