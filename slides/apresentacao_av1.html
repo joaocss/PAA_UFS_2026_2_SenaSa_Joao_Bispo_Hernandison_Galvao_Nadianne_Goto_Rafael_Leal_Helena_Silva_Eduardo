@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Apresentação AV1 — Recuperação de contexto para IA generativa</title>
+<style>
+  @page { size: 10in 5.625in; margin: 0; }
+  :root {
+    --escuro: #1F3D2B; --musgo: #6E9B4E; --claro: #F3F6F1; --texto: #23302A;
+    --cinza: #6B7770; --branco: #FFFFFF; --laranja: #B5541B; --verde-claro: #CFE0C6; --verde-suave: #9DB79B;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #fff; }
+  body { font-family: "Liberation Sans", "Carlito", Calibri, Arial, sans-serif; color: var(--texto); }
+  .slide {
+    width: 10in; height: 5.625in; position: relative; overflow: hidden;
+    page-break-after: always; break-after: page; padding: 0.35in 0.5in 0.45in 0.5in; background: var(--branco);
+  }
+  .slide:last-child { page-break-after: auto; }
+  .escuro { background: var(--escuro); color: var(--branco); }
+  h1 { font-family: "Liberation Serif", "Caladea", Cambria, Georgia, serif; font-size: 28pt; margin: 0 0 0.22in 0; color: var(--escuro); line-height: 1.15; }
+  .escuro h1 { color: var(--branco); }
+  .rodape { position: absolute; bottom: 0.18in; left: 0.5in; right: 0.5in; font-size: 8.5pt; color: var(--cinza); display: flex; justify-content: space-between; }
+  .escuro .rodape { color: var(--verde-suave); }
+  p, li { font-size: 12.5pt; line-height: 1.32; }
+  ul { margin: 0; padding-left: 0.2in; }
+  li { margin-bottom: 0.06in; }
+  .duas { display: grid; grid-template-columns: 1fr 1fr; gap: 0.35in; }
+  .col-5-4 { display: grid; grid-template-columns: 5.2in 3.5in; gap: 0.3in; }
+  .cartao { background: var(--claro); border-radius: 0.09in; padding: 0.16in 0.2in; }
+  .cartao h3 { margin: 0 0 0.08in 0; font-size: 14pt; color: var(--escuro); }
+  .cartao p, .cartao li { font-size: 11pt; }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.2in; margin-bottom: 0.25in; }
+  .stat { background: var(--claro); border-radius: 0.09in; padding: 0.14in 0.1in; text-align: center; }
+  .stat .n { font-family: "Liberation Serif", Cambria, Georgia, serif; font-size: 26pt; font-weight: bold; color: var(--escuro); line-height: 1.1; }
+  .stat .n.musgo { color: var(--musgo); } .stat .n.laranja { color: var(--laranja); }
+  .stat .r { font-size: 10pt; color: var(--cinza); margin-top: 0.06in; line-height: 1.25; }
+  table { border-collapse: collapse; width: 100%; font-size: 11pt; }
+  th { background: var(--escuro); color: #fff; font-weight: bold; text-align: left; padding: 0.06in 0.1in; }
+  td { padding: 0.06in 0.1in; border-bottom: 1px solid #DDE3DC; }
+  tr:nth-child(even) td { background: var(--claro); }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  td.num { white-space: nowrap; }
+  th.larga { width: 2.1in; }
+  .destaque { color: var(--musgo); font-style: italic; }
+  .passo { display: grid; grid-template-columns: 0.5in 1fr; gap: 0.15in; align-items: start; margin-bottom: 0.14in; }
+  .passo .num { width: 0.48in; height: 0.48in; border-radius: 50%; background: var(--musgo); color: #fff; font-weight: bold; font-size: 16pt; display: flex; align-items: center; justify-content: center; font-family: "Liberation Serif", serif; }
+  .passo b { display: block; font-size: 13.5pt; color: var(--escuro); margin-bottom: 0.03in; }
+  .passo span { font-size: 11pt; }
+  .grade-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.25in; }
+  .grade-3 h3 { color: var(--musgo); font-size: 13.5pt; margin: 0 0 0.08in 0; }
+  .grade-3 li { font-size: 11pt; }
+  .teorema { background: var(--claro); border-radius: 0.09in; padding: 0.12in 0.2in; font-size: 12pt; color: var(--escuro); margin-bottom: 0.2in; }
+  .rag { display: grid; grid-template-columns: 1fr 1fr; gap: 0.18in; }
+  .rag .cartao b { display: block; font-size: 12.5pt; color: var(--escuro); margin-bottom: 0.04in; }
+  .rag .cartao span { font-size: 10.5pt; }
+  .capa h1 { font-size: 30pt; margin-top: 0.4in; }
+  .capa .sub { font-size: 15pt; color: var(--verde-claro); margin: 0.1in 0 0.5in 0; }
+  .capa .equipe { font-size: 12.5pt; line-height: 1.5; }
+  .capa .meta { font-size: 11.5pt; color: var(--verde-suave); margin-top: 0.45in; }
+  .final .ponto { margin-bottom: 0.28in; }
+  .final .ponto b { display: block; font-family: "Liberation Serif", Cambria, serif; font-size: 19pt; color: var(--verde-claro); margin-bottom: 0.04in; }
+  .final .ponto span { font-size: 12.5pt; }
+  .final .link { font-size: 10pt; color: var(--verde-suave); margin-top: 0.35in; line-height: 1.5; }
+  img.fig { width: 100%; display: block; border-radius: 0.06in; }
+  .formula { font-family: "Liberation Mono", "Courier New", monospace; font-size: 11.5pt; }
+  .peq { font-size: 10.5pt; color: var(--cinza); }
+</style>
+</head>
+<body>
+
+<!-- 1 -->
+<section class="slide escuro capa">
+  <h1>Recuperação de contexto para IA generativa em materiais educacionais abertos</h1>
+  <div class="sub">Corretude, eficiência e qualidade de três estratégias de ordenação e busca sobre o livro <i>Pense Python</i></div>
+  <div class="equipe">João Cosme Sena Sá · Eduardo Henrique do Lago Silva · Helena Carvalho Leal<br>Hernandison da Silva Bispo · Nadianne Maria dos Santos Galvão · Rafael Takeguma Goto</div>
+  <div class="meta">Tema 8 · Projeto e Análise de Algoritmos · Prof. Glauco Carneiro · PROCC/UFS · 24/09/2026</div>
+  <div class="rodape"><span>PAA · PROCC/UFS · AV1 2026.2</span><span>1</span></div>
+</section>
+
+<!-- 2 -->
+<section class="slide">
+  <h1>Problema e corpus</h1>
+  <div class="col-5-4">
+    <ul>
+      <li><b>Entrada:</b> corpus C com N chunks, consulta q em português, k resultados</li>
+      <li><b>Saída:</b> lista R com até k chunks, ordenada por relevância não crescente, sem repetição</li>
+      <li><b>Relevância</b> tf-idf lexical: <span class="formula">tf = 1 + ln f</span>, <span class="formula">idf = ln((N+1)/(df+1)) + 1</span></li>
+      <li><b>Ordem total:</b> maior escore primeiro; empate decidido pela posição no livro (<span class="formula">source_order</span>)</li>
+      <li><b>Casos de borda:</b> consulta vazia, k = 0 ou nenhum termo casando devolvem lista vazia; k maior que os candidatos devolve todos</li>
+    </ul>
+    <div class="cartao">
+      <h3>Pense Python</h3>
+      <ul>
+        <li>Tradução livre da 3ª ed. de <i>Think Python</i> (Downey; trad. Carlson)</li>
+        <li>21 notebooks, 817.578 bytes, commit fixado e hash conferido</li>
+        <li>2.737 chunks (256 tokens, sobreposição 32, corte por célula)</li>
+        <li>30 consultas escritas antes dos resultados: 10 fáceis, 10 médias, 10 difíceis</li>
+        <li>Texto CC BY-NC-SA: não versionado, baixado por script</li>
+      </ul>
+    </div>
+  </div>
+  <div class="rodape"><span>PAA · PROCC/UFS · AV1 2026.2</span><span>2</span></div>
+</section>
+
+<!-- 3 -->
+<section class="slide">
+  <h1>Quatro configurações, uma só função de relevância</h1>
+  <table>
+    <tr><th>Config.</th><th>Busca</th><th>Ordenação</th><th>Papel</th></tr>
+    <tr><td>C1</td><td>varredura linear</td><td>Insertion Sort (equipe)</td><td>baseline</td></tr>
+    <tr><td>C2</td><td>índice invertido + busca binária no vocabulário</td><td>Merge Sort (equipe)</td><td>busca indexada</td></tr>
+    <tr><td>C3</td><td>varredura linear</td><td>Merge Sort (equipe)</td><td>divisão e conquista</td></tr>
+    <tr><td>C4</td><td>TfidfVectorizer + cosseno (scikit-learn)</td><td>biblioteca</td><td>referência externa</td></tr>
+  </table>
+  <p style="margin-top:0.25in">C1, C2 e C3 devem devolver exatamente a mesma lista: só o custo muda. C4 normaliza os vetores (norma L2) e por isso pode devolver outra lista; é analisada à parte e não substitui nenhuma exigência.</p>
+  <p class="destaque">Cinco algoritmos obrigatórios cobertos: busca linear · Insertion Sort · Merge Sort (também a divisão e conquista) · busca binária · comparação com biblioteca</p>
+  <div class="rodape"><span>PAA · PROCC/UFS · AV1 2026.2</span><span>3</span></div>
+</section>
+
+<!-- 4 -->
+<section class="slide">
+  <h1>C2: índice invertido com busca binária</h1>
+  <div class="col-5-4">
+    <div>
+      <div class="passo"><div class="num">1</div><div><b>Construção</b><span>cada termo do corpus ganha a lista crescente das posições dos chunks em que aparece; o vocabulário é ordenado uma vez</span></div></div>
+      <div class="passo"><div class="num">2</div><div><b>Busca binária</b><span>cada termo da consulta é localizado no vocabulário em Θ(log V) comparações</span></div></div>
+      <div class="passo"><div class="num">3</div><div><b>União</b><span>as listas dos termos encontrados são unidas com dois ponteiros, como no merge</span></div></div>
+      <div class="passo"><div class="num">4</div><div><b>Pontuação e Merge Sort</b><span>só os candidatos da união são pontuados, com a mesma função de C1 e C3, e ordenados</span></div></div>
+    </div>
+    <div class="cartao">
+      <h3>Corretude da busca binária</h3>
+      <p>Só vale porque o vocabulário está ordenado pela mesma chave que o laço compara. Invariante: se o termo existe, está em <span class="formula">vocab[lo..hi]</span> no início de cada iteração.</p>
+      <p><b>Custo real da consulta</b><br><span class="formula">O(m log V + m·S + P(m + n))</span><br><span class="peq">S = soma dos postings dos termos, P = candidatos, n = tokens do chunk</span></p>
+    </div>
+  </div>
+  <div class="rodape"><span>PAA · PROCC/UFS · AV1 2026.2</span><span>4</span></div>
+</section>
+
+<!-- 5 -->
+<section class="slide">
+  <h1>Corretude do Merge Sort</h1>
+  <div class="teorema"><b>Teorema.</b> Para uma lista finita de candidatos com <span class="formula">source_order</span> únicos e a ordem total ≼ (maior escore; empate por menor <span class="formula">source_order</span>), <span class="formula">merge_sort</span> termina e devolve uma permutação da entrada ordenada por ≼.</div>
+  <div class="grade-3">
+    <div><h3>Invariante de _merge</h3><ul>
+      <li>A saída está ordenada por ≼</li>
+      <li>Contém exatamente os elementos já consumidos de <i>left</i> e <i>right</i></li>
+      <li>Todo elemento da saída ≼ qualquer elemento ainda não consumido</li>
+      <li>Inicialização, manutenção e término verificados</li></ul></div>
+    <div><h3>Indução no tamanho</h3><ul>
+      <li>Base: |A| ≤ 1 devolve a própria lista</li>
+      <li>Passo: as metades, menores que n, são corretas por hipótese; o merge junta preservando a ordem</li>
+      <li>A recursão termina: ⌊n/2⌋ &lt; n</li></ul></div>
+    <div><h3>Limites do argumento</h3><ul>
+      <li>Garante a ordenação, não a relevância semântica</li>
+      <li>Exige escores finitos e ids únicos</li>
+      <li>Testes: entradas embaralhadas, empates, k maior que os candidatos; 131 testes passando</li></ul></div>
+  </div>
+  <div class="rodape"><span>PAA · PROCC/UFS · AV1 2026.2</span><span>5</span></div>
+</section>
+
+<!-- 6 -->
+<section class="slide">
+  <h1>Modelo RAM, casos e recorrências</h1>
+  <table>
+    <tr><th>Algoritmo</th><th>Melhor</th><th>Pior</th><th>Médio</th><th>Espaço extra</th></tr>
+    <tr><td>Pontuação linear (N chunks, m termos, L tokens)</td><td>Θ(N·m + L)</td><td>Θ(N·m + L)</td><td>Θ(N·m + L)</td><td>Θ(P)</td></tr>
+    <tr><td>Insertion Sort (P candidatos)</td><td>Θ(P)</td><td>Θ(P²)</td><td>Θ(P²)</td><td>Θ(1)</td></tr>
+    <tr><td>Merge Sort (P candidatos)</td><td>Θ(P log P)</td><td>Θ(P log P)</td><td>Θ(P log P)</td><td>Θ(P)</td></tr>
+    <tr><td>Busca binária (V termos)</td><td>Θ(1)</td><td>Θ(log V)</td><td>Θ(log V)</td><td>Θ(1)</td></tr>
+  </table>
+  <div class="duas" style="margin-top:0.22in">
+    <div class="cartao">
+      <p><b>Merge Sort:</b> <span class="formula">T(P) = 2·T(P/2) + Θ(P)</span> ⇒ Θ(P log P)<br><span class="peq">duas chamadas nas metades; o merge percorre as duas uma vez</span></p>
+      <p><b>Busca binária:</b> <span class="formula">T(V) = T(V/2) + Θ(1)</span> ⇒ Θ(log V)<br><span class="peq">uma chamada sobre metade do vocabulário; Θ(1) no meio e na comparação</span></p>
+    </div>
+    <div>
+      <p style="font-size:11.5pt"><b>Parâmetros declarados:</b> N chunks, L tokens do corpus, m termos da consulta, V termos distintos, P candidatos com escore &gt; 0, k resultados.</p>
+      <p style="font-size:11.5pt">A pontuação recalcula os termos de cada chunk a cada consulta, por isso o termo L entra no custo: no corpus inteiro, L = 72.205 supera N·m = 27.370.</p>
+    </div>
+  </div>
+  <div class="rodape"><span>PAA · PROCC/UFS · AV1 2026.2</span><span>6</span></div>
+</section>
+
+<!-- 7 -->
+<section class="slide">
+  <h1>Metodologia experimental</h1>
+  <div class="stats">
+    <div class="stat"><div class="n">3.600</div><div class="r">execuções registradas, uma linha por execução</div></div>
+    <div class="stat"><div class="n">4 × 3 × 30</div><div class="r">configurações × tamanhos de corpus × consultas</div></div>
+    <div class="stat"><div class="n">k = 5 e 10</div><div class="r">5 repetições após 2 aquecimentos descartados</div></div>
+    <div class="stat"><div class="n musgo">0</div><div class="r">divergências entre C1, C2 e C3 em 180 combinações</div></div>
+  </div>
+  <ul>
+    <li>Tamanhos: 25 %, 50 % e 100 % dos chunks (684, 1.368 e 2.737), sorteados por capítulo com semente 2026</li>
+    <li>Ordem das configurações sorteada em cada bloco; mediana e intervalo interquartil por célula</li>
+    <li>Métricas: tempo de ingestão, índice, busca, ordenação, consulta e total; memória de pico (tracemalloc); comparações e trocas por contadores internos; Precision@k, Recall@k, nDCG@k e MRR contra o gabarito</li>
+    <li>Ambiente registrado: Apple M5, macOS, Python 3.14.7, scikit-learn 1.6.1, commit e linha de comando</li>
+    <li>Reprodução: <span class="formula">python scripts/reproduzir_tudo.py</span>, conferida em máquina limpa com resultados idênticos</li>
+  </ul>
+  <div class="rodape"><span>PAA · PROCC/UFS · AV1 2026.2</span><span>7</span></div>
+</section>
+
+<!-- 8 -->
+<section class="slide">
+  <h1>Comparações: quadrático contra n log n</h1>
+  <div class="col-5-4">
+    <img class="fig" src="../experimentos/figuras/comparacoes_por_tamanho.png" alt="Comparações por tamanho do corpus, escala log">
+    <div>
+      <div class="stat" style="margin-bottom:0.2in"><div class="n">×4 vs ×2,2</div><div class="r">comparações por dobra de candidatos: Insertion (C1) e Merge (C2, C3)</div></div>
+      <div class="stat" style="margin-bottom:0.2in"><div class="n musgo">36×</div><div class="r">menos comparações no corpus inteiro para devolver a mesma lista</div></div>
+      <p class="peq">Insertion Sort fez 93 % de P²/4; Merge Sort, 85 % de P log₂ P (medianas por consulta). A C2 soma poucas dezenas de comparações da busca binária.</p>
+    </div>
+  </div>
+  <div class="rodape"><span>PAA · PROCC/UFS · AV1 2026.2</span><span>8</span></div>
+</section>
+
+<!-- 9 -->
+<section class="slide">
+  <h1>Tempo, memória e escalabilidade</h1>
+  <div class="col-5-4">
+    <table>
+      <tr><th class="larga">Configuração (corpus inteiro)</th><th class="num">Total (ms)</th><th class="num">Consulta (ms)</th><th class="num">Comparações</th><th class="num">Memória</th></tr>
+      <tr><td>C1 varredura + Insertion</td><td class="num">167,0</td><td class="num">127,9</td><td class="num">461.702</td><td class="num">451 KiB</td></tr>
+      <tr><td>C2 índice + binária + Merge</td><td class="num">128,6</td><td class="num">47,7</td><td class="num">13.039</td><td class="num">1.659 KiB</td></tr>
+      <tr><td>C3 varredura + Merge</td><td class="num">105,7</td><td class="num">65,8</td><td class="num">12.746</td><td class="num">452 KiB</td></tr>
+      <tr><td>C4 scikit-learn</td><td class="num">87,1</td><td class="num">0,4</td><td class="num">n/a</td><td class="num">2.581 KiB</td></tr>
+    </table>
+    <img class="fig" src="../experimentos/figuras/decomposicao_do_tempo.png" alt="Decomposição do tempo por etapa">
+  </div>
+  <ul style="margin-top:0.2in">
+    <li>C1 cresce 2,4× por dobra do corpus: a ordenação sobe de 13 % para 38 % do total</li>
+    <li>C2 tem a consulta mais rápida da equipe (47,7 ms), mas paga 40,8 ms de índice; compensa a partir da 3ª consulta com o índice reaproveitado</li>
+    <li>Preço da C2: 3,7× a memória da C3</li>
+  </ul>
+  <div class="rodape"><span>PAA · PROCC/UFS · AV1 2026.2</span><span>9</span></div>
+</section>
+
+<!-- 10 -->
+<section class="slide">
+  <h1>Qualidade da recuperação</h1>
+  <div class="col-5-4">
+    <table>
+      <tr><th>Configuração</th><th class="num">P@5</th><th class="num">P@10</th><th class="num">R@10</th><th class="num">nDCG@10</th><th class="num">MRR</th></tr>
+      <tr><td>C1 = C2 = C3</td><td class="num">0,087</td><td class="num">0,077</td><td class="num">0,158</td><td class="num">0,141</td><td class="num">0,248</td></tr>
+      <tr><td>C4 scikit-learn</td><td class="num">0,247</td><td class="num">0,183</td><td class="num">0,387</td><td class="num">0,366</td><td class="num">0,551</td></tr>
+    </table>
+    <div class="duas" style="gap:0.2in">
+      <div class="stat"><div class="n laranja">14/30</div><div class="r">consultas sem trecho relevante no top-10 (equipe)</div></div>
+      <div class="stat"><div class="n musgo">2/30</div><div class="r">idem, na referência C4</div></div>
+    </div>
+  </div>
+  <ul style="margin-top:0.22in">
+    <li>Referência: gabarito de 146 pares consulta–chunk, com justificativa, escolhidos antes de ver qualquer ranking</li>
+    <li>C1, C2 e C3 têm a mesma qualidade porque devolvem a mesma lista: o algoritmo define o custo, não a qualidade</li>
+    <li>A C4 acerta quase 3× mais: a norma L2 impede que trechos longos, como o Glossário (37 % do top-10 da equipe), dominem</li>
+    <li>Nas consultas difíceis as duas empatam em nível baixo (0,10 vs 0,12): limite da busca lexical quando a pergunta usa palavras diferentes do livro</li>
+  </ul>
+  <div class="rodape"><span>PAA · PROCC/UFS · AV1 2026.2</span><span>10</span></div>
+</section>
+
+<!-- 11 -->
+<section class="slide">
+  <h1>Relação com IA generativa e RAG</h1>
+  <div class="rag">
+    <div class="cartao"><b>Prompt</b><span>os k chunks entram como bloco de contexto, cada um com a origem (notebook, seção) para citação</span></div>
+    <div class="cartao"><b>k e tamanho do chunk</b><span>mais trechos e trechos maiores custam tokens e latência; a ordem importa (<i>lost in the middle</i>)</span></div>
+    <div class="cartao"><b>Lexical vs. semântico</b><span>tf-idf casa palavras, não sinônimos: "laço" não acha "loop"; embeddings achariam</span></div>
+    <div class="cartao"><b>Riscos</b><span>recuperação incompleta ou irrelevante em 14 das 30 consultas leva o LLM a responder sem base; contexto desatualizado é controlado pelo commit fixado</span></div>
+    <div class="cartao"><b>Rastreabilidade</b><span>cada chunk carrega a proveniência: a resposta pode citar a fonte exata e o usuário confere</span></div>
+    <div class="cartao"><b>Trade-offs</b><span>C4: 3× a precisão e consulta rápida, com 6× a memória da C3; C2: consulta rápida, com índice de 3,7× a memória</span></div>
+  </div>
+  <div class="rodape"><span>PAA · PROCC/UFS · AV1 2026.2</span><span>11</span></div>
+</section>
+
+<!-- 12 -->
+<section class="slide">
+  <h1>Limitações, ameaças à validade e uso de IA</h1>
+  <div class="duas">
+    <div>
+      <h3 style="color:var(--musgo);margin:0 0 0.08in 0;font-size:13.5pt">Ameaças à validade</h3>
+      <ul style="font-size:11pt">
+        <li>A hipótese de esparsidade não se confirmou: palavras como "que" e "de" fazem 51 % dos chunks virar candidato, e o índice ganhou só 1,4× na consulta</li>
+        <li>Três tamanhos mostram tendência, não provam ordem assintótica; o cronômetro mede o interpretador tanto quanto o algoritmo</li>
+        <li>Os chunks seguem as células dos notebooks (mediana de 13 tokens), não janelas de 256</li>
+        <li>Um livro introdutório é estudo de caso; julgamento de relevância binário e com uma avaliadora</li>
+      </ul>
+    </div>
+    <div>
+      <h3 style="color:var(--musgo);margin:0 0 0.08in 0;font-size:13.5pt">Uso crítico de IA generativa</h3>
+      <ul style="font-size:11pt">
+        <li>Registro por uso em <span class="formula">docs/USO_DE_IA.md</span>: ferramenta, finalidade, prompts, sugestões aceitas e rejeitadas</li>
+        <li>Erros detectados: numeração de C2/C3 trocada; análise da C2 sem o termo da pontuação dos candidatos; empate tratado como simples estabilidade</li>
+        <li>Nada entrou sem verificação: 131 testes, gabarito calculado à parte, contadores confrontados com P²/4 e P log P, teste de mutação do Merge Sort</li>
+      </ul>
+    </div>
+  </div>
+  <div class="rodape"><span>PAA · PROCC/UFS · AV1 2026.2</span><span>12</span></div>
+</section>
+
+<!-- 13 -->
+<section class="slide escuro final">
+  <h1>O que aprendemos</h1>
+  <div class="ponto"><b>O algoritmo define o custo</b><span>C1, C2 e C3 devolvem a mesma lista com 36× de diferença nas comparações</span></div>
+  <div class="ponto"><b>A função de relevância define a qualidade</b><span>a normalização L2 da C4 triplica a precisão sem mudar o algoritmo</span></div>
+  <div class="ponto"><b>A hipótese precisa ser testada</b><span>o índice só compensa quando os termos são raros, e no português corrente não são</span></div>
+  <div class="link">github.com/joaocss/PAA_UFS_2026_2_SenaSa_Joao_Bispo_Hernandison_Galvao_Nadianne_Goto_Rafael_Leal_Helena_Silva_Eduardo<br>Reprodução completa: python scripts/reproduzir_tudo.py</div>
+  <div class="rodape"><span>PAA · PROCC/UFS · AV1 2026.2</span><span>13</span></div>
+</section>
+
+</body>
+</html>
