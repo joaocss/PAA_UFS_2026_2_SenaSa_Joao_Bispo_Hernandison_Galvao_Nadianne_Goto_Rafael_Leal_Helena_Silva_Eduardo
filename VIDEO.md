@@ -15,7 +15,7 @@ Plataforma: Google Drive e Loom, com reprodução liberada por link, sem solicit
 | João Cosme Sena Sá | Abertura da equipe, tema e corpus; índice invertido e busca binária (C2) no código; demonstração das três configurações com a mesma consulta; lição e limite dos resultados. Gravação individual: https://www.loom.com/share/aab4b4cd6a934bb892fd6c4bb73bcd85 |
 | Eduardo Henrique do Lago Silva | a definir |
 | Helena Carvalho Leal | Consultas de avaliação, gabarito de relevância e métricas de qualidade (Precision@k) das configurações. Gravação individual: https://drive.google.com/file/d/1mrltLobY4q7kejFFrKunLzwvc68bTs38/view?usp=drive_link |
-| Hernandison da Silva Bispo | a definir |
+| Hernandison da Silva Bispo | Relatório completo. Gravação individual: https://drive.google.com/file/d/1uum6u9M137ya6Ex8oYPVvSaY3Qes8g2C/view?usp=sharing |
 | Nadianne Maria dos Santos Galvão | RAM e complexidade, recorrências de C1, C2 e C3 e corretude formal do Merge Sort. Gravação individual: https://drive.google.com/file/d/1WWhyEl1k9qLuE8Sod03WE9qJ3bNDWx3Y/view?usp=drive_link |
 | Rafael Takeguma Goto | Busca linear, Insertion Sort, Merge Sort, pontuação e consulta (C1 e C3). Gravação individual: https://drive.google.com/file/d/13jiWmtcPA6ZGqowYDyxqEHd5966waPa8/view?usp=sharing |
 
