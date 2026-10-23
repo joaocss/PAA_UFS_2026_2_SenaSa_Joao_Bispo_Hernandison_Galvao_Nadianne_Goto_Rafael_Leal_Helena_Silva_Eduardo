@@ -18,7 +18,7 @@ O problema é modelado como **mochila 0/1**: cada *chunk* é incluído por intei
 
 O corpus é o livro *Pense Python*, tradução de Rodrigo Castelan Carlson da terceira edição de *Think Python*, de Allen B. Downey. O recorte processado na AV1 reúne **21 notebooks Jupyter** e **2.737 chunks**, dos quais **1.405 são Markdown** e **1.332 são código**.
 
-A AV2 reutilizará o corpus produzido pela AV1, sem substituir ou alterar `data/processed/chunks.jsonl`. A recuperação será mantida fixa na **configuração C3 da AV1: busca linear e Merge Sort**. Os candidatos serão ordenados por maior pontuação lexical e, em empates, menor `source_order`.
+A AV2 reutilizará o corpus produzido pela AV1, sem alterar o conteúdo processado da AV1. Para reprodução a partir do repositório, a AV2 utilizará `data/chunks.jsonl`, sujeito à verificação de equivalência por SHA-256 com `data/processed/chunks.jsonl`. A recuperação será mantida fixa na **configuração C3 da AV1: busca linear e Merge Sort**. Os candidatos serão ordenados por maior pontuação lexical e, em empates, menor `source_order`.
 
 O cadastro de *chunks* contém, entre outros, `chunk_id`, `source_order`, `texto`, `tipo`, `arquivo`, `capitulo`, `secao` e `n_tokens`. A pontuação de relevância é **calculada em função da consulta**, não é um campo persistente do corpus.
 
@@ -33,7 +33,7 @@ O cadastro de *chunks* contém, entre outros, `chunk_id`, `source_order`, `texto
 | `score_relevancia` / `v_i` | Relevância da consulta para o chunk | Recuperação C3 |
 | `origem` | Referência/metadados de localização do chunk | Corpus AV1 |
 
-> `n_tokens` é usado como **aproximação lexical de custo**, não como número exato de tokens de um LLM. A regra efetiva de contagem deve ser conferida no código da AV1, para não confundir a tokenização de relevância com a contagem utilizada na fragmentação.
+> `n_tokens` é usado como **aproximação lexical de custo**, não como número exato de tokens de um LLM. Na fragmentação da AV1, a contagem é obtida com a expressão regular `\w+` aplicada ao texto normalizado; a normalização utilizada no cálculo do TF-IDF é distinta. Portanto, custo e valor não são contagens sobre a mesma representação.
 
 ## 3. Função de relevância
 
@@ -52,10 +52,10 @@ Manter a pontuação lexical da AV1. Para termo `t` e *chunk* `c`:
 \]
 
 \[
-\operatorname{score}(q,c)=\sum_{t\in\operatorname{Termos}(q)}qtf_t\,\operatorname{tf}(t,c)\,\operatorname{idf}(t).
+\operatorname{score}(q,c)=\sum_{t\in\operatorname{TermosDistintos}(q)}qtf_t\,\operatorname{tf}(t,c)\,\operatorname{idf}(t).
 \]
 
-Aqui, `N` é a quantidade de chunks do corpus, `df(t)` é a quantidade de chunks que contêm o termo e `qtf_t` é sua frequência na consulta. **Somente candidatos com pontuação positiva** serão submetidos à seleção.
+A soma percorre **os termos distintos** da consulta, ponderados por `qtf_t`. Aqui, `N` é a quantidade de chunks do corpus, `df(t)` é a quantidade de chunks que contêm o termo e `qtf_t` é sua frequência na consulta. **Somente candidatos com pontuação positiva** serão submetidos à seleção.
 
 A pontuação é uma medida lexical estimada. Sua soma não representa necessariamente cobertura semântica, diversidade ou qualidade de uma resposta de LLM.
 
@@ -75,7 +75,7 @@ Cada candidato `c_i` possui:
 
 O orçamento é `W ∈ ℕ₀` e a quantidade `n` é o número de **candidatos recuperados**, não o número total `N` de chunks do corpus.
 
-Pré-condições: tipos válidos, custos inteiros positivos, valores finitos não negativos, IDs únicos e orçamento inteiro não negativo.
+Pré-condições: tipos válidos, custos inteiros positivos, valores finitos não negativos, `chunk_id` e `source_order` únicos e orçamento inteiro não negativo.
 
 ## 5. Saída formal
 
@@ -156,7 +156,7 @@ A implementação deve manter esse critério consistente inclusive na reconstru�
 | Mesmo texto com IDs diferentes | Preservar candidatos; analisar redundância nos experimentos |
 | Duas ou mais soluções ótimas | Aplicar desempate da programação dinâmica |
 | Razões `v_i/w_i` empatadas | Aplicar desempate do guloso |
-| `v_i = 0` | Pode ser removido antes da seleção |
+| `v_i = 0` | Será descartado antes da seleção |
 
 Esses são **requisitos de teste**, não resultados já verificados.
 
@@ -202,6 +202,11 @@ A configuração de recuperação, os scores, os custos, os candidatos e os orç
 - **Downey, Allen B.** *Think Python*, 3ª ed.; tradução brasileira *Pense Python*, Rodrigo Castelan Carlson. Fonte: <https://rodrigocarlson.github.io/PensePython3ed/>.
 - **Kleinberg, Jon; Tardos, Éva.** *Algorithm Design*. Pearson/Addison-Wesley, 2005/2006. Referência conceitual para mochila 0/1 e comparação com decisões gulosas.
 - **Manning, Christopher D.; Raghavan, Prabhakar; Schütze, Hinrich.** *Introduction to Information Retrieval*. Cambridge University Press, 2008. Referência para recuperação lexical.
-- Artefatos da AV1: `data/processed/chunks.jsonl`, `data/queries.csv`, `docs/CONTRATOS.md`, `data/README.md` e código de recuperação C3.
+- Artefatos da AV1: `data/chunks.jsonl` (versão rastreada), `data/processed/chunks.jsonl` (origem processada), `data/queries.csv`, `docs/CONTRATOS.md`, `data/README.md` e código de recuperação C3.
 
 > **Nota de integração:** esta versão Markdown resume e operacionaliza as decisões da Parte A. O texto LaTeX/PDF aprovado pelo grupo permanece a referência formal do relatório; eventuais mudanças de parâmetros ou nomenclatura precisam ser refletidas nos dois artefatos.
+
+
+## Decisões de integração ainda pendentes
+
+A Parte A define a função objetivo sobre os escores lexicais originais. A eventual quantização dos escores em inteiros para a Parte B só poderá ser incorporada após aprovação e atualização explícita da formulação. A avaliação da qualidade do contexto com julgamentos humanos também requer protocolo previamente fixado, inclusive tratamento de candidatos sem julgamento.
