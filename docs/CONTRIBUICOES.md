@@ -12,3 +12,17 @@ O enunciado pede contribuição com evidência, não cargo. Cada linha aponta co
 | Rafael Takeguma Goto | Busca linear, Insertion Sort, Merge Sort, pontuação e consulta (C1 e C3) | Pré-processamento de texto (`preprocessing.py`) e primeira versão da função de relevância (`relevance.py`), com testes unitários (`9ae619b`); busca linear sobre os chunks (`linear_search.py`, `test_linear_search.py`, `edc590d`); Insertion Sort (`insertion_sort.py`, `test_insertion_sort.py`, `6f025c0`); Merge Sort (`merge_sort.py`, `test_merge_sort.py`, `3338455`); contador de operações elementares (`contador.py`), seleção dos top-k, critério de desempate nas ordenações e pipeline de consulta (`pipeline.py`, `test_pipeline.py`) (`f660124`); merge do PR #1 (branch `Nadianne_01`, `c1ca7a2`) | https://drive.google.com/file/d/13jiWmtcPA6ZGqowYDyxqEHd5966waPa8/view?usp=sharing |
 
 A revisão de código, da prova e dos resultados é responsabilidade coletiva, independentemente da frente de cada um.
+
+
+## AV2 — Contribuições e evidências (em atualização)
+
+As informações anteriores documentam a AV1 e foram preservadas. A tabela abaixo registra responsabilidades da AV2; **não** atesta conclusão das atividades planejadas. Completar os campos de evidências somente após confirmação dos commits/PRs.
+
+| Integrante | Frente AV2 | Evidências verificáveis | Situação |
+| --- | --- | --- | --- |
+| João Cosme Sena Sá | B — algoritmos/corretude; D — experimentos | PR da Parte B: inserir URL e commit após abertura | Em revisão |
+| Eduardo Henrique do Lago Silva | B — algoritmos/corretude; C — complexidade; D — experimentos | A preencher | Planejada |
+| Helena Carvalho Leal | D — experimentos; E — IA generativa | A preencher | Planejada |
+| Hernandison da Silva Bispo | A — especificação; E — IA generativa | Parte A: inserir link do documento e commits | Parte A elaborada |
+| Nadianne Maria dos Santos Galvão | A — especificação; C — complexidade | Parte A: inserir link do documento e commits | Parte A elaborada |
+| Rafael Takeguma Goto | B — algoritmos/corretude; E — IA generativa | A preencher | Planejada |

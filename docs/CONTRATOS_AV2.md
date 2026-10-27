@@ -1,15 +1,15 @@
 # AV2 — Contratos técnicos de seleção de contexto
 
-**Projeto:** Recuperação e seleção de contexto para IA generativa em materiais educacionais abertos 
-**Disciplina:** Projeto e Análise de Algoritmos (PAA) — PROCC/UFS, 2026.2 
-**Trilha A:** Programação dinâmica para seleção de contexto 
-**Estado:** contrato proposto a partir da Parte A; implementação e validação da AV2 pendentes.
+**Projeto:** Recuperação e seleção de contexto para IA generativa em materiais educacionais abertos
+**Disciplina:** Projeto e Análise de Algoritmos (PAA) — PROCC/UFS, 2026.2
+**Trilha A:** Programação dinâmica para seleção de contexto
+**Estado (23/10/2026):** contratos 01–09 definidos na Parte A; implementação da Parte B em revisão/integração; validação experimental da Parte D pendente.
 
 > **Como utilizar:** este documento orienta a Parte B (implementação), a Parte C (análise) e a Parte D (experimentos). Em caso de divergência, alinhar com `docs/ESPECIFICACAO_AV2.md` e com o relatório da Parte A **antes de modificar o código**. Os contratos existentes de `docs/CONTRATOS.md` continuam valendo para a AV1.
 
 ## Contrato 01 — Continuidade com a AV1
 
-- **Corpus:** `data/processed/chunks.jsonl`, produzido pela AV1, sem sobrescrevê-lo na AV2.
+- **Corpus usado pela AV2:** `data/chunks.jsonl`, arquivo versionado. Sua equivalência ao corpus processado da AV1 (`data/processed/chunks.jsonl`) deve ser conferida pelo SHA-256 registrado em `data/README.md`; não modificar o conteúdo do corpus.
 - **Consultas:** `data/queries.csv`, com as 30 consultas predefinidas.
 - **Recuperação:** configuração **C3** — busca linear e Merge Sort da AV1.
 - **Pontuação:** TF-IDF lexical da AV1, sem refazer a fórmula para cada seletor.
@@ -27,16 +27,16 @@ Entrada lógica de cada chamada:
 | --- | --- | --- |
 | `candidatos` | sequência de candidatos | Pode ser vazia; cada `chunk_id` deve ser único |
 | `chunk_id` | `str` | Identifica o chunk original da AV1 |
-| `source_order` | `int` | Índice de origem usado no desempate |
+| `source_order` | `int` único entre os candidatos | Índice de origem usado no desempate; repetições invalidam a entrada |
 | `texto` | `str` | Texto normalizado original, se necessário para exibição ou redundância |
 | `origem` | metadados opcionais | Referência de arquivo/capítulo/seção, para rastreabilidade |
 | `score_relevancia` (`v_i`) | número real finito, não negativo | Gerado para a consulta; candidatos de score zero são filtrados antes da seleção |
 | `n_tokens` (`w_i`) | inteiro positivo | Custo do candidato, obtido do corpus AV1 |
 | `orcamento` (`W`) | inteiro não negativo | Limite máximo de custo da seleção |
 
-**Pré-condições:** `W >= 0`, `w_i >= 1`, valores finitos, identificadores não repetidos. Valores `NaN`, infinitos, custos fracionários ou negativos, orçamento negativo e IDs duplicados são inválidos e deverão produzir erro explícito, em vez de um resultado silenciosamente inconsistente.
+**Pré-condições:** `W >= 0`, `w_i >= 1`, valores finitos, identificadores e valores de `source_order` não repetidos. Valores `NaN`, infinitos, custos fracionários ou negativos, orçamento negativo e IDs duplicados são inválidos e deverão produzir erro explícito, em vez de um resultado silenciosamente inconsistente.
 
-`n_tokens` é tratado como **unidade lexical aproximada** de custo de contexto, **não** como quantidade exata de tokens de um LLM. A regra efetiva de contagem deve ser conferida no código da AV1 antes da integração.
+`n_tokens` é tratado como **unidade lexical aproximada** de custo de contexto, **não** como quantidade exata de tokens de um LLM. Na fragmentação da AV1, as unidades são identificadas pela expressão regular `\w+` sobre o texto normalizado. A pontuação lexical pode utilizar normalização/tokenização diferente: custo e relevância não medem exatamente a mesma representação.
 
 > **Importante:** `score_relevancia` não é um campo armazenado originalmente em `chunks.jsonl`: é associado ao candidato depois da recuperação, para uma consulta específica. O nome das classes/funções Python é uma decisão da Parte B; os campos e comportamentos deste contrato são a interface lógica obrigatória.
 
@@ -134,6 +134,7 @@ O guloso deve respeitar o orçamento, mas **não precisa alcançar o ótimo** da
 | Soma dos custos de todos os itens positivos `<= W` | Selecionar todos os itens positivos |
 | Um item com `w_i > W` | Ignorar o item, mantendo os demais elegíveis |
 | Identificador repetido | Rejeitar entrada inválida |
+| `source_order` repetido em candidatos distintos | Rejeitar entrada inválida |
 | Mesmo texto com IDs distintos | Tratar como itens distintos; avaliar redundância posteriormente |
 | `v_i = 0` | Filtrar antes da seleção, sem perda de valor objetivo |
 | Empates de solução ótima da DP | Aplicar desempate por custo e `source_order` |
@@ -179,7 +180,7 @@ Ambos os algoritmos deverão receber **exatamente os mesmos candidatos, scores, 
 - **Parte D:** executar protocolo comparativo e discutir métricas.
 - **Parte E:** relacionar os resultados ao uso em IA generativa, sem confundir soma lexical com avaliação da resposta de um LLM.
 
-**Referências internas:** `docs/ESPECIFICACAO_AV2.md`, `docs/CONTRATOS.md`, `data/README.md`, `data/queries.csv` e `data/processed/chunks.jsonl`.
+**Referências internas:** `docs/ESPECIFICACAO_AV2.md`, `docs/CONTRATOS.md`, `data/README.md`, `data/queries.csv`, `data/chunks.jsonl` e `data/processed/chunks.jsonl` (origem gerada).
 
 
 ---
@@ -458,3 +459,12 @@ Em 23/10, a implementação alinhada à Parte A escolheu, nesses 6 cenários, ex
 
 - **18 a 22/10:** João manteve, fora do repositório, um laboratório de estudo e um rascunho de contrato (versões 1 a 4). A versão 4 usava a regra "leva" pela posição no ranking, sem desempate por custo.
 - **23/10:** com a Parte A publicada, a implementação foi alinhada aos contratos 01 a 09: desempate da DP por menor custo e depois por `source_order` (contrato 05), desempate do guloso por maior valor e depois por `source_order` (contrato 06), `chunk_id` repetido, escore inválido e custo menor que 1 rejeitados na conversão, escore zero descartado (contratos 02 e 07) e `relevancia_total` na saída (contrato 04). O rascunho foi incorporado a este arquivo como Parte B, e as partes experimentais passaram a figurar como proposta da Parte D.
+
+---
+
+## Questões para deliberação do grupo (não alteram os contratos 01–09)
+
+1. **Representação dos escores na Parte B.** Foi proposta a quantização `round(1000 * v_i)` para tratar empates. A programação dinâmica assim implementada seria ótima em relação aos **valores quantizados**, não necessariamente aos escores TF-IDF reais previstos no Contrato 03. Os testes relatados em 270 cenários não substituem a garantia geral. **Pendente:** decidir entre manter os escores originais com política numérica documentada ou formalizar a quantização, seu erro e a nova função objetivo. A DP indexada por capacidade exige custos inteiros, não valores inteiros.
+2. **Estratégias adicionais.** Corte do ranking da AV1, guloso por valor e guloso modificado podem integrar análises complementares. A comparação principal permanece DP versus guloso por relevância/custo. Suas regras precisam ser documentadas antes da coleta definitiva.
+3. **Qualidade independente do TF-IDF (Parte D).** Proposta de avaliar a seleção com `data/qrels.csv`, além de `V_S`, `ΔV`, custo, tempo e memória. É necessário definir cobertura dos julgamentos, tratamento de chunks não julgados e métrica antes de consultar os resultados confirmatórios. Não interpretar automaticamente "sem julgamento" como "irrelevante". Registrar tempo de preparação/recuperação separadamente do tempo de seleção.
+4. **Separação experimental.** Foi proposto reservar `n = 50, W = 1024` até o fechamento do protocolo de qualidade. Não relatar esse cenário como validação confirmatória após usá-lo para calibrar hipóteses.
