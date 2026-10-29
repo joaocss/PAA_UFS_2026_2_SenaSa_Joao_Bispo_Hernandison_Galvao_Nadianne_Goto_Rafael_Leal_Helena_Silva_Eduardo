@@ -286,6 +286,40 @@ Valem para todas as estratégias as seguintes regras.
 5. **Ordem da saída:** os escolhidos saem na ordem do ranking da AV1 (posição crescente), que é a ordem em que o contexto seria enviado ao LLM. O contrato 04 não fixa a ordem da saída (o item 5 menciona a ordenação por `source_order` como possibilidade da apresentação final); esta regra é uma escolha da Parte B, que não altera o conjunto nem as somas.
 6. **Pureza:** nenhuma estratégia altera a lista recebida nem lê qualquer dado fora dela.
 
+### Verificação independente da análise assintótica — Parte C (29/10/2026)
+
+A Parte C realizou uma verificação adicional **sem modificar** `src/paa_context/selecao.py` nem os testes da Parte B. O script `scripts/analise_complexidade/verificar_contadores.py` executa `mochila_dp()` com candidatos sintéticos determinísticos e utiliza `sys.settrace` para contar eventos reais na linha de atualização dos estados da matriz. Essa contagem não se confunde com a propriedade `resultado.celulas`, que é calculada pela fórmula `(n + 1)(W + 1)`.
+
+| `n` | `W` | Iterações previstas `n(W+1)` | Iterações observadas | Células informadas `(n+1)(W+1)` |
+| ---: | ---: | ---: | ---: | ---: |
+| 10 | 256 | 2.570 | 2.570 | 2.827 |
+| 10 | 512 | 5.130 | 5.130 | 5.643 |
+| 10 | 1024 | 10.250 | 10.250 | 11.275 |
+| 30 | 256 | 7.710 | 7.710 | 7.967 |
+| 30 | 512 | 15.390 | 15.390 | 15.903 |
+| 30 | 1024 | 30.750 | 30.750 | 31.775 |
+| 50 | 256 | 12.850 | 12.850 | 13.107 |
+| 50 | 512 | 25.650 | 25.650 | 26.163 |
+| 50 | 1024 | 51.250 | 51.250 | 52.275 |
+
+**Resultado:** as nove configurações produziram contagens observadas iguais a `n(W + 1)`. A instrumentação introduz sobrecarga e **não deve ser usada como medida de tempo ou memória**. A propriedade `resultado.celulas` é apresentada apenas como informação estrutural, não como medição independente de alocação real.
+
+O script `scripts/analise_complexidade/analisar_crescimento.py` gera `resultados/crescimento_dp.csv`, `crescimento_por_n.png` e `crescimento_por_w.png` a partir das **expressões teóricas**. Portanto, esses gráficos ilustram o crescimento esperado e **não constituem medições experimentais de execução**.
+
+Para a etapa C3 da AV1, `scripts/analise_complexidade/verificar_c3.py` executou `merge_sort()` com dados sintéticos determinísticos e conferiu tanto a ordenação quanto os desempates com `sorted(resultados, key=sort_key)`. As comparações registradas foram:
+
+| `P` | Comparações observadas |
+| ---: | ---: |
+| 10 | 23 |
+| 30 | 112 |
+| 50 | 232 |
+| 100 | 559 |
+| 200 | 1.296 |
+
+As cinco verificações passaram. O script gera `resultados/comparacoes_merge_sort.csv`, utilizado por `scripts/analise_complexidade/grafico_merge_sort.py` para produzir `comparacoes_merge_sort.png`; os valores observados não são digitados manualmente no gráfico. A curva `P log₂ P` é uma referência assintótica, não uma previsão de contagem exata.
+
+A execução local da suíte `python -m pytest -q --disable-warnings` alcançou 100% e retornou **código de saída 0**. Estes resultados sustentam as verificações nos cenários examinados, sem substituir a demonstração formal de corretude (Parte B) nem as medições de desempenho da Parte D.
+
 ## Contrato 12: estratégias complementares
 
 A comparação exigida pela Parte A é **S5 (DP) × S3 (guloso por relevância/custo)**, sobre os mesmos candidatos, escores, custos e orçamentos (contrato 08). O módulo implementa ainda três estratégias que não fazem parte da Parte A. Elas estão testadas e disponíveis em `ESTRATEGIAS`, mas só entram nos experimentos se o grupo aprovar a proposta da Parte D, ao fim deste documento.
