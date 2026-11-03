@@ -124,6 +124,86 @@ python scripts/av2/auditar_av2.py
 python -m pytest -v tests/unit/test_rodar_av2.py tests/unit/test_analisar_av2.py tests/unit/test_auditar_av2.py
 python -m pytest -q --disable-warnings
 ```
+## Avaliação complementar — Contrato 08
+
+### Diferença absoluta de valor (ΔV)
+
+A diferença de valor quantizado foi calculada por:
+
+\[
+\Delta V = V_{\mathrm{DP}} - V_{\mathrm{estratégia}}
+\]
+
+Nas 270 configurações de consulta, candidatos e orçamento, foram produzidos 1.350 registros complementares para as cinco estratégias.
+
+Os maiores valores médios de ΔV por configuração foram:
+
+| Estratégia | Configuração | Maior ΔV médio |
+|---|---|---:|
+| S3 — Guloso por densidade | n=30, W=1024 | 13.785,47 |
+| S4 — Guloso modificado | n=30, W=1024 | 13.785,47 |
+| S2 — Guloso por valor | n=50, W=1024 | 166.923,90 |
+| S1 — Prefixo do ranking | n=50, W=1024 | 205.809,07 |
+| S5 — Programação dinâmica | — | 0 |
+
+As diferenças foram calculadas sobre os valores quantizados utilizados pelos algoritmos. Não devem ser confundidas com diferenças diretas entre os escores TF-IDF originais.
+
+### Redundância textual
+
+Foi adotado o critério de similaridade de Jaccard entre conjuntos de palavras, classificando como redundante um par de chunks com similaridade igual ou superior a 0,8.
+
+| Estratégia | Pares redundantes / possíveis | Taxa |
+|---|---:|---:|
+| S1 | 0 / 1.137 | 0% |
+| S2 | 0 / 1.763 | 0% |
+| S3 | 0 / 5.140 | 0% |
+| S4 | 0 / 5.140 | 0% |
+| S5 | 0 / 5.216 | 0% |
+
+Não foram identificados pares acima desse limiar nas configurações avaliadas. Esse resultado não implica ausência de redundância semântica.
+
+### Tempo completo do fluxo de consulta
+
+Além da seleção isolada, foi realizada uma segunda série experimental que mede recuperação C3, conversão dos candidatos e seleção.
+
+Foram obtidas 1.620 medições, correspondentes a 270 cenários, duas estratégias principais (S3 e S5) e três repetições.
+
+No cenário n=10, W=256, foram observadas as seguintes medianas agregadas:
+
+| Estratégia | Tempo do fluxo |
+|---|---:|
+| S3 — Guloso por densidade | 138,4361 ms |
+| S5 — Programação dinâmica | 138,1148 ms |
+
+Nesse cenário, a recuperação C3 apresentou participação dominante no tempo do fluxo. A diferença entre as medianas não deve ser interpretada isoladamente como superioridade de desempenho da DP, devido à variabilidade entre execuções.
+
+O carregamento do corpus e a construção das estatísticas não integram essa medida do fluxo de consulta e devem ser documentados como etapas de preparação.
+
+### Rastreabilidade do corpus
+
+Os arquivos `data/chunks.jsonl` e `data/processed/chunks.jsonl` apresentaram o mesmo SHA-256:
+
+`2af8c533a2a872a6381307ae8e5b02eadd20c9b110a84e892d4b18bb12863cc4`
+
+Assim, foi confirmada sua equivalência byte a byte no ambiente utilizado.
+
+### Validação complementar
+
+Foram aprovados 14 testes específicos adicionais, elevando para 39 os testes desenvolvidos especificamente para a Parte D.
+
+A suíte completa do projeto retornou código de saída 0.
+
+A auditoria das 6.750 medições originais permaneceu aprovada. A auditoria complementar verificou 1.620 registros do fluxo, 540 grupos de medição e 1.350 registros de métricas, sem inconsistências nas regras examinadas.
+
+Os resultados complementares encontram-se em `experimentos/av2/`, separados dos resultados da AV1.
+
+### Limitações
+
+A redundância foi avaliada apenas por similaridade lexical de Jaccard com limiar 0,8.
+
+As medições do fluxo completo foram realizadas para S3 e S5, enquanto os demais seletores participaram da avaliação de seleção isolada.
+
+A recuperação foi medida novamente na série complementar, mas o pré-processamento permanece separado. A baixa cobertura do gabarito de relevância limita conclusões sobre qualidade semântica.
 
 
 ## 8. Conclusão
