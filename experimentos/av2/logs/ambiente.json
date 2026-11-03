@@ -1,0 +1,39 @@
+{
+  "inicio_utc": "2026-11-03T15:30:04+00:00",
+  "fim_utc": "2026-11-03T15:30:28+00:00",
+  "comando": "scripts/av2/rodar_av2.py",
+  "commit": "ade2517a6f52413cdf7ba2006e30f51833ee19bb",
+  "python": "3.12.16",
+  "plataforma": "Linux-7.2.13-200.fc44.x86_64-x86_64-with-glibc2.43",
+  "host": "fedora",
+  "cpu": "",
+  "nucleos_logicos": 12,
+  "semente_ordem": 2026,
+  "estrategias": [
+    "prefixo_ranking",
+    "guloso_valor",
+    "guloso_densidade",
+    "guloso_modificado",
+    "mochila_dp"
+  ],
+  "n": [
+    10,
+    30,
+    50
+  ],
+  "orcamentos": [
+    256,
+    512,
+    1024
+  ],
+  "consultas": 30,
+  "repeticoes": 5,
+  "aquecimentos_descartados": 2,
+  "casos": 270,
+  "execucoes": 6750,
+  "fonte_corpus": "data/processed/chunks.jsonl",
+  "aviso_memoria": "tracemalloc: pico de alocacoes Python por selecao, fora do cronometro; nao equivale a RSS",
+  "aviso_qualidade": "Nao julgados separados; precisao_entre_julgados so considera itens com qrels",
+  "aviso_recuperacao": "C3 recuperada uma vez por consulta, fora do tempo de selecao",
+  "arquivo_saida": "experimentos/av2/brutos/execucoes.jsonl"
+}
