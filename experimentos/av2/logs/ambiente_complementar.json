@@ -1,0 +1,32 @@
+{
+  "gerado_utc": "2026-11-03T16:54:40.321333+00:00",
+  "commit_base": "5b656522268dde1c1908cea84a1abd50104e9638",
+  "python": "3.12.16",
+  "plataforma": "Linux-7.2.13-200.fc44.x86_64-x86_64-with-glibc2.43",
+  "nucleos_logicos": 12,
+  "semente": 2026,
+  "comparacao_principal": [
+    "guloso_densidade",
+    "mochila_dp"
+  ],
+  "repeticoes": 3,
+  "aquecimentos": 1,
+  "cenarios": 270,
+  "medicoes_fluxo": 1620,
+  "preprocessamento_ns": {
+    "amostras_ns": [
+      354485370,
+      379399468,
+      369676429
+    ],
+    "mediana_ns": 369676429
+  },
+  "hashes_corpus": {
+    "sha256_versionado": "2af8c533a2a872a6381307ae8e5b02eadd20c9b110a84e892d4b18bb12863cc4",
+    "sha256_processado": "2af8c533a2a872a6381307ae8e5b02eadd20c9b110a84e892d4b18bb12863cc4",
+    "equivalencia_corpus": true
+  },
+  "metodo_redundancia": "Jaccard de conjuntos de palavras (casefold/split); pares >= 0.8",
+  "escopo_fluxo": "C3 retrieve + conversao + selecao; corpus e estatisticas precomputados",
+  "nota": "Novas medicoes separadas das 6750 execucoes originais; maquinas/horarios diferem"
+}
