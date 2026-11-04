@@ -20,7 +20,7 @@ As informações anteriores documentam a AV1 e foram preservadas. A tabela abaix
 
 | Integrante | Frente AV2 | Evidências verificáveis | Situação |
 | --- | --- | --- | --- |
-| João Cosme Sena Sá | B — algoritmos/corretude; D — experimentos | PR da Parte B: inserir URL e commit após abertura | Em revisão |
+| João Cosme Sena Sá | B — algoritmos/corretude; D — experimentos | PR #3 (`96be3cf`, `3fe726c`, `2b40806`, `01ab977`) e PR #5 (`c704ea6`, `d01b72d`): `src/paa_context/selecao.py`, `tests/unit/test_selecao.py` (50 funções, 748 execuções), `scripts/mutacoes_selecao.py`, contratos 10 a 15; Seção 6 do relatório (pseudocódigo e demonstração, com o Apêndice B); revisões das PRs #2, #4 e #6 | Concluída |
 | Eduardo Henrique do Lago Silva | B — algoritmos/corretude; C — complexidade; D — experimentos | A preencher | Planejada |
 | Helena Carvalho Leal | D — experimentos; E — IA generativa | Gabarito humano reutilizado na Parte D (`data/qrels.csv`, 146 pares positivos); discussão de cobertura e limites da precisão entre julgados na seção 5.1 de `docs/AV2_PARTE_D_EXPERIMENTOS.md` (branch `av2-parte-d-revisao-qualidade`) | Em revisão |
 | Hernandison da Silva Bispo | A — especificação; E — IA generativa | Parte A: inserir link do documento e commits | Parte A elaborada |

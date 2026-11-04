@@ -94,6 +94,7 @@ Nadianne: a análise formal foi conferida contra a implementação de `merge_sor
 | Ferramenta | Integrante | Modelo | Período e observação |
 | --- | --- | --- | --- |
 | ChatGPT (OpenAI) | Nadianne | GPT-6 | Apoio à especificação, análise de algoritmos, revisão de documentação e preparação da apresentação, durante o desenvolvimento da AV2 (setembro–novembro de 2026). |
+| Claude Code (Anthropic) | João | Claude Opus 5.5; Claude Fable 5.1 e Claude Sonnet 5.5 na conferência | Outubro e novembro de 2026. Assistente de programação e de revisão técnica na Parte B e na conferência das PRs, sob especificação e validação do integrante. |
 | Outras ferramentas eventualmente utilizadas | Cada integrante responsável | **A confirmar** | Inserir somente após confirmação de uso efetivo. |
 
 ## 2. Finalidades e localização das contribuições
@@ -105,6 +106,7 @@ Nadianne: a análise formal foi conferida contra a implementação de `merge_sor
 | Parte D — Interpretação experimental | Apoio à leitura e revisão de métricas, às ressalvas sobre TF-IDF, `qrels` e à comunicação dos resultados. | `docs/AV2_PARTE_D_EXPERIMENTOS.md` e tabelas experimentais. | Não atribuir à IA a execução dos experimentos ou a produção dos julgamentos humanos. |
 | Parte E — RAG | Revisão textual de sua relação conceitual com a seleção de contexto e explicitação de limites de uso com LLMs. | `docs/AV2_PARTE_E_RAG.md`. | O trabalho não testou geração de respostas com LLM. |
 | Relatório, GitHub e apresentação | Apoio à revisão de consistência, interpretação dos comentários das PRs e estruturação de roteiro/slides. | Relatório técnico da AV2, PRs e apresentação em PDF. | A equipe verifica conteúdo, resultados, histórico de commits e versão final entregue. |
+| Parte B: seleção e corretude | Rascunhos de código e de testes a partir das regras definidas pela equipe, revisão de texto dos contratos 10 a 15 e apoio à redação do pseudocódigo e da demonstração da Seção 6. | `src/paa_context/selecao.py`, `tests/unit/test_selecao.py`, `docs/CONTRATOS_AV2.md` e Seção 6 do relatório. | A especificação, a escolha do que entrou e a validação são do integrante; o código foi conferido contra a força bruta e por testes de mutação antes da integração. |
 
 ## 3. Prompts relevantes da AV2
 
@@ -128,6 +130,8 @@ Esses prompts documentam o apoio à **comunicação do trabalho**, não a geraç
 | --- | --- | --- |
 | Classificar 0,3030 ms e 7,2771 ms como "tempos médios" e 7,34/854,07 KiB como médias de memória. | Os revisores da PR #8 identificaram que os números correspondem a **medianas agregadas**, enquanto 97,78% é **média da razão de aproximação**. | Revisar os rótulos no `docs/AV2_PARTE_E_RAG.md`, na tabela do relatório em PDF e nos slides. O ajuste do Markdown foi registrado na PR #8; a conferência do PDF final continua necessária. |
 | Tratar a precisão de 1,0 entre itens julgados em `qrels.csv` como evidência de superioridade semântica. | O gabarito disponível registra apenas julgamentos positivos; a ausência de um par não equivale a julgamento negativo. | Preservar a interpretação descritiva e a ressalva metodológica documentadas na revisão da Parte D (PR #9). |
+| Desempate da DP pela posição no ranking. | Divergia do contrato 05 da Parte A. | Rejeitada; adotados os desempates da especificação. |
+| Afirmação de que, em empate, a DP manteria os primeiros do ranking. | Refutada por contraexemplo (W = 10, quatro itens). | Reconstrução reescrita e contraexemplo incluído como teste. |
 
 ## 6. Erros identificados, origem e correção
 
@@ -146,7 +150,7 @@ As duas questões acima foram **identificadas ou fundamentadas em revisões huma
 | Integrante | Apoio de IA identificado neste registro | Decisões, verificações e entregas sob responsabilidade humana |
 | --- | --- | --- |
 | Nadianne Maria dos Santos Galvão | Apoio à especificação da Parte A, à interpretação/apresentação da Parte C, à revisão de documentação e métricas, e à preparação dos slides e falas. | Conferência e ajustes do conteúdo, revisão das PRs, controle dos arquivos versionados e gravação de sua participação no vídeo. |
-| João Cosme Sena Sá | | Implementação/testes e revisões atribuídos ao integrante no projeto; descrever aqui somente usos reais de IA. |
+| João Cosme Sena Sá | Rascunhos de código e de testes da Parte B, apoio à redação técnica da Seção 6 e à conferência das revisões. | Definição das regras com a equipe, especificação do que implementar, decisão sobre cada sugestão (inclusive as rejeitadas), validação por testes (918 na suíte; força bruta em 200 instâncias; 21 mutações detectadas) e publicação das revisões. |
 | Eduardo Henrique do Lago Silva | | Confirmar atividades e verificações específicas. |
 | Helena Carvalho Leal || Julgamentos e revisão da qualidade documentados no projeto não devem ser atribuídos à IA. |
 | Hernandison da Silva Bispo |  | Confirmar atividades e verificações específicas. |
