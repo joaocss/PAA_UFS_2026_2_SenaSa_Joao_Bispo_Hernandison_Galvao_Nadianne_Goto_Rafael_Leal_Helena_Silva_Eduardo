@@ -58,13 +58,13 @@ Para `n = 50` e `W = 1024`, foram observados:
 
 | Métrica | S3 — Guloso | S5 — DP |
 |---|---:|---:|
-| Tempo médio de seleção | 0,3030 ms | 7,2771 ms |
-| Pico de alocações Python rastreadas | 7,34 KiB | 854,07 KiB |
-| Razão média de aproximação | 97,78% | 100% |
+| Mediana do tempo de seleção | 0,3030 ms | 7,2771 ms |
+| Mediana do pico de alocações Python rastreadas | 7,34 KiB | 854,07 KiB |
+| Razão média de aproximação ao ótimo quantizado | 97,78% | 100% |
 
 A programação dinâmica alcançou o valor ótimo quantizado. O guloso por densidade apresentou menor custo de seleção, mantendo, nesse cenário, uma aproximação média elevada em relação à solução ótima.
 
-Esses valores caracterizam o cenário experimental informado e não devem ser generalizados automaticamente para outros corpora, tamanhos de entrada ou modelos de linguagem.
+Os valores de tempo e alocações rastreadas apresentados na tabela são medianas agregadas; a razão de aproximação é uma média. Esses resultados caracterizam o cenário experimental informado e não devem ser generalizados automaticamente para outros corpora, tamanhos de entrada ou modelos de linguagem.
 
 ## 5. Implicações para aplicações com LLMs
 
@@ -82,7 +82,7 @@ Na seleção isolada, a programação dinâmica apresentou maior custo temporal 
 
 Na avaliação do fluxo completo, a recuperação C3 representou uma parcela predominante do tempo de processamento. Consequentemente, diferenças entre seletores podem ser menos relevantes para a latência total do fluxo avaliado.
 
-Não foram medidos tempos de inferência, geração de tokens ou latência de respostas de um LLM.
+Não foram medidos tempos de inferência, geração de tokens ou latência de respostas de um LLM. Sem a geração e a avaliação das respostas, também não foi validado se o contexto selecionado fornece evidências suficientes para fundamentar corretamente as afirmações de um modelo de linguagem.
 
 ### 5.3 Qualidade do contexto
 
