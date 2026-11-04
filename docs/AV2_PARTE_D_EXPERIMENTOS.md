@@ -73,13 +73,42 @@ Em 270 cenários, foram observados os seguintes empates no valor quantizado com 
 
 Os resultados mostram que S3 e S4 obtiveram boas aproximações ao objetivo quantizado, com custos computacionais inferiores aos da DP.
 
+## 5.1 Qualidade com julgamentos humanos (qrels)
+
+A qualidade da função objetivo TF-IDF (valor quantizado e razão de aproximação) não deve ser confundida com relevância humana. Para esta última, a Parte D reutiliza o gabarito da AV1 em `data/qrels.csv`: **146** pares consulta–chunk com relevância **1**, julgados pela Helena **antes** dos rankings da recuperação. O gabarito contém apenas julgamentos positivos; a ausência de um chunk no arquivo **não** significa que ele seja irrelevante.
+
+Para cada seleção agregada por consulta, `n` e `W`, foram contados os itens escolhidos presentes no gabarito (`itens_julgados`) e os demais (`itens_nao_julgados`). A cobertura observada nos 270 cenários foi:
+
+| Estratégia | Ocorrências julgadas / selecionadas | Cobertura |
+|---|---:|---:|
+| S1 — Prefixo do ranking | 81 / 756 | 10,71% |
+| S2 — Guloso por valor | 143 / 964 | 14,83% |
+| S3 — Guloso por densidade | 269 / 1.575 | 17,08% |
+| S4 — Guloso modificado | 269 / 1.575 | 17,08% |
+| S5 — Programação dinâmica | 266 / 1.587 | 16,76% |
+
+Quando havia pelo menos um item julgado na seleção, a métrica `precisao_entre_julgados` resultou sempre em **1,0**. Esse valor é **tautológico** no desenho atual do gabarito: todos os pares em `qrels.csv` têm relevância 1, de modo que a razão não observa falsos positivos e **não** equivale à Precision@k da AV1 nem a uma precisão do conjunto escolhido sobre o universo completo de chunks.
+
+A comparação descritiva entre as estratégias principais mostra diferença pequena: S3 acumulou três ocorrências julgadas a mais que S5 (269 versus 266), com coberturas próximas (17,08% e 16,76%). Essa magnitude, somada à baixa fração de itens com julgamento, **não** sustenta as hipóteses H1/H2 da proposta experimental D1 em `docs/CONTRATOS_AV2.md` nem um ranking semântico entre seletores.
+
+Métricas do Contrato 08 já medidas e distintas da relevância humana:
+
+- **Utilização do orçamento** (média sobre os 270 cenários): S3 88,00%; S5 96,40%. No cenário `n = 50`, `W = 1024`: S3 94,92%; S5 99,44%.
+- **Redundância lexical** (Jaccard ≥ 0,8 entre conjuntos de palavras): zero pares redundantes em todas as estratégias (por exemplo, S3 0/5.140 e S5 0/5.216). Zero pares nesse limiar **não** implica ausência de redundância semântica.
+
+**Conclusão desta subseção:** a Parte D demonstra o compromisso entre otimalidade da função objetivo quantizada e custo computacional. A evidência de qualidade semântica via `qrels` é parcial e descritiva; não autoriza afirmar superioridade semântica da programação dinâmica sobre o guloso por densidade, nem o contrário.
+
 ## 6. Limitações
 
 A programação dinâmica garante otimalidade para a função objetivo quantizada, não necessariamente maior relevância semântica.
 
-A cobertura dos julgamentos disponíveis foi limitada: 269 de 1.575 ocorrências selecionadas por S3 (17,08%) e 266 de 1.587 por S5 (16,76%) possuíam julgamento.
+A cobertura dos julgamentos disponíveis foi limitada: 269 de 1.575 ocorrências selecionadas por S3 (17,08%) e 266 de 1.587 por S5 (16,76%) possuíam julgamento. A seção 5.1 detalha o método, a tabela completa por estratégia e a interpretação correta de `precisao_entre_julgados`.
 
 Consequentemente, não é possível afirmar superioridade semântica geral das estratégias com base nessa cobertura.
+
+As métricas adicionais da proposta D1 (fração de tokens relevantes, cobertura/recall sobre \(R(q)\), cobertura máxima alcançável do top-\(n\), amostra cega de pares fora do gabarito e cenários com \(n \in \{100,200\}\)) **não** foram executadas nesta entrega e permanecem fora do escopo do Contrato 08 cumprido pela grade `n ∈ {10,30,50}` × `W ∈ {256,512,1024}`.
+
+O custo `n_tokens` corresponde a unidades lexicais/palavras do corpus da AV1, não à tokenização de um LLM específico.
 
 As medições com `tracemalloc` representam alocações Python rastreadas, não a memória residente total do processo.
 
@@ -210,4 +239,4 @@ A recuperação foi medida novamente na série complementar, mas o pré-processa
 
 A programação dinâmica apresentou o maior valor quantizado, conforme sua garantia teórica. As estratégias gulosas por densidade e modificada ofereceram aproximações elevadas com menor tempo de execução e menor pico de alocações rastreadas.
 
-Os resultados evidenciam o compromisso entre qualidade da otimização e custo computacional na seleção de contexto sob orçamento de palavras. A avaliação de relevância semântica permanece limitada pela cobertura dos julgamentos disponíveis.
+Os resultados evidenciam o compromisso entre qualidade da otimização e custo computacional na seleção de contexto sob orçamento de palavras. A avaliação de relevância semântica permanece limitada pela cobertura dos julgamentos disponíveis, conforme a discussão metodológica da seção 5.1.

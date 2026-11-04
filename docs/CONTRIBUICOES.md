@@ -22,7 +22,7 @@ As informações anteriores documentam a AV1 e foram preservadas. A tabela abaix
 | --- | --- | --- | --- |
 | João Cosme Sena Sá | B — algoritmos/corretude; D — experimentos | PR da Parte B: inserir URL e commit após abertura | Em revisão |
 | Eduardo Henrique do Lago Silva | B — algoritmos/corretude; C — complexidade; D — experimentos | A preencher | Planejada |
-| Helena Carvalho Leal | D — experimentos; E — IA generativa | A preencher | Planejada |
+| Helena Carvalho Leal | D — experimentos; E — IA generativa | Gabarito humano reutilizado na Parte D (`data/qrels.csv`, 146 pares positivos); discussão de cobertura e limites da precisão entre julgados na seção 5.1 de `docs/AV2_PARTE_D_EXPERIMENTOS.md` (branch `av2-parte-d-revisao-qualidade`) | Em revisão |
 | Hernandison da Silva Bispo | A — especificação; E — IA generativa | Parte A: inserir link do documento e commits | Parte A elaborada |
 | Nadianne Maria dos Santos Galvão | A — especificação; C — complexidade | Parte A: inserir link do documento e commits | Parte A elaborada |
-| Rafael Takeguma Goto | B — algoritmos/corretude; E — IA generativa | A preencher | Planejada |
+| Rafael Takeguma Goto | B — algoritmos/corretude; E — IA generativa; revisão da Parte D | Revisão do Contrato 08 na PR #6 (testes AV2 + `auditar_av2.py` aprovados); seção 5.1 de qualidade/`qrels` em `docs/AV2_PARTE_D_EXPERIMENTOS.md` na branch `av2-parte-d-revisao-qualidade` | Em revisão |
