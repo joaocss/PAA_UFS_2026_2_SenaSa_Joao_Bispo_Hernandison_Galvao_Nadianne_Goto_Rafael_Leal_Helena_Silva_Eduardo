@@ -83,3 +83,73 @@ Nadianne: a análise formal foi conferida contra a implementação de `merge_sor
 | João Cosme Sena Sá | Estrutura do repositório, fixtures, fragmentação, índice invertido, conversão das consultas, documentação de testes | Decisões de escopo e divisão de frentes, revisão de cada trecho antes do commit, execução dos testes e das medições |
 | Nadianne Maria dos Santos Galvão | Estruturação e revisão textual da prova de corretude; apoio na análise RAM, complexidade e recorrências, elaboração inicial dos testes de `sort_key` | Conferência da análise com o código da equipe, execução e validação dos testes, revisão das hipóteses da prova, adaptação do conteúdo ao trabalho e gravação da própria participação no vídeo |
 | a preencher | a preencher | a preencher |
+
+
+# Atividade 2 (AV2) — Registro complementar de uso de IA generativa
+
+> **Escopo deste complemento:** registra apenas atividades da AV2 que puderam ser identificadas nas interações e nos artefatos examinados. As entradas da AV1 acima permanecem preservadas. Modelos exatos, usos dos demais integrantes, datas de intervenções específicas e verificações não documentadas devem ser confirmados pelos respectivos responsáveis; não se presume que a IA tenha executado ou validado autonomamente os experimentos.
+
+## 1. Ferramentas e modelos utilizados
+
+| Ferramenta | Integrante | Modelo | Período e observação |
+| --- | --- | --- | --- |
+| ChatGPT (OpenAI) | Nadianne | GPT-6 | Apoio à especificação, análise de algoritmos, revisão de documentação e preparação da apresentação, durante o desenvolvimento da AV2 (setembro–novembro de 2026). |
+| Outras ferramentas eventualmente utilizadas | Cada integrante responsável | **A confirmar** | Inserir somente após confirmação de uso efetivo. |
+
+## 2. Finalidades e localização das contribuições
+
+| Etapa | Uso de IA como apoio | Material relacionado | Limites da atribuição |
+| --- | --- | --- | --- |
+| Parte A — Especificação | Organização/revisão de explicações sobre seleção de contexto sob orçamento e mochila 0/1. | `docs/ESPECIFICACAO_AV2.md` e relatório técnico. | A especificação e as decisões técnicas são de responsabilidade da equipe. |
+| Parte C — Análise assintótica | Apoio à redação e explicação de complexidade, recorrências, Teorema Mestre e interpretação dos gráficos da DP e do Merge Sort. | Documentação da Parte C, gráficos e slides 7–8. | Os gráficos e resultados devem ser conferidos contra os scripts/dados produzidos pela equipe. |
+| Parte D — Interpretação experimental | Apoio à leitura e revisão de métricas, às ressalvas sobre TF-IDF, `qrels` e à comunicação dos resultados. | `docs/AV2_PARTE_D_EXPERIMENTOS.md` e tabelas experimentais. | Não atribuir à IA a execução dos experimentos ou a produção dos julgamentos humanos. |
+| Parte E — RAG | Revisão textual de sua relação conceitual com a seleção de contexto e explicitação de limites de uso com LLMs. | `docs/AV2_PARTE_E_RAG.md`. | O trabalho não testou geração de respostas com LLM. |
+| Relatório, GitHub e apresentação | Apoio à revisão de consistência, interpretação dos comentários das PRs e estruturação de roteiro/slides. | Relatório técnico da AV2, PRs e apresentação em PDF. | A equipe verifica conteúdo, resultados, histórico de commits e versão final entregue. |
+
+## 3. Prompts relevantes da AV2
+
+O registro geral acima já contém três exemplos da AV1 e informa limite de até cinco prompts. Para respeitar esse limite, seguem **dois exemplos literais adicionais**, enviados por Nadianne durante a preparação da apresentação:
+
+4. (Nadianne, AV2) "Revise a seguinte audiotoria: ===== AUDITORIA APROFUNDADA — PARTE D ===== Registros de fluxo: 1620 ..."
+5. (Nadianne, AV2) "O seguinte resultado fecha ΔV e redundância na Parte D?"
+
+Esses prompts documentam o apoio à **comunicação do trabalho**, não a geração ou a validação de resultados experimentais. Caso o enunciado exija especificamente prompts técnicos de análise/código, a equipe deve selecionar outros registros **reais** e revisar a lista total, sem reconstruir ou inventar mensagens.
+
+## 4. Sugestões aproveitadas
+
+| Sugestão de apoio | Como foi utilizada | Verificação necessária/responsabilidade |
+| --- | --- | --- |
+| Separar nos slides a análise teórica da DP e do Merge Sort da avaliação experimental de tempo e memória. | Organização dos slides da Parte C e do roteiro de apresentação. | Conferir fórmulas com as análises e figuras efetivamente versionadas. |
+| Distinguir a otimização do valor TF-IDF quantizado da qualidade semântica ou da resposta de LLM. | Revisão da documentação da Parte E e dos slides sobre RAG. | Conferir formulação contra os contratos, experimentos e revisões por pares. | Ajustes de linguagem no material técnico e na apresentação. | Conferir definições nos scripts e na documentação experimental. |
+
+## 5. Sugestões corrigidas ou rejeitadas
+
+| Ponto revisado | Problema | Tratamento adotado |
+| --- | --- | --- |
+| Classificar 0,3030 ms e 7,2771 ms como "tempos médios" e 7,34/854,07 KiB como médias de memória. | Os revisores da PR #8 identificaram que os números correspondem a **medianas agregadas**, enquanto 97,78% é **média da razão de aproximação**. | Revisar os rótulos no `docs/AV2_PARTE_E_RAG.md`, na tabela do relatório em PDF e nos slides. O ajuste do Markdown foi registrado na PR #8; a conferência do PDF final continua necessária. |
+| Tratar a precisão de 1,0 entre itens julgados em `qrels.csv` como evidência de superioridade semântica. | O gabarito disponível registra apenas julgamentos positivos; a ausência de um par não equivale a julgamento negativo. | Preservar a interpretação descritiva e a ressalva metodológica documentadas na revisão da Parte D (PR #9). |
+
+## 6. Erros identificados, origem e correção
+
+As duas questões acima foram **identificadas ou fundamentadas em revisões humanas e nos dados do projeto**; não devem ser descritas como erros produzidos pela IA sem evidência de uma saída específica. O papel da IA documentado aqui foi auxiliar na análise e redação das correções. Se houver um erro concreto em resposta de IA da AV2, anexar o prompt/saída correspondente e registrar quem o detectou e como foi validado.
+
+## 7. Verificação e validação
+
+- **Análise assintótica:** verificar as relações de crescimento e as fórmulas contra o código, os contratos e os gráficos da Parte C; distinguir contagens teóricas de estados de tempos realmente medidos.
+- **Métricas experimentais:** confrontar afirmações com os CSVs de `experimentos/av2/processados/` e a documentação da Parte D, preservando a distinção entre média e mediana.
+- **Julgamentos humanos:** o arquivo `data/qrels.csv` é uma evidência de relevância julgada, não de execução de LLM; evitar considerar automaticamente não julgados como irrelevantes.
+- **Revisão por pares:** registrar as aprovações, ressalvas e correções na PR correspondente; não substituir o processo de revisão por uma resposta de IA.
+- **Validação técnica:** as execuções de testes e os números reportados precisam ser vinculados aos logs/commits da equipe; este registro não afirma nova execução de testes.
+
+## 8. Contribuição individual no uso de IA — AV2
+
+| Integrante | Apoio de IA identificado neste registro | Decisões, verificações e entregas sob responsabilidade humana |
+| --- | --- | --- |
+| Nadianne Maria dos Santos Galvão | Apoio à especificação da Parte A, à interpretação/apresentação da Parte C, à revisão de documentação e métricas, e à preparação dos slides e falas. | Conferência e ajustes do conteúdo, revisão das PRs, controle dos arquivos versionados e gravação de sua participação no vídeo. |
+| João Cosme Sena Sá | | Implementação/testes e revisões atribuídos ao integrante no projeto; descrever aqui somente usos reais de IA. |
+| Eduardo Henrique do Lago Silva | | Confirmar atividades e verificações específicas. |
+| Helena Carvalho Leal || Julgamentos e revisão da qualidade documentados no projeto não devem ser atribuídos à IA. |
+| Hernandison da Silva Bispo |  | Confirmar atividades e verificações específicas. |
+| Rafael Takeguma Goto | | Confirmar atividades e verificações específicas. |
+
+**Antes da entrega:** confirmar modelos e períodos exatos, acrescentar usos dos demais integrantes quando houver, verificar a exigência de prompts do enunciado e alinhar este registro à versão oficial do relatório da AV2.
