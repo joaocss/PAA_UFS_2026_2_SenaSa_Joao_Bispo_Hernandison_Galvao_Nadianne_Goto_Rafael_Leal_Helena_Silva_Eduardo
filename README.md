@@ -6,7 +6,7 @@ Projeto da disciplina **Projeto e Análise de Algoritmos (PAA)**, do **Programa 
 
 O projeto investiga duas etapas complementares de um pipeline de recuperação de contexto: **recuperação e ordenação de trechos relevantes (AV1)** e **seleção de um subconjunto sob orçamento limitado (AV2)**. O material utilizado é o livro aberto *Pense Python*.
 
-> **Estado da AV2 (04/11/2026):** integrada na `main` (merge da PR #2). Partes A–E versionadas: especificação, seleção por programação dinâmica e guloso, análise assintótica, experimentos comparativos e discussão com RAG. Relatório em [`relatorio/RELATORIO_AV2.pdf`](relatorio/RELATORIO_AV2.pdf). O vídeo da AV2 ainda aguarda a URL pública (ver seção abaixo).
+> **Estado da AV2 (04/11/2026):** integrada na `main` (merge da PR #2). Partes A–E versionadas: especificação, seleção por programação dinâmica e guloso, análise assintótica, experimentos comparativos e discussão com RAG. Relatório em [`relatorio/RELATORIO_AV2.pdf`](relatorio/RELATORIO_AV2.pdf). Vídeo da AV2: [pasta no Google Drive](https://drive.google.com/drive/folders/1qF5mMkBG4x6ZlZMEypKzlrl6P9b71Dy7?usp=sharing).
 
 ## Atividades
 
@@ -73,9 +73,9 @@ As evidências de contribuições da AV1 e da AV2 estão em [`docs/CONTRIBUICOES
 
 ### AV2
 
-**URL do vídeo consolidado:** a preencher quando a gravação for publicada (também em [`VIDEO.md`](VIDEO.md) e na capa do relatório).
+**URL do vídeo:** https://drive.google.com/drive/folders/1qF5mMkBG4x6ZlZMEypKzlrl6P9b71Dy7?usp=sharing
 
-Participação prevista de todos os integrantes, cobrindo trilha A (mochila 0/1), baseline guloso, corretude, complexidade, experimentos e relação com RAG.
+Pasta no Google Drive com a gravação da AV2 (também em [`VIDEO.md`](VIDEO.md) e na capa do relatório). Participação de todos os integrantes, cobrindo trilha A (mochila 0/1), baseline guloso, corretude, complexidade, experimentos e relação com RAG.
 
 ### AV1
 

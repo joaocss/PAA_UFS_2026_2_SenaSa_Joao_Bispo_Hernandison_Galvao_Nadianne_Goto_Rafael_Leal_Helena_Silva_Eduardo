@@ -1,14 +1,39 @@
 # Vídeo da atividade
 
-URL: gravações individuais, listadas por integrante na tabela abaixo; a URL do vídeo consolidado substitui esta linha quando a junção for publicada
+## AV2
+
+URL: https://drive.google.com/drive/folders/1qF5mMkBG4x6ZlZMEypKzlrl6P9b71Dy7?usp=sharing
+
+Data de gravação: 04 e 05/11/2026
+
+Duração: até 10 minutos
+
+Plataforma: Google Drive, com reprodução liberada por link, sem solicitação de acesso
+
+### Participantes e trecho de fala
+
+| Integrante | Trecho apresentado |
+| --- | --- |
+| João Cosme Sena Sá | a registrar conforme roteiro final |
+| Eduardo Henrique do Lago Silva | a registrar conforme roteiro final |
+| Helena Carvalho Leal | a registrar conforme roteiro final |
+| Hernandison da Silva Bispo | a registrar conforme roteiro final |
+| Nadianne Maria dos Santos Galvão | a registrar conforme roteiro final |
+| Rafael Takeguma Goto | Slides 12–14: interpretação dos experimentos, integração com RAG e conclusões (contribuições e limitações) |
+
+Todos os integrantes participam do vídeo, com identificação clara da própria contribuição.
+
+A mesma URL precisa constar no README, na capa do relatório em PDF e na área da atividade no Google Classroom quando o docente solicitar. Ela deve permanecer acessível até o encerramento da avaliação.
+
+## AV1 (registro histórico)
+
+URL: gravações individuais, listadas por integrante na tabela abaixo
 
 Data de gravação: 22 e 23/09/2026
 
 Duração: até 10 minutos
 
 Plataforma: Google Drive e Loom, com reprodução liberada por link, sem solicitação de acesso
-
-## Participantes e trecho de fala
 
 | Integrante | Trecho apresentado |
 | --- | --- |
@@ -18,7 +43,3 @@ Plataforma: Google Drive e Loom, com reprodução liberada por link, sem solicit
 | Hernandison da Silva Bispo | Relatório completo. Gravação individual: https://drive.google.com/file/d/1uum6u9M137ya6Ex8oYPVvSaY3Qes8g2C/view?usp=sharing |
 | Nadianne Maria dos Santos Galvão | RAM e complexidade, recorrências de C1, C2 e C3 e corretude formal do Merge Sort. Gravação individual: https://drive.google.com/file/d/1WWhyEl1k9qLuE8Sod03WE9qJ3bNDWx3Y/view?usp=drive_link |
 | Rafael Takeguma Goto | Busca linear, Insertion Sort, Merge Sort, pontuação e consulta (C1 e C3). Gravação individual: https://drive.google.com/file/d/13jiWmtcPA6ZGqowYDyxqEHd5966waPa8/view?usp=sharing |
-
-Todos os integrantes participam do vídeo, com identificação clara da própria contribuição.
-
-A mesma URL precisa constar no README, na capa do relatório em PDF e na área da atividade no Google Classroom quando o docente solicitar. Ela deve permanecer acessível até o encerramento da avaliação.
