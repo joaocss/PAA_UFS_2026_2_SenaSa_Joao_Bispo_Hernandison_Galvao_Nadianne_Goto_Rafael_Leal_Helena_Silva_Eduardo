@@ -6,7 +6,7 @@ Projeto da disciplina **Projeto e Análise de Algoritmos (PAA)**, do **Programa 
 
 O projeto investiga duas etapas complementares de um pipeline de recuperação de contexto: **recuperação e ordenação de trechos relevantes (AV1)** e **seleção de um subconjunto sob orçamento limitado (AV2)**. O material utilizado é o livro aberto *Pense Python*.
 
-> **Estado da AV2 (23/10/2026):** Parte A — especificação do problema elaborada. Implementação, testes e experimentos específicos da AV2 ainda em desenvolvimento. Os comandos de reprodução documentados abaixo pertencem à AV1, até que os novos comandos sejam implementados e validados.
+> **Estado da AV2 (04/11/2026):** integrada na `main` (merge da PR #2). Partes A–E versionadas: especificação, seleção por programação dinâmica e guloso, análise assintótica, experimentos comparativos e discussão com RAG. Relatório em [`relatorio/RELATORIO_AV2.pdf`](relatorio/RELATORIO_AV2.pdf). O vídeo da AV2 ainda aguarda a URL pública (ver seção abaixo).
 
 ## Atividades
 
@@ -45,7 +45,7 @@ A AV2 reutiliza o corpus, as consultas e a pontuação lexical da AV1; não subs
 
 ## Equipe
 
-### Responsabilidades previstas na AV2
+### Responsabilidades na AV2
 
 | Integrante | Partes da AV2 |
 | --- | --- |
@@ -67,20 +67,24 @@ A AV2 reutiliza o corpus, as consultas e a pontuação lexical da AV1; não subs
 | Nadianne Maria dos Santos Galvão | Corretude, modelo RAM, complexidade e recorrências |
 | Rafael Takeguma Goto | Busca linear, Insertion Sort, Merge Sort, pontuação e consulta (C1 e C3) |
 
-As evidências de contribuições da AV1 estão em [`docs/CONTRIBUICOES.md`](docs/CONTRIBUICOES.md). As contribuições da AV2 serão registradas no mesmo histórico ou em uma seção específica desse documento.
+As evidências de contribuições da AV1 e da AV2 estão em [`docs/CONTRIBUICOES.md`](docs/CONTRIBUICOES.md).
 
 ## Vídeos das atividades
 
 ### AV2
 
-Apresentação e vídeo da AV2 **ainda não disponibilizados**.
+**URL do vídeo consolidado:** a preencher quando a gravação for publicada (também em [`VIDEO.md`](VIDEO.md) e na capa do relatório).
+
+Participação prevista de todos os integrantes, cobrindo trilha A (mochila 0/1), baseline guloso, corretude, complexidade, experimentos e relação com RAG.
 
 ### AV1
 
 Gravações individuais:
 
 - **João Cosme Sena Sá:** https://www.loom.com/share/aab4b4cd6a934bb892fd6c4bb73bcd85
+- **Eduardo Henrique do Lago Silva:** https://drive.google.com/file/d/10dloKdDsq0IxlEt7zqfLoBoR96YElOho/view?usp=sharing
 - **Helena Carvalho Leal:** https://drive.google.com/file/d/1mrltLobY4q7kejFFrKunLzwvc68bTs38/view?usp=drive_link
+- **Hernandison da Silva Bispo:** https://drive.google.com/file/d/1uum6u9M137ya6Ex8oYPVvSaY3Qes8g2C/view?usp=sharing
 - **Nadianne Maria dos Santos Galvão:** https://drive.google.com/file/d/1WWhyEl1k9qLuE8Sod03WE9qJ3bNDWx3Y/view?usp=drive_link
 - **Rafael Takeguma Goto:** https://drive.google.com/file/d/13jiWmtcPA6ZGqowYDyxqEHd5966waPa8/view?usp=sharing
 
@@ -135,7 +139,7 @@ O conjunto candidato é específico de cada consulta. A programação dinâmica 
 
 A ordenação dos resultados usa o critério `(-score, source_order)`. Os detalhes de formato, pontuação e desempate estão em [`docs/CONTRATOS.md`](docs/CONTRATOS.md).
 
-### Extensão planejada para a AV2
+### Extensão implementada na AV2
 
 ```text
 Consulta
@@ -147,33 +151,33 @@ Recuperação C3 (busca linear + Merge Sort)
 Candidatos: id, texto, relevância, custo, source_order
    ↓
 Seleção sob orçamento W
-   ├── Programação dinâmica (mochila 0/1)
-   └── Guloso (relevância / custo)
+   ├── Programação dinâmica (mochila 0/1) — S5
+   └── Guloso por densidade (relevância / custo) — S3
    ↓
 Subconjunto selecionado + relevância total + custo total
    ↓
-Avaliação comparativa
+Avaliação comparativa (Parte D)
 ```
 
 A estratégia gulosa considera os chunks em ordem decrescente de `v_i/w_i`, incluindo um item apenas se couber no orçamento restante. Em empates de razão, prefere maior relevância absoluta e depois menor `source_order`.
 
-Na programação dinâmica, entre soluções com relevância máxima igual, o critério previsto é: **menor custo total** e, persistindo o empate, **menor sequência lexicográfica dos `source_order` selecionados e ordenados crescentemente**.
+Na programação dinâmica, entre soluções com valor quantizado máximo igual, o critério é: **menor custo total** e, persistindo o empate, **menor sequência lexicográfica dos `source_order`**. A implementação está em `src/paa_context/selecao.py`.
 
-Essas regras são **especificações para implementação e teste**, não resultados já medidos.
+## Experimentos da AV2
 
-## Planejamento experimental da AV2
+Parâmetros efetivamente utilizados na Parte D:
 
-Os parâmetros abaixo são preliminares e serão confirmados antes da execução dos experimentos.
-
-| Parâmetro | Valor previsto |
+| Parâmetro | Valor |
 | --- | --- |
 | Consultas | 30 consultas de `data/queries.csv`, reutilizadas da AV1 |
-| Quantidade de candidatos | 10, 30 e 50, quando houver suficientes com score positivo |
+| Quantidade de candidatos | 10, 30 e 50 |
 | Orçamentos `W` | 256, 512 e 1.024 unidades lexicais |
-| Repetições | Mínimo de 3 por cenário |
-| Comparação | Programação dinâmica versus guloso, sob entradas idênticas |
-| Qualidade da seleção | Relevância acumulada, custo utilizado, utilização do orçamento, diferença de relevância, redundância |
-| Custo computacional | Tempo de seleção, tempo total do fluxo e memória aproximada |
+| Repetições | 5 por cenário (após aquecimentos), na grade principal |
+| Comparação principal | S5 (programação dinâmica) versus S3 (guloso por densidade) |
+| Qualidade da seleção | Valor quantizado, relevância TF-IDF, custo, utilização do orçamento, ΔV, redundância lexical |
+| Custo computacional | Tempo de seleção, tempo do fluxo completo e pico de alocações Python (`tracemalloc`) |
+
+Dados brutos, tabelas e gráficos: `experimentos/av2/`. Detalhes em [`docs/AV2_PARTE_D_EXPERIMENTOS.md`](docs/AV2_PARTE_D_EXPERIMENTOS.md).
 
 **Observação:** a relevância acumulada é a soma dos scores lexicais dos chunks escolhidos. Ela não constitui avaliação automática da qualidade de respostas geradas por LLM.
 
@@ -195,17 +199,28 @@ pytest
 
 Os testes da AV1 utilizam dados sintéticos de `tests/fixtures/` e não exigem o download do corpus para os casos cobertos por essas fixtures.
 
-## Reprodução da AV1
+## Reprodução
 
-> **Atenção:** os comandos desta seção executam as funcionalidades **já existentes da AV1**. A interface de execução específica da AV2 será documentada após sua implementação.
+### AV2 — seleção e experimentos
 
-Para reproduzir o fluxo da AV1, da aquisição aos gráficos:
+Exige o corpus processado (`data/processed/chunks.jsonl`). Se necessário, prepare-o com os scripts da AV1 abaixo.
+
+```bash
+pytest
+python scripts/av2/rodar_av2.py --rapido          # smoke test
+python scripts/av2/auditar_av2.py                 # auditoria dos JSONL
+python scripts/av2/analisar_av2.py                # agregações / resumos
+```
+
+A grade completa (sem `--rapido`) regenera `experimentos/av2/brutos/execucoes.jsonl` e pode demorar. Os resultados já versionados podem ser auditados sem rerodar a grade.
+
+### AV1 — recuperação lexical
 
 ```bash
 python scripts/reproduzir_tudo.py
 ```
 
-Os estágios podem ser executados separadamente:
+Estágios separados:
 
 ```bash
 python scripts/baixar_corpus.py
@@ -215,7 +230,7 @@ python scripts/gerar_figuras.py
 python scripts/medir_ingestao.py
 ```
 
-Para consultar o corpus após sua preparação:
+Consulta após a preparação:
 
 ```bash
 python scripts/consultar.py --consulta "o que é recursão" --k 5 --config C3
@@ -228,21 +243,15 @@ O protocolo original de avaliação está em [`docs/PROTOCOLO_EXPERIMENTAL.md`](
 ## Estrutura do repositório
 
 ```text
-src/paa_context/       Código do pipeline lexical da AV1
-scripts/               Aquisição, processamento, consulta e experimentos da AV1
+src/paa_context/       Pipeline lexical (AV1) e seleção sob orçamento (AV2)
+scripts/               AV1 + scripts/av2/ e scripts/analise_complexidade/
 tests/                 Testes unitários, de integração e fixtures
-data/                  Manifesto, consultas e dados processados gerados
-experimentos/          Registros, tabelas, gráficos e logs
-relatorio/             Fontes e entregas do relatório
+data/                  Manifesto, consultas, qrels e corpus processado
+experimentos/          AV1 e experimentos/av2/
+relatorio/             Relatórios AV1 e AV2
 slides/                Materiais de apresentação
-docs/                  Contratos, corretude, resultados e contribuições
+docs/                  Contratos, especificações, partes C–E e contribuições
 ```
-
-**Documentos previstos para a AV2** (adicionar os links apenas depois de criar os arquivos):
-
-- `docs/ESPECIFICACAO_AV2.md` — conteúdo da Parte A.
-- `docs/CONTRATOS_AV2.md` — formatos de entrada/saída, interfaces e decisões de implementação.
-- `docs/PLANEJAMENTO_AV2.md` — responsabilidades e prazos da AV2.
 
 Os documentos `docs/PLANEJAMENTO.md`, `docs/CONTRATOS.md` e `docs/SEMANA1.md` continuam como registros da AV1 e **não devem ser sobrescritos**.
 
@@ -263,4 +272,9 @@ O código deste repositório é distribuído sob a licença **MIT**, conforme o 
 
 ### AV2
 
-A especificação da Parte A e os contratos específicos da AV2 serão adicionados à branch `av2-programacao-dinamica` e vinculados aqui quando estiverem versionados.
+- [`docs/ESPECIFICACAO_AV2.md`](docs/ESPECIFICACAO_AV2.md) — especificação formal (Parte A).
+- [`docs/CONTRATOS_AV2.md`](docs/CONTRATOS_AV2.md) — contratos técnicos da seleção.
+- [`docs/PLANEJAMENTO_AV2.md`](docs/PLANEJAMENTO_AV2.md) — responsabilidades e prazos.
+- [`docs/AV2_PARTE_D_EXPERIMENTOS.md`](docs/AV2_PARTE_D_EXPERIMENTOS.md) — experimentos e comparação.
+- [`docs/AV2_PARTE_E_RAG.md`](docs/AV2_PARTE_E_RAG.md) — relação com IA generativa / RAG.
+- [`relatorio/RELATORIO_AV2.pdf`](relatorio/RELATORIO_AV2.pdf) — relatório técnico.
