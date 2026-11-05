@@ -145,11 +145,11 @@ As duas questões acima foram **identificadas ou fundamentadas em revisões huma
 
 | Integrante | Apoio de IA identificado neste registro | Decisões, verificações e entregas sob responsabilidade humana |
 | --- | --- | --- |
-| Nadianne Maria dos Santos Galvão | Apoio à especificação da Parte A, à interpretação/apresentação da Parte C, à revisão de documentação e métricas, e à preparação dos slides e falas. | Conferência e ajustes do conteúdo, revisão das PRs, controle dos arquivos versionados e gravação de sua participação no vídeo. |
-| João Cosme Sena Sá | | Implementação/testes e revisões atribuídos ao integrante no projeto; descrever aqui somente usos reais de IA. |
-| Eduardo Henrique do Lago Silva | | Confirmar atividades e verificações específicas. |
-| Helena Carvalho Leal || Julgamentos e revisão da qualidade documentados no projeto não devem ser atribuídos à IA. |
-| Hernandison da Silva Bispo |  | Confirmar atividades e verificações específicas. |
-| Rafael Takeguma Goto | | Confirmar atividades e verificações específicas. |
+| Nadianne Maria dos Santos Galvão | Apoio à especificação da Parte A, à interpretação/apresentação da Parte C, à revisão de documentação e métricas, e à preparação dos slides e falas. | Conferência e ajustes do conteúdo, revisão das PRs. |
+| João Cosme Sena Sá | |  |
+| Eduardo Henrique do Lago Silva | | |
+| Helena Carvalho Leal || |
+| Hernandison da Silva Bispo |  |  |
+| Rafael Takeguma Goto | | |
 
-**Antes da entrega:** confirmar modelos e períodos exatos, acrescentar usos dos demais integrantes quando houver, verificar a exigência de prompts do enunciado e alinhar este registro à versão oficial do relatório da AV2.
+
